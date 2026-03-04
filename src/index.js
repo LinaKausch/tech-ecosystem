@@ -1,3 +1,5 @@
+import './world/scene.js';
+
 const socket = io();
 const $url = document.getElementById('url');
 
