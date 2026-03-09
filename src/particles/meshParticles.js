@@ -2,12 +2,13 @@ import * as THREE from 'three';
 
 export const createMeshParticles = (scene, options = {}) => {
     const {
-        count = 200,
+        count = 100,
         minRadius = 2,
-        spread = 10,
+        spread = 5,
         particleRadius = 0.05,
         color = 0x26263C
     } = options;
+
 
     const center = new THREE.Vector3(0, 0, 0);
     const geometry = new THREE.SphereGeometry(particleRadius, 6, 6);
