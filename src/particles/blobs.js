@@ -4,8 +4,8 @@ import { MarchingCubes } from "three/examples/jsm/objects/MarchingCubes.js";
 
 export const blobs = (scene, options = {}) => {
     const {
-        count = 20,
-        spread = 20
+        count = 15,
+        spread = 5
     } = options;
 
     const resolution = 64;
@@ -13,9 +13,9 @@ export const blobs = (scene, options = {}) => {
 
     const blobs = new MarchingCubes(resolution, material, false, false);
     blobs.position.set(0, 0, 0);
-    const cubeScale = 1;
+    const cubeScale = 0.9;
     blobs.scale.set(cubeScale, cubeScale, cubeScale);
-    blobs.isolation = 10;
+    blobs.isolation = 20;
     scene.add(blobs);
 
     const particles = [];
@@ -50,8 +50,8 @@ export const animateBlobs = (state, time = performance.now()) => {
     const dt = Math.min((time - lastTime) * 0.001, 0.05);
     state.lastTime = time;
 
-    const strength = 0.05;
-    const subtract = 8;
+    const strength = 0.09;
+    const subtract =5;
 
     for (let i = 0; i < particles.length; i++) {
         const particle = particles[i];

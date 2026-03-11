@@ -3,6 +3,7 @@ import { pointParticles } from '../particles/pointParticles.js';
 import { platform, rigidPlatform, world } from '../components/platform.js';
 import { createMeshParticles, updateMeshParticles } from '../particles/meshParticles.js';
 import { createDiamond, updateDiamond } from '../components/shape.js';
+import { createAgent, updateAgent } from '../components/agent.js';
 import { createWalls, updateWalls } from '../components/walls.js';
 import { blobs, animateBlobs } from '../particles/blobs.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -18,6 +19,7 @@ const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 };
+const agents = [];
 
 //CAMERA
 const camera = new THREE.PerspectiveCamera(40, sizes.width / sizes.height, 0.1, 100);
@@ -43,33 +45,33 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 //HELPERS
-// const helpers = () => {
-//     const size = 10;
-//     const divisions = 20;
-//     const gridHelper = new THREE.GridHelper(size, divisions);
-//     const axesHelper = new THREE.AxesHelper(5);
-//     scene.add(gridHelper, axesHelper);
-// }
-// helpers();
+const helpers = () => {
+    const size = 10;
+    const divisions = 20;
+    const gridHelper = new THREE.GridHelper(size, divisions);
+    const axesHelper = new THREE.AxesHelper(5);
+    scene.add(gridHelper, axesHelper);
+}
+helpers();
 
 //PLATFORMS
-const platform1 = platform();
-platform1.position.set(1.2, 0.4, 0);
-platform1.rotation.y = Math.PI / 5;
-rigidPlatform(platform1);
-scene.add(platform1);
+// const platform1 = platform();
+// platform1.position.set(1.2, 0.4, 0);
+// platform1.rotation.y = Math.PI / 5;
+// rigidPlatform(platform1);
+// scene.add(platform1);
 
-const platform2 = platform();
-platform2.position.set(-1, -0.6, 1);
-platform2.rotation.y = -Math.PI / 4;
-rigidPlatform(platform2);
-scene.add(platform2);
+// const platform2 = platform();
+// platform2.position.set(-1, -0.6, 1);
+// platform2.rotation.y = -Math.PI / 4;
+// rigidPlatform(platform2);
+// scene.add(platform2);
 
-const platform3 = platform();
-platform3.position.set(-1, 0.8, -1);
-platform3.rotation.y = Math.PI / 3;
-rigidPlatform(platform3);
-scene.add(platform3);
+// const platform3 = platform();
+// platform3.position.set(-1, 0.8, -1);
+// platform3.rotation.y = Math.PI / 3;
+// rigidPlatform(platform3);
+// scene.add(platform3);
 
 //PARTICLES
 // pointParticles(scene, grass, 5, 5);
@@ -78,7 +80,10 @@ scene.add(platform3);
 // pointParticles(scene, sand, -5, -5);
 const meshParticlesState = createMeshParticles(scene);
 
-const diamond = createDiamond(scene);
+for (let i = 0; i < 2; i++) {
+    agents.push(createAgent(scene));
+}
+// const diamond = createDiamond(scene);
 // const wallsState = createWalls(scene);
 const blobsState = blobs(scene);
 
@@ -86,7 +91,11 @@ const draw = () => {
     animationId = requestAnimationFrame(draw);
     controls.update();
     updateMeshParticles(meshParticlesState);
-    updateDiamond(diamond, performance.now());
+
+    agents.forEach(agent => {
+        updateAgent(agent, performance.now());
+    })
+    // updateDiamond(diamond, performance.now());
     // updateWalls(wallsState, performance.now() * 0.0005);
     animateBlobs(blobsState, performance.now());
     world.step();
