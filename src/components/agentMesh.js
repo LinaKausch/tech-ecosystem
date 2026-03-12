@@ -8,7 +8,15 @@ export const createMesh = (agentDNA) => {
 }
 
 export const updateMesh = (mesh, agent) => {
-    mesh.position.copy(agent.position);
+    if (agent.rigidBody) {
+        const translation = agent.rigidBody.translation();
+        const rotation = agent.rigidBody.rotation();
+
+        mesh.position.set(translation.x, translation.y, translation.z);
+        mesh.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
+    } else {
+        mesh.position.copy(agent.position);
+    }
     // mesh.scale.set (agent.dna.size, agent.dna.size, agent.dna.size);
     // mesh.material.color.set(agent.dna.color);
 }

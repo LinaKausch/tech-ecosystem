@@ -1,6 +1,11 @@
 import * as THREE from 'three';
 import { createMesh, updateMesh } from './agentMesh.js';
 import { wander } from '../behaviour/wander.js';
+import RAPIER from '@dimforge/rapier3d-compat';
+await RAPIER.init();
+export const world = new RAPIER.World(new RAPIER.Vector3(0, 0, 0));
+world.gravity = { x: 0, y: 0, z: 0 };
+
 
 //position, velocity, dna, behaviour, generation, lifeStage, target
 export const createAgent = (
@@ -11,10 +16,19 @@ export const createAgent = (
     generation = 1
 ) => {
 
+    //child - 0.01
+    //adult - 0.12
+
+    // if lifeStage = child then size  = 0.01 & size += 0.001
+    // if size === 0.012 then lifestage = adult & size = 0.012
+    //if generation = 1 && size = 0.012 then add generation 2 agents with size = 0.01
+    // if generation = 2 && size  =  0.012 wait for user input for dna
+    // if get user input data then choose one random agent - generation = 2 && size = 0.012 - mix dna and release generation 3 
+    // generation = 3 && size = 0.012 then exchange data with generation 3 random agent? 
 
     const agentDNA = dna ?? {
         size: 0.12,
-        color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+        color: new THREE.Color().setRGB(Math.random(), Math.random(), Math.random()),
         segmentsW: Math.floor(THREE.MathUtils.randFloat(3, 16)),
         segmentsH: Math.floor(THREE.MathUtils.randFloat(3, 16))
     };
@@ -41,18 +55,81 @@ export const createAgent = (
         lifeStage: 'child',
         target: null,
         mesh: null,
+        rigidBody: null
     };
 
     agent.mesh = createMesh(agent.dna);
     scene.add(agent.mesh);
 
+    // const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
+    //     .setTranslation(agent.position.x, agent.position.y, agent.position.z);
+    // agent.rigidBody = world.createRigidBody(rigidBodyDesc);
+
+    const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
+        .setTranslation(agent.position.x, agent.position.y, agent.position.z)
+        .setLinearDamping(1.0);
+    agent.rigidBody = world.createRigidBody(rigidBodyDesc);
+
+    const colliderDesc = RAPIER.ColliderDesc.ball(agent.dna.size + 0.1);
+    world.createCollider(colliderDesc, agent.rigidBody);
+    console.log(agent.rigidBody);
     return agent;
 }
 
 export const updateAgent = (agent, dt) => {
-    agent.behaviour(agent, dt);
-    updateMesh(agent.mesh, agent);
+    const steeringF = agent.behaviour(agent, dt);
+
+    if (steeringF && agent.rigidBody) {
+        moveAgent(agent, steeringF);
+    }
+
+    if (agent.rigidBody) {
+        const translation = agent.rigidBody.translation();
+        const rotation = agent.rigidBody.rotation();
+
+        agent.mesh.position.set(translation.x, translation.y, translation.z);
+        agent.mesh.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
+
+        agent.position.copy(agent.mesh.position);
+    }
+
+    // updateMesh(agent.mesh, agent);
 }
+
+export const moveAgent = (agent, forceVector) => {
+    if (agent.rigidBody) {
+        agent.rigidBody.setLinvel({
+            x: forceVector.x,
+            y: forceVector.y,
+            z: forceVector.z
+        }, true);
+    }
+};
+
+export const createBoundBox = (world, size = 10) => {
+    const halfSize = size / 2;
+    const thickness = 0.5;
+
+    const createWall = (x, y, z, w, h, d) => {
+        const wallDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(x, y, z);
+        const wallBody = world.createRigidBody(wallDesc);
+        const wallCollider = RAPIER.ColliderDesc.cuboid(w, h, d);
+        world.createCollider(wallCollider, wallBody);
+
+    }
+createWall(0, -halfSize, 0, halfSize, thickness, halfSize); // Floor
+createWall(0, halfSize, 0, halfSize, thickness, halfSize); // Ceiling
+createWall(-halfSize, 0, 0, thickness, halfSize, halfSize); // Left Wall
+createWall(halfSize, 0, 0, thickness, halfSize, halfSize); // Right Wall
+createWall(0, 0, -halfSize, halfSize, halfSize, thickness); // Back Wall
+createWall(0, 0, halfSize, halfSize, halfSize, thickness); // Front Wall
+}
+
+
+
+
+
+
 
 
 //postion 

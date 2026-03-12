@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import RAPIER from '@dimforge/rapier3d-compat';
-await RAPIER.init();
-export const world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
+// await RAPIER.init();
+// export const world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
 
 export const platformSize = { x: 1, y: 0.05, z: 2 };
 

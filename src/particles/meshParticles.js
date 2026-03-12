@@ -5,7 +5,7 @@ export const createMeshParticles = (scene, options = {}) => {
         count = 100,
         minRadius = 2,
         spread = 5,
-        particleRadius = 0.05,
+        particleRadius = 0.04,
         color = 0x26263C
     } = options;
 

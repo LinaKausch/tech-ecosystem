@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { pointParticles } from '../particles/pointParticles.js';
-import { platform, rigidPlatform, world } from '../components/platform.js';
+import { platform, rigidPlatform } from '../components/platform.js';
 import { createMeshParticles, updateMeshParticles } from '../particles/meshParticles.js';
 import { createDiamond, updateDiamond } from '../components/shape.js';
-import { createAgent, updateAgent } from '../components/agent.js';
+import { createAgent, updateAgent, world, createBoundBox } from '../components/agent.js';
+import { createOffspring } from '../components/evolution.js';
 import { createWalls, updateWalls } from '../components/walls.js';
 import { blobs, animateBlobs } from '../particles/blobs.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -76,17 +77,25 @@ helpers();
 //PARTICLES
 // pointParticles(scene, grass, 5, 5);
 // pointParticles(scene, ocean, -5, 5);
-// pointParticles(scene, fire, 5, -5);
-// pointParticles(scene, sand, -5, -5);
+// pointParticles(scene, fire, 5, -5);1
+// pointParticles(s12cene, sand, -5, -5);
 const meshParticlesState = createMeshParticles(scene);
 
 for (let i = 0; i < 2; i++) {
     agents.push(createAgent(scene));
 }
+
+const parent1 = agents[0];
+const parent2 = agents[1];
+console.log("p1:", parent1.dna, "p2:", parent2.dna);
+
+const offsprings = createOffspring(scene, parent1, parent2, 4);
+agents.push(...offsprings);
+console.log("offsprings:", offsprings.map(o => o.dna));
 // const diamond = createDiamond(scene);
 // const wallsState = createWalls(scene);
 const blobsState = blobs(scene);
-
+createBoundBox(world);
 const draw = () => {
     animationId = requestAnimationFrame(draw);
     controls.update();
@@ -99,8 +108,10 @@ const draw = () => {
     // updateWalls(wallsState, performance.now() * 0.0005);
     animateBlobs(blobsState, performance.now());
     world.step();
+    
     renderer.render(scene, camera);
 }
+
 draw();
 
 if (import.meta.hot) {
