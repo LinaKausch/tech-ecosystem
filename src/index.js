@@ -1,4 +1,4 @@
-import './world/scene.js';
+import { handleRemoteData } from './world/scene.js';
 
 const socket = io();
 const $url = document.getElementById('url');
@@ -17,6 +17,7 @@ socket.on('connect', () => {
     document.getElementById('qr').innerHTML = qr.createImgTag(4);
 });
 
-socket.on("display-action", (data) => {
+socket.on("render-data", (data) => {
     console.log("Display performing action:", data);
+    handleRemoteData(data);
 });

@@ -7,7 +7,6 @@ export const world = new RAPIER.World(new RAPIER.Vector3(0, 0, 0));
 world.gravity = { x: 0, y: 0, z: 0 };
 
 
-//position, velocity, dna, behaviour, generation, lifeStage, target
 export const createAgent = (
     scene,
     dna = null,
@@ -27,8 +26,8 @@ export const createAgent = (
     // generation = 3 && size = 0.012 then exchange data with generation 3 random agent? 
 
     const agentDNA = dna ?? {
-        size: 0.12,
-        color: new THREE.Color().setRGB(Math.random(), Math.random(), Math.random()),
+        size: 0.01,
+        color: new THREE.Color(Math.random(), Math.random(), Math.random()),
         segmentsW: Math.floor(THREE.MathUtils.randFloat(3, 16)),
         segmentsH: Math.floor(THREE.MathUtils.randFloat(3, 16))
     };
@@ -52,7 +51,7 @@ export const createAgent = (
         movement: agentMovement,
         behaviour,
         generation,
-        lifeStage: 'child',
+        lifeStage: agentDNA.size < 0.12 ? 'child' : 'adult',
         target: null,
         mesh: null,
         rigidBody: null
@@ -61,10 +60,6 @@ export const createAgent = (
     agent.mesh = createMesh(agent.dna);
     scene.add(agent.mesh);
 
-    // const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
-    //     .setTranslation(agent.position.x, agent.position.y, agent.position.z);
-    // agent.rigidBody = world.createRigidBody(rigidBodyDesc);
-
     const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
         .setTranslation(agent.position.x, agent.position.y, agent.position.z)
         .setLinearDamping(1.0);
@@ -72,11 +67,12 @@ export const createAgent = (
 
     const colliderDesc = RAPIER.ColliderDesc.ball(agent.dna.size + 0.1);
     world.createCollider(colliderDesc, agent.rigidBody);
-    console.log(agent.rigidBody);
+    // console.log(agent.rigidBody);
     return agent;
 }
 
 export const updateAgent = (agent, dt) => {
+    handleGrowth(agent);
     const steeringF = agent.behaviour(agent, dt);
 
     if (steeringF && agent.rigidBody) {
@@ -117,16 +113,28 @@ export const createBoundBox = (world, size = 10) => {
         world.createCollider(wallCollider, wallBody);
 
     }
-createWall(0, -halfSize, 0, halfSize, thickness, halfSize); // Floor
-createWall(0, halfSize, 0, halfSize, thickness, halfSize); // Ceiling
-createWall(-halfSize, 0, 0, thickness, halfSize, halfSize); // Left Wall
-createWall(halfSize, 0, 0, thickness, halfSize, halfSize); // Right Wall
-createWall(0, 0, -halfSize, halfSize, halfSize, thickness); // Back Wall
-createWall(0, 0, halfSize, halfSize, halfSize, thickness); // Front Wall
+    createWall(0, -halfSize, 0, halfSize, thickness, halfSize); // Floor
+    createWall(0, halfSize, 0, halfSize, thickness, halfSize); // Ceiling
+    createWall(-halfSize, 0, 0, thickness, halfSize, halfSize); // Left Wall
+    createWall(halfSize, 0, 0, thickness, halfSize, halfSize); // Right Wall
+    createWall(0, 0, -halfSize, halfSize, halfSize, thickness); // Back Wall
+    createWall(0, 0, halfSize, halfSize, halfSize, thickness); // Front Wall
 }
 
+export const handleGrowth = (agent, world) => {
+    const adultS = 0.12;
+    const growthRate = 0.0001;
 
-
+    if (agent.lifeStage === 'child') {
+        agent.dna.size += growthRate;
+        agent.mesh.scale.setScalar(agent.dna.size / 0.01);
+        if (agent.dna.size >= adultS) {
+            agent.dna.size = adultS;
+            agent.lifeStage = 'adult';
+            console.log('Agent is adult now');
+        }
+    }
+}
 
 
 

@@ -22,6 +22,7 @@ app.get('/remote', (req, res) => {
     res.sendFile(join(__dirname, '..', 'remote.html'));
 });
 
+//maybe i need unlimited displays but limited remotes?
 io.on('connection', (socket) => {
     socket.on('join-display', () => {
         const room = io.sockets.adapter.rooms.get('display');
@@ -42,6 +43,11 @@ io.on('connection', (socket) => {
         }
         socket.join('remote');
         console.log('Remote connected! Socket ID:', socket.id);
+    });
+
+    socket.on('send-to-display', (data) => {
+        console.log('Forwarding data to display:', data);
+        io.to('display').emit('render-data', data);
     });
     // console.log('User connected! Socket ID:', socket.id);
     socket.on('disconnect', () => {
