@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { MarchingCubes } from "three/examples/jsm/objects/MarchingCubes.js";
-
+import vertex from '../shaders/vertex.glsl?raw';
+import fragment from '../shaders/fragment.glsl?raw';
 
 export const blobs = (scene, options = {}) => {
     const {
@@ -9,9 +10,17 @@ export const blobs = (scene, options = {}) => {
     } = options;
 
     const resolution = 64;
-    const material = new THREE.MeshNormalMaterial();
+    // const material = new THREE.MeshNormalMaterial();
+    const material = new THREE.ShaderMaterial({
+        vertexShader: vertex,
+        fragmentShader: fragment,
+        uniforms: {
+            iTime: { value: 0 },
+            iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+        }
+    });
 
-    const blobs = new MarchingCubes(resolution, material, false, false);
+    const blobs = new MarchingCubes(resolution, material, true, true);
     blobs.position.set(0, 0, 0);
     const cubeScale = 0.9;
     blobs.scale.set(cubeScale, cubeScale, cubeScale);
@@ -35,23 +44,23 @@ export const blobs = (scene, options = {}) => {
         });
 
     }
-
     return { blobs, particles, spread };
-
 }
- 
+
 export const animateBlobs = (state, time = performance.now()) => {
     if (!state?.blobs || !state?.particles) {
         return;
     }
 
     const { blobs, particles, spread } = state;
+        blobs.material.uniforms.iTime.value = time * 0.0001;
+
     const lastTime = state.lastTime ?? time;
     const dt = Math.min((time - lastTime) * 0.001, 0.05);
     state.lastTime = time;
 
     const strength = 0.09;
-    const subtract =5;
+    const subtract = 3;
 
     for (let i = 0; i < particles.length; i++) {
         const particle = particles[i];

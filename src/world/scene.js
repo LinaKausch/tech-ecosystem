@@ -37,10 +37,10 @@ controls.enableDamping = true;
 controls.target.set(0, 0, 0);
 
 //LIGHT
-// const ambient = new THREE.AmbientLight(0x51AA77, 0.01);
-// scene.add(ambient);
+const ambient = new THREE.AmbientLight(0x51AA77,1);
+scene.add(ambient);
 
-const directional = new THREE.DirectionalLight(0xffffff, 10);
+const directional = new THREE.DirectionalLight(0xffffff, 5);
 directional.position.set(5, 10, 7.5);
 scene.add(directional);
 
@@ -80,11 +80,11 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 // rigidPlatform(platform3);
 // scene.add(platform3);
 
-//PARTICLES
+// PARTICLES
 // pointParticles(scene, grass, 5, 5);
 // pointParticles(scene, ocean, -5, 5);
 // pointParticles(scene, fire, 5, -5);1
-// pointParticles(s12cene, sand, -5, -5);
+// pointParticles(scene, sand, -5, -5);
 const meshParticlesState = createMeshParticles(scene);
 
 for (let i = 0; i < 2; i++) {
