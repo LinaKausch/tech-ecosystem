@@ -1,140 +1,86 @@
 # Tech Ecosystem
 
-An interactive generative landscape where technology mimics the behavior of a living ecosystem. A digital nature that responds to human interaction as environmental input.
+An experimental 3D project where a digital ecosystem evolves in real time and reacts to phone input.
 
-##  Concept
+## Concept
 
-The Tech Ecosystem is a visual art/interaction project that explores the relationship between human input and digital systems. It creates a breathing, living digital landscape that:
+Tech Ecosystem treats a 3D environment like a living system: agents move, reproduce, and influence the visual field while procedural forms (blobs, cubes, shaders) keep the scene in constant motion.
 
-- **Grows organically** using natural algorithms and generative design principles
-- **Responds sensitively** to human interaction (phone connections)
-- **Self-regulates** based on system load - too much input causes "digital pollution" and system collapse
-- **Remembers and evolves** through user-contributed vector drawings that get integrated into the ecosystem
-- **Self-heals over time**
+## Phone connection
 
-## How It Works
+A display screen generates a QR/link for phone access. A connected phone opens a remote page and sends DNA-like inputs (color + geometry values) through Socket.IO. The display receives that data and injects it into the ecosystem behavior.
 
-**Ecosystem Growth**: Generative algorithms create vector-based organisms that grow and evolve based on natural systems.
+## Evolution loop (brief)
 
-**User Input**: Users connect via phone and submit vector drawings. The system analyzes and integrates them into the ecosystem.
+- Initial agents are spawned in the world
+- When parent agents reach adulthood, offspring are generated
+- Remote DNA input can be merged into later generations
+- New offspring inherit and vary traits, then continue the cycle
 
-**System Balance**: Simple inputs create beautiful results. Too many concurrent inputs or complex drawings cause system collapse.
+## Run locally
 
-**Recovery**: After collapse, the ecosystem regenerates over time.
-
-## Quick Start
-
-### Requirements
-- Node.js (v16+)
-- npm or yarn
-- Modern browser with WebGL support
-- Mobile device for interaction testing
-
-### Installation
+### 1) Install
 
 ```bash
-# Clone the repository
-git clone git@github.com:LinaKausch/ecosystem.git
-cd ecosystem
-
-# Install dependencies
 npm install
 ```
 
-### Running the Project
+### 2) Start backend server (Socket.IO + static routes)
 
-**Start Server** (production):
 ```bash
 npm run start
 ```
-Server runs on `http://localhost:3000`
 
-**Development Server** (with live hot-reload and network access):
-```bash
-npm run dev -- --host
-```
-Server runs on `http://YOUR_LOCAL_IP:3000`
+Runs on `http://localhost:3000`.
 
-**Production Build**:
+### 3) Start Vite dev server (frontend HMR)
+
 ```bash
-npm run build
+npm run dev
 ```
 
-**Preview Production Build**:
-```bash
-npm run preview
-```
+Vite runs on `http://localhost:5173` and proxies `/socket.io` traffic to `http://localhost:3000`.
 
-### Accessing the Application
+## Interaction flow
 
-1. Open your browser to the local IP address displayed in terminal
-2. A QR code will be generated on the display page
-3. Scan the QR code with your phone to connect as a remote participant
-4. Use mouse/trackpad on desktop to rotate the 3D view with OrbitControls
+1. Open the display in browser (`/`)
+2. Use the generated URL/QR to open remote page (`/remote?id=...`)
+3. On remote, press **Random Color** to send a DNA payload
+4. Display receives payload and applies it to evolution flow in the scene
 
-## Current Status
+## Future work
 
-### Completed
-- Socket.IO server setup for real-time mobile connections
-- Three.js 3D rendering engine initialized
-- QR code generation for mobile access
-- Basic canvas rendering with black background
-- OrbitControls for 3D interaction
-- Network connectivity testing
+- Stronger trait inheritance and mutation rules
+- Better behavior logic across multiple generations
+- More expressive remote controls beyond random input
+- Clear ecosystem state feedback (health, stage, events)
+- Visual/performance refinement of shaders and particle systems
 
-### In Development / TODO
-- [ ] Generative landscape algorithm (particle system, growth patterns)
-- [ ] Vector drawing input interface on mobile
-- [ ] TensorFlow.js integration for vector analysis
-- [ ] Custom WebGL shaders for ecosystem effects
-- [ ] System health/load monitoring
-- [ ] Ecosystem collapse detection and recovery mechanics
-- [ ] Data persistence for drawn vectors
-- [ ] Real-time ecosystem visualization of user contributions
-- [ ] Performance optimization for multiple concurrent users
-- [ ] Visual feedback system for user actions
+## Socket behavior
 
-## Technical Stack
+- Room `display`: max 1 client
+- Room `remote`: max 5 clients
+- Remote emits `send-to-display`
+- Server forwards to display as `render-data`
 
-### Graphics & Visualization
-- **Three.js** - WebGL 3D rendering engine for ecosystem visualization
-- **WebGL Shaders (GLSL)** - Custom vertex and fragment shaders for generative effects and particle systems
-- **Procedural Generation** - Algorithm-based mesh and texture generation for organic structures
+## Scripts
 
-### AI & Machine Learning
-- **TensorFlow.js** - On-device machine learning for vector drawing analysis
-- **Neural Networks** - Pattern recognition to understand user-drawn shapes
-- **Generative Algorithms** - Custom algorithms for ecosystem growth, morphing, and adaptation
+- `npm run dev` → Vite dev server
+- `npm run build` → production frontend build
+- `npm run preview` → preview built frontend
+- `npm run start` → Node/Express/Socket.IO server
 
-### Core Technologies
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Real-time Communication**: Socket.IO - WebSocket-based bidirectional messaging
-- **Server**: Express.js, Node.js
-- **Build Tool**: Vite - Lightning-fast ES module based build tool
-- **QR Code**: qrcode-generator library
+## Tech stack
 
-### Future Technology Integration
-- **Compute Shaders**: GPU-accelerated ecosystem evolution
-- **WebAssembly (WASM)**: Performance-critical computations
-- **WebWorkers**: Background AI and data processing threads
-- **Instanced Rendering**: Efficient rendering of millions of particles
+- Three.js
+- GLSL shaders
+- Socket.IO
+- Express
+- Vite
+- Rapier (`@dimforge/rapier3d-compat`)
 
-## Usage
+## Status
 
-### Display Screen
-- Shows the evolving ecosystem in real-time
-- Renders all user contributions and system state
-- Displays connection status and system health metrics (future)
+Active prototype and iteration phase.
 
-### Mobile Remote
-- Connect to the ecosystem for drawing input
-- See your contribution impact on the ecosystem (future)
-- Receive visual feedback on system health
-
-## Notes
-
-This is an early-stage interactive art/technology experiment. The current version provides the infrastructure needed for real-time multi-user interaction. The core generative algorithms and AI-driven ecosystem adaptation are coming soon.
-
-
-**Status**: Active Development
-**Last Updated**: February 2026
+Last updated: March 2026
