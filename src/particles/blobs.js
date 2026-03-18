@@ -10,7 +10,6 @@ export const blobs = (scene, options = {}) => {
     } = options;
 
     const resolution = 64;
-    // const material = new THREE.MeshNormalMaterial();
     const material = new THREE.ShaderMaterial({
         vertexShader: vertex,
         fragmentShader: fragment,
@@ -19,6 +18,7 @@ export const blobs = (scene, options = {}) => {
             iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
         }
     });
+   
 
     const blobs = new MarchingCubes(resolution, material, true, true);
     blobs.position.set(0, 0, 0);

@@ -8,7 +8,7 @@ export const follow = (agent, dt) => {
     }
 
     const parentPos = agent.target.position;
-    const orbitRadius = 1;
+    const orbitRadius = Math.random() * 0.5 + 1;
     const orbitSpeed = 0.03;
     const verticalWave = 0.15;
 

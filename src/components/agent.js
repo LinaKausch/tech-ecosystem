@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createMesh, updateMesh } from './agentMesh.js';
 import { wander } from '../behaviour/wander.js';
+import {float, floatInit} from '../behaviour/float.js';
 import RAPIER from '@dimforge/rapier3d-compat';
 await RAPIER.init();
 export const world = new RAPIER.World(new RAPIER.Vector3(0, 0, 0));
@@ -11,12 +12,9 @@ export const createAgent = (
     scene,
     dna = null,
     movement = null,
-    behaviour = wander,
+    behaviour = float,
     generation = 1
 ) => {
-
-    //child - 0.01
-    //adult - 0.12
 
     // if lifeStage = child then size  = 0.01 & size += 0.001
     // if size === 0.012 then lifestage = adult & size = 0.012
@@ -58,6 +56,7 @@ export const createAgent = (
     };
 
     agent.mesh = createMesh(agent.dna);
+    floatInit(agent.mesh);
     scene.add(agent.mesh);
 
     const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
@@ -65,7 +64,7 @@ export const createAgent = (
         .setLinearDamping(1.0);
     agent.rigidBody = world.createRigidBody(rigidBodyDesc);
 
-    const colliderDesc = RAPIER.ColliderDesc.ball(agent.dna.size + 0.1);
+    const colliderDesc = RAPIER.ColliderDesc.ball(agent.dna.size + 0.2);
     world.createCollider(colliderDesc, agent.rigidBody);
     // console.log(agent.rigidBody);
     return agent;
@@ -75,7 +74,15 @@ export const updateAgent = (agent, dt) => {
     handleGrowth(agent);
     const steeringF = agent.behaviour(agent, dt);
 
-    if (steeringF && agent.rigidBody) {
+    if (agent.behaviour === float && agent.rigidBody) {
+        agent.rigidBody.setTranslation({
+            x: agent.mesh.position.x,
+            y: agent.mesh.position.y,
+            z: agent.mesh.position.z
+        }, true);
+    }
+
+    else if (steeringF && agent.rigidBody) {
         moveAgent(agent, steeringF);
     }
 
@@ -113,12 +120,12 @@ export const createBoundBox = (world, size = 10) => {
         world.createCollider(wallCollider, wallBody);
 
     }
-    createWall(0, -halfSize, 0, halfSize, thickness, halfSize); // Floor
-    createWall(0, halfSize, 0, halfSize, thickness, halfSize); // Ceiling
-    createWall(-halfSize, 0, 0, thickness, halfSize, halfSize); // Left Wall
-    createWall(halfSize, 0, 0, thickness, halfSize, halfSize); // Right Wall
-    createWall(0, 0, -halfSize, halfSize, halfSize, thickness); // Back Wall
-    createWall(0, 0, halfSize, halfSize, halfSize, thickness); // Front Wall
+    createWall(0, -halfSize, 0, halfSize, thickness, halfSize); 
+    createWall(0, halfSize, 0, halfSize, thickness, halfSize); 
+    createWall(-halfSize, 0, 0, thickness, halfSize, halfSize); 
+    createWall(halfSize, 0, 0, thickness, halfSize, halfSize); 
+    createWall(0, 0, -halfSize, halfSize, halfSize, thickness); 
+    createWall(0, 0, halfSize, halfSize, halfSize, thickness); 
 }
 
 export const handleGrowth = (agent, world) => {

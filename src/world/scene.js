@@ -4,6 +4,7 @@ import { createOffspring } from '../components/evolution.js';
 import { blobs, animateBlobs } from '../particles/blobs.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { wander } from '../behaviour/wander.js';
+import { float } from '../behaviour/float.js';
 import { cubeCluster, animateCluster } from '../components/cubes.js';
 
 const canvas = document.querySelector('#scene');
@@ -12,7 +13,7 @@ const scene = new THREE.Scene();
 let animationId;
 const sizes = {
     width: window.innerWidth,
-    height: window.innerHeight - 200
+    height: window.innerHeight
 };
 const agents = [];
 
@@ -28,12 +29,34 @@ controls.enableDamping = true;
 controls.target.set(0, 0, 0);
 
 //LIGHT
-const ambient = new THREE.AmbientLight(0xfffffff, 1);
-scene.add(ambient);
+// const ambient = new THREE.AmbientLight(0xfffffff, 2);
+// scene.add(ambient);
 
-const directional = new THREE.DirectionalLight(0x220000, 5);
-directional.position.set(5, 10, 7.5);
+const directional = new THREE.DirectionalLight(0x220000, 200);
+directional.position.set(10, 0, 7.5);
+directional.target.position.set(0, 0, 0); 
 scene.add(directional);
+
+const directional2 = new THREE.DirectionalLight(0x002000, 200);
+directional2.position.set(-10, 0, 7.5);
+directional2.target.position.set(0, 0, 0); 
+scene.add(directional2);
+
+const directionalTop = new THREE.DirectionalLight(0x0021FF, 200);
+directionalTop.position.set(0, 10, 0);
+directionalTop.target.position.set(0, 0, 0); 
+scene.add(directionalTop);
+
+const directionalFront = new THREE.DirectionalLight(0x220000, 200);
+directionalFront.position.set(0, 0, 10);
+directionalFront.target.position.set(0, 0, 0); 
+scene.add(directionalFront);
+
+// const directionalBot = new THREE.DirectionalLight(0x0000ff, 200);
+// directionalBot.position.set(0, -10, 0);
+// directionalBot.target.position.set(0, 0, 0); 
+// scene.add(directionalBot);
+
 
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -64,7 +87,7 @@ let offspringsSpawned = false;
 let gen3Spawned = false;
 let remoteDNA = null;
 
-const cubes = cubeCluster(scene, 100);
+const cubes = cubeCluster(scene, 200);
 
 export const getRemoteDNA = () => remoteDNA;
 
@@ -101,7 +124,7 @@ const handleRemoteEvolution = () => {
 
         const gen3Offsprings = createOffspring(scene, selectedAgent, { dna: remoteDNA }, 4);
 
-        selectedAgent.behaviour = wander;
+        selectedAgent.behaviour = float;
         gen3Offsprings.forEach(offspring => {
             offspring.target = selectedAgent;
         });
@@ -129,7 +152,7 @@ const draw = () => {
     });
 
     if (!offspringsSpawned && parent1.lifeStage === 'adult' && parent2.lifeStage === 'adult') {
-        const offsprings = createOffspring(scene, parent1, parent2, 4);
+        const offsprings = createOffspring(scene, parent1, parent2, 10);
         agents.push(...offsprings);
         offspringsSpawned = true;
         console.log('Both parents adult — spawned offspring');
