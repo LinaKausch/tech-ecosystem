@@ -1,50 +1,48 @@
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { float, floatInit, occupied, objectSize, snap } from '../behaviour/float.js';
+
+const cubeSize = objectSize;
 
 export const createMesh = (agentDNA) => {
-    const geometry = new THREE.SphereGeometry(agentDNA.size, agentDNA.segmentsW, agentDNA.segmentsH);
-    // const material = new THREE.MeshPhysicalMaterial({ color: agentDNA.color, roughness: 0});
 
-         const glassMaterial = new THREE.MeshPhysicalMaterial({
-                color: agentDNA.color,
-                transparent: true,
-                opacity: 0.2,
-                roughness: 0.4,
-                iridescence: 1,
-                metalness: 0,
-                reflectivity: 1,
-                clearcoat: 0,
-                clearcoatRoughness: 0,
-                ior: 2,
-                flatShading: true,
-            });
+   const w = cubeSize + (agentDNA.widthExt || 0);
+    const h = cubeSize + (agentDNA.heightExt || 0);
+    const d = cubeSize + (agentDNA.depthExt || 0);
+    // const cubeDim = cubeSize + (agentDNA?.extension ?? 0);
+    const roundGeometry = new RoundedBoxGeometry(w, h, d, 1, 0.001);
 
-                const smthnr = 0.01;
-    const smth = geometry.attributes.position;
-    for (let i = 0 ; i< smth.count; i++){
-        smth.setXYZ (i,
-            smth.getX(i) + (Math.random() - 0.5) * smthnr,
-            smth.getY(i) + (Math.random() - 0.5) * smthnr,
-            smth.getZ(i) + (Math.random() - 0.5) * smthnr 
+    const noise = 0.00;
+    const displace = roundGeometry.attributes.position;
+    for (let i = 0; i < displace.count; i++) {
+        displace.setXYZ(i,
+            displace.getX(i) + (Math.random() - 0.5) * noise,
+            displace.getY(i) + (Math.random() - 0.5) * noise,
+            displace.getZ(i) + (Math.random() - 0.5) * noise
         )
     }
-    smth.needsUpdate = true;
-    geometry.computeVertexNormals();
+    displace.needsUpdate = true;
+    roundGeometry.computeVertexNormals();
 
+    const material = new THREE.MeshPhysicalMaterial({
+        color: agentDNA.color,
+        transparent: true,
+        opacity: agentDNA.opacity,
+        roughness: 0,
+        iridescence: 0,
+        metalness: agentDNA.metalness,
+        reflectivity: 1,
+        clearcoat: 1,
+        clearcoatRoughness: 0,
+        ior: 2
+    });
+    // const cube = new THREE.Mesh(roundGeometry, material);
+    // cube.position.copy(agent.position);
 
-    const mesh = new THREE.Mesh(geometry, glassMaterial);
-    return mesh;
+    return new THREE.Mesh(roundGeometry, material);
+
 }
 
-export const updateMesh = (mesh, agent) => {
-    if (agent.rigidBody) {
-        const translation = agent.rigidBody.translation();
-        const rotation = agent.rigidBody.rotation();
-
-        mesh.position.set(translation.x, translation.y, translation.z);
-        mesh.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
-    } else {
-        mesh.position.copy(agent.position);
-    }
-    // mesh.scale.set (agent.dna.size, agent.dna.size, agent.dna.size);
-    // mesh.material.color.set(agent.dna.color);
+export const updateMesh = (mesh, time) => {
+    float(mesh, time);
 }
