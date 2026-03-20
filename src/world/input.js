@@ -1,31 +1,70 @@
-import * as THREE from 'three';
-
 export const inputData = (onChange) => {
     const $input = document.querySelector('.input');
     if (!$input) return;
+    shapeInput($input, onChange);
+    colorInput($input, onChange);
+};
 
-    const $inputBtn = document.createElement('button');
-    $inputBtn.textContent = 'Random Color';
-    $input.appendChild($inputBtn);
+const colorInput = ($input, onChange) => {
 
-    $inputBtn.addEventListener('click', () => {
-        const randomColor = new THREE.Color(Math.random(), Math.random(), Math.random());
-        const payload = {
-            type: 'dna-input',
-            dna: {
-                size: 0.01,
-                color: {
-                    r: randomColor.r,
-                    g: randomColor.g,
-                    b: randomColor.b
-                },
-                segmentsW: Math.floor(THREE.MathUtils.randFloat(3, 16)),
-                segmentsH: Math.floor(THREE.MathUtils.randFloat(3, 16))
+    const colorBtns = [];
+
+    for (let i = 0; i < 3; i++) {
+        const $inputBtn = document.createElement('button');
+        colorBtns.push($inputBtn);
+        $input.appendChild(colorBtns[i]);
+    }
+    colorBtns[0].textContent = 'Blue';
+    colorBtns[1].textContent = 'Red';
+    colorBtns[2].textContent = 'Green';
+
+    colorBtns.forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+            const payload = {
+                type: 'color-input',
+                color: index === 0 ? 'blue' : index === 1 ? 'red' : 'green'
+            };
+            if (onChange) {
+                onChange(payload);
             }
-        };
+        })
 
-        if (onChange) {
-            onChange(payload);
-        }
     });
+}
+
+const shapeInput = ($input, onChange) => {
+    const sliders = [];
+
+    for (let i = 0; i < 3; i++) {
+        const $slider = document.createElement('input');
+        $slider.type = 'range';
+        $slider.min = 1;
+        $slider.max = 10;
+        sliders.push($slider);
+        $input.appendChild($slider);
+    }
+
+    sliders.forEach((slider, index) => {
+        slider.addEventListener('input', () => {
+            const payload = {
+                type: 'shape-input',
+                dimension: index === 0 ? 'width' : index === 1 ? 'height' : 'depth',
+                value: slider.value
+            };
+            if (onChange) {
+                onChange(payload);
+            }
+        });
+    })
+};
+
+const materialInput = ($input, onChange) => {
+
+
+
+}
+
+const hiddenInput = ($input, onChange) => {     
+
+
 }

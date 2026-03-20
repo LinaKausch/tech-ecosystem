@@ -15,7 +15,7 @@ const sizes = {
 
 //CAMERA
 const camera = new THREE.PerspectiveCamera(40, sizes.width / sizes.height, 0.1, 100);
-camera.position.set(0, 3, 9);
+camera.position.set(0, 0, 9);
 scene.add(camera);
 
 const controls = new OrbitControls(camera, canvas);
@@ -67,22 +67,12 @@ const agents = cubeCluster(scene, 100);
 export const handleRemoteData = (data) => {
     if (!data) return;
 
-    if (data.type === 'dna-input' && data.dna) {
-        remoteDNA = {
-            ...data.dna,
-            size: data.dna.size ?? 0.01,
-            segmentsW: data.dna.segmentsW ?? 8,
-            segmentsH: data.dna.segmentsH ?? 8,
-            color: new THREE.Color(
-                data.dna.color?.r ?? 1,
-                data.dna.color?.g ?? 1,
-                data.dna.color?.b ?? 1
-            )
-        };
-        console.log('Scene received DNA input:', remoteDNA);
+    if (data.type === 'color-input' && data.color) {
+   
+        console.log('Scene received color input:', data.color);
     }
 };
-
+let angle = 0;
 const draw = () => {
     animationId = requestAnimationFrame(draw);
 
@@ -99,6 +89,15 @@ const draw = () => {
     populationControl(scene, agents);
     controls.update();
     animateBlobs(blobsState, performance.now());
+
+  angle += 0.002;
+
+  camera.position.x = Math.cos(angle) * 9;
+  camera.position.z = Math.sin(angle) * 9;
+  camera.position.y = 0; 
+
+  camera.lookAt(0, 0, 0);
+
     renderer.render(scene, camera);
     console.log("alive:", aliveAgents.length, "dead:", deadAgents.length);
 

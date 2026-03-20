@@ -1,86 +1,135 @@
 # Tech Ecosystem
 
-An experimental 3D project where a digital ecosystem evolves in real time and reacts to phone input.
+An experimental 3D visualization where a digital ecosystem evolves in real time through procedural blob generation, powered by agent-driven behaviors and remote input.
 
 ## Concept
 
-Tech Ecosystem treats a 3D environment like a living system: agents move, reproduce, and influence the visual field while procedural forms (blobs, cubes, shaders) keep the scene in constant motion.
+Tech Ecosystem is an interactive visualization that simulates living behavior in a 3D space:
+- **Agents** move through the environment, consuming energy at rates determined by their health traits
+- **Marching Cubes** algorithm creates dynamic blob geometry from agent positions
+- **Evolution** occurs through reproduction—low population spawns new offspring with inherited and mutated traits
+- **Remote input** (via phone) injects DNA-like parameters that influence the ecosystem's genetic composition
+- **Multi-directional lighting** and custom shaders create an immersive visual presentation
 
-## Phone connection
+## Core Features
 
-A display screen generates a QR/link for phone access. A connected phone opens a remote page and sends DNA-like inputs (color + geometry values) through Socket.IO. The display receives that data and injects it into the ecosystem behavior.
+### Energy & Survival
+- Each agent burns energy proportional to its inverse health score
+- When energy reaches zero, agents die
+- Population control automatically spawns offspring when population drops below 50
 
-## Evolution loop (brief)
+### Visual Generation
+- Blobs are rendered using **MarchingCubes** algorithm, with strength and isolation values driving the mesh
+- Particle positions create implicit density fields that influence blob morphology
+- **GLSL shaders** apply time-based animations to the geometry
 
-- Initial agents are spawned in the world
-- When parent agents reach adulthood, offspring are generated
-- Remote DNA input can be merged into later generations
-- New offspring inherit and vary traits, then continue the cycle
+### Evolution Loop
+- Initial agents spawn with randomized DNA traits
+- When population is low, random survivors are selected for breeding
+- New offspring inherit blended DNA with mutation
+- Remote DNA input can be merged into generation evolution
 
-## Run locally
+### Phone Connection
+- Display screen generates QR code and shareable URL
+- Connected phones open a remote interface with:
+  - **Color buttons** (Blue, Red, Green) to send color input
+  - **Shape sliders** to adjust width, height, depth parameters
+- Socket.IO forwards remote input to the display for ecosystem injection
 
-### 1) Install
+## Run Locally
+
+### 1) Install dependencies
 
 ```bash
 npm install
 ```
 
-### 2) Start backend server (Socket.IO + static routes)
+### 2) Start the backend/Socket.IO server
 
 ```bash
 npm run start
 ```
 
-Runs on `http://localhost:3000`.
+Server runs on `http://localhost:3000`.
 
-### 3) Start Vite dev server (frontend HMR)
+### 3) Start the Vite dev server
 
 ```bash
 npm run dev
 ```
 
-Vite runs on `http://localhost:5173` and proxies `/socket.io` traffic to `http://localhost:3000`.
+Vite runs on `http://localhost:5173` (with proxy to Socket.IO on port 3000).
 
-## Interaction flow
+### 4) Open in browser
 
-1. Open the display in browser (`/`)
-2. Use the generated URL/QR to open remote page (`/remote?id=...`)
-3. On remote, press **Random Color** to send a DNA payload
-4. Display receives payload and applies it to evolution flow in the scene
+- **Display**: `http://localhost:5173/` (or `http://localhost:3000/`)
+- **Remote**: Scan the QR code or use the generated URL to connect a phone
 
-## Future work
+## Architecture
 
-- Stronger trait inheritance and mutation rules
-- Better behavior logic across multiple generations
-- More expressive remote controls beyond random input
-- Clear ecosystem state feedback (health, stage, events)
-- Visual/performance refinement of shaders and particle systems
+### Scene (`src/world/scene.js`)
+- Three.js Scene with camera, directional lights, and blob renderer
+- Animation loop updates particle positions and renders MarchingCubes mesh
+- OrbitControls for interactive camera
 
-## Socket behavior
+### Agents (`src/components/agent.js`)
+- DNA: extension, color, speed, opacity, metalness, healthScore, mass
+- Energy: decreases each frame based on health (healthier = lower burn rate)
+- Mesh: RoundedBoxGeometry with procedural displacement
 
-- Room `display`: max 1 client
-- Room `remote`: max 5 clients
-- Remote emits `send-to-display`
-- Server forwards to display as `render-data`
+### Blobs (`src/particles/blobs.js`)
+- 15 particles with random positions and velocities
+- Each particle bounces within a defined spread
+- MarchingCubes updates every frame using particle density
+- Vertex/Fragment shaders apply time-based effects
+
+### Evolution (`src/components/evolution.js`)
+- `mixDNA()`: Blends parent traits with mutation
+- `populationControl()`: Spawns offspring when population drops
+
+### Input (`src/world/input.js`)
+- Color buttons and shape sliders trigger callbacks
+- Events are emitted through Socket.IO to remote interface
+
+## Socket Events
+
+| Event | Direction | Purpose |
+|-------|-----------|---------|
+| `join-display` | Remote → Server | Register as display viewport |
+| `send-to-display` | Remote → Server | Send color/shape input |
+| `render-data` | Server → Display | Forward user input to scene |
 
 ## Scripts
 
-- `npm run dev` → Vite dev server
-- `npm run build` → production frontend build
-- `npm run preview` → preview built frontend
-- `npm run start` → Node/Express/Socket.IO server
+```bash
+npm run dev      # Vite dev server with HMR
+npm run build    # Production frontend build
+npm run preview  # Preview built frontend
+npm run start    # Node/Express/Socket.IO server
+```
 
-## Tech stack
+## Tech Stack
 
-- Three.js
-- GLSL shaders
-- Socket.IO
-- Express
-- Vite
-- Rapier (`@dimforge/rapier3d-compat`)
+- **Three.js** — 3D graphics engine
+- **GLSL** — Vertex and fragment shaders
+- **Marching Cubes** — Mesh generation from particle density
+- **Socket.IO** — Real-time client-server communication
+- **Rapier** — Physics engine for agent interactions
+- **Vite** — Frontend build tool
+- **Express** — Backend server
+
+## Future Enhancements
+
+- [ ] Real-time population/health metrics display
+- [ ] Selectable agent tracking and inspection
+- [ ] Advanced remote controls (mutation rate, energy thresholds)
+- [ ] Persistent ecosystem state and replay functionality
+- [ ] Multi-user ecosystem influence and competition
+- [ ] Performance optimization for larger agent populations
+- [ ] Behavior variations beyond float/wander (predator/prey dynamics)
 
 ## Status
 
-Active prototype and iteration phase.
+**Active development** — Currently exploring blob-based visualization and population dynamics.
 
 Last updated: March 2026
