@@ -1,0 +1,68 @@
+body {
+    font-family: 'Roboto Mono', monospace;
+    background-color: #1C1C1C;
+    color: white;
+    overflow: hidden;
+    height: 100vh;
+}
+
+h1 {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.5em;
+}
+
+.data {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+}
+
+.page,
+.date {
+    font-weight: 300;
+    font-size: 0.65rem;
+}
+
+.hex {
+    position: absolute;
+    top: 18%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.rgba,
+.colorname {
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    text-align: center;
+}
+
+.colorname {
+    padding-top: 1rem;
+}
+
+.date {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.page {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.btn {
+    border: 1px solid #7ECCF8;
+    background-color: #1C1C1C;
+    color: white;
+    padding: 1rem 1.5rem;
+    position: absolute;
+    bottom: 2%;
+    right: 5%;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 300;
+    font-size: 1.2rem;
+}

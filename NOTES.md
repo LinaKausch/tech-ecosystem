@@ -8,3 +8,12 @@
     // energy: number to indicate how much energy the agent has to move
     // healthScore: probability to reproduce
     // mass: rate to survive harsh conditions
+
+
+
+    make new particles small 
+    Let them go without order in axis.
+    finish user input 
+    consider react for remote
+    change material of blobs
+    

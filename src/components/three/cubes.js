@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { occupied, objectSize, snap } from '../behaviour/float.js';
+import { occupied, objectSize, snap } from '../../behaviour/float.js';
 import { createAgent, updateAgent } from './agent.js';
 
 const cubeSize = objectSize;

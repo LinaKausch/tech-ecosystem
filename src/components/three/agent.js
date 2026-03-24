@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import { createMesh, updateMesh } from './agentMesh.js';
-import { float, floatInit } from '../behaviour/float.js';
-
-
+import { float, floatInit } from '../../behaviour/float.js';
 
 export const createAgent = (
     scene,

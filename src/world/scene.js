@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { blobs, animateBlobs } from '../particles/blobs.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { cubeCluster, animateCluster } from '../components/cubes.js';
-import { populationControl } from '../components/evolution.js';
+import { cubeCluster, animateCluster } from '../components/three/cubes.js';
+import { populationControl } from '../components/three/evolution.js';
 
 const canvas = document.querySelector('#scene');
 const scene = new THREE.Scene();

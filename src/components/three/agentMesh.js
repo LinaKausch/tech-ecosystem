@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { float, floatInit, occupied, objectSize, snap } from '../behaviour/float.js';
+import { float, floatInit, occupied, objectSize, snap } from '../../behaviour/float.js';
 
 const cubeSize = objectSize;
 
 export const createMesh = (agentDNA) => {
 
-   const w = cubeSize + (agentDNA.widthExt || 0);
+    const w = cubeSize + (agentDNA.widthExt || 0);
     const h = cubeSize + (agentDNA.heightExt || 0);
     const d = cubeSize + (agentDNA.depthExt || 0);
     // const cubeDim = cubeSize + (agentDNA?.extension ?? 0);
