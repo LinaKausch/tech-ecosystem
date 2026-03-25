@@ -64,15 +64,22 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 const blobsState = blobs(scene);
 const agents = cubeCluster(scene, 100);
 
-export const handleRemoteData = (data) => {
-    if (!data) return;
+// Create a static cube to display remote color
+const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+const staticCube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+staticCube.position.set(0, 0, 0);
+scene.add(staticCube);
 
-    if (data.type === 'color-input' && data.color) {
-   
-        console.log('Scene received color input:', data.color);
-    }
+
+export const handleRemoteData = (data) => {
+    if (!data || !data.hex) return;
+    staticCube.material.color.set(data.hex);
+    console.log('Cube color updated to:', data.hex);
 };
+
 let angle = 0;
+
 const draw = () => {
     animationId = requestAnimationFrame(draw);
 
@@ -90,13 +97,13 @@ const draw = () => {
     controls.update();
     animateBlobs(blobsState, performance.now());
 
-  angle += 0.002;
+    angle += 0.002;
 
-  camera.position.x = Math.cos(angle) * 9;
-  camera.position.z = Math.sin(angle) * 9;
-  camera.position.y = 0; 
+    camera.position.x = Math.cos(angle) * 9;
+    camera.position.z = Math.sin(angle) * 9;
+    camera.position.y = 0;
 
-  camera.lookAt(0, 0, 0);
+    camera.lookAt(0, 0, 0);
 
     renderer.render(scene, camera);
     console.log("alive:", aliveAgents.length, "dead:", deadAgents.length);

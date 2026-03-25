@@ -89,6 +89,7 @@ export const ColorWheel = ({ onChange }) => {
 
     //INTERACTION
     const handlePointerDown = (e) => {
+        console.log("Pointer down event fired");
         e.target.setPointerCapture(e.pointerId);
         e.preventDefault();
 
@@ -101,6 +102,7 @@ export const ColorWheel = ({ onChange }) => {
 
         setStartDragAngle(angle - newAngle);
         setIsDragging(true);
+        console.log("isDragging set to true");
     };
 
     const handlePointerMove = (e) => {

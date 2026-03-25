@@ -18,6 +18,6 @@ socket.on('connect', () => {
 });
 
 socket.on("render-data", (data) => {
-    console.log("Display performing action:", data);
+    console.log("Display performing action:", data.hex);
     handleRemoteData(data);
 });
