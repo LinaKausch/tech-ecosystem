@@ -4,7 +4,7 @@ import { ColorWheel } from './utils/ColorWheel';
 const ColorStep = ({ onChange, value }) => {
     const [selectedColor, setSelectedColor] = useState({
         colorName: "red",
-        rgbObj: { r: 194, g: 38, b: 10 },
+        rgbObj: { r: 194/255, g: 38/255, b: 10/255 },
         hex: "#c2260a"
     });
 

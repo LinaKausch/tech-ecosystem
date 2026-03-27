@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { blobs, animateBlobs } from '../particles/blobs.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { cubeCluster, animateCluster } from '../components/three/cubes.js';
-import { populationControl } from '../components/three/evolution.js';
+import { populationControl, inputLife } from '../components/three/evolution.js';
 
 const canvas = document.querySelector('#scene');
 const scene = new THREE.Scene();
@@ -25,28 +25,28 @@ controls.enableDamping = true;
 controls.target.set(0, 0, 0);
 
 //LIGHT
-// const ambient = new THREE.AmbientLight(0xfffffff, 2);
-// scene.add(ambient);
+const ambient = new THREE.AmbientLight(0xfffffff, 2);
+scene.add(ambient);
 
-const directional = new THREE.DirectionalLight(0x220000, 200);
-directional.position.set(10, 0, 7.5);
-directional.target.position.set(0, 0, 0);
-scene.add(directional);
+// const directional = new THREE.DirectionalLight(0x220000, 200);
+// directional.position.set(10, 0, 7.5);
+// directional.target.position.set(0, 0, 0);
+// scene.add(directional);
 
-const directional2 = new THREE.DirectionalLight(0x002000, 200);
-directional2.position.set(-10, 0, 7.5);
-directional2.target.position.set(0, 0, 0);
-scene.add(directional2);
+// const directional2 = new THREE.DirectionalLight(0x002000, 200);
+// directional2.position.set(-10, 0, 7.5);
+// directional2.target.position.set(0, 0, 0);
+// scene.add(directional2);
 
-const directionalTop = new THREE.DirectionalLight(0x0021FF, 200);
-directionalTop.position.set(0, 10, 0);
-directionalTop.target.position.set(0, 0, 0);
-scene.add(directionalTop);
+// const directionalTop = new THREE.DirectionalLight(0x0021FF, 200);
+// directionalTop.position.set(0, 10, 0);
+// directionalTop.target.position.set(0, 0, 0);
+// scene.add(directionalTop);
 
-const directionalFront = new THREE.DirectionalLight(0x220000, 200);
-directionalFront.position.set(0, 0, 10);
-directionalFront.target.position.set(0, 0, 0);
-scene.add(directionalFront);
+// const directionalFront = new THREE.DirectionalLight(0x220000, 200);
+// directionalFront.position.set(0, 0, 10);
+// directionalFront.target.position.set(0, 0, 0);
+// scene.add(directionalFront);
 
 // const directionalBot = new THREE.DirectionalLight(0x0000ff, 200);
 // directionalBot.position.set(0, -10, 0);
@@ -63,19 +63,33 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const blobsState = blobs(scene);
 const agents = cubeCluster(scene, 100);
-
 // Create a static cube to display remote color
-const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-const staticCube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-staticCube.position.set(0, 0, 0);
-scene.add(staticCube);
+// const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+// const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+// const staticCube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+// staticCube.position.set(0, 0, 0);
+// scene.add(staticCube);
+
 
 
 export const handleRemoteData = (data) => {
     if (!data || !data.hex) return;
-    staticCube.material.color.set(data.hex);
-    console.log('Cube color updated to:', data.hex);
+
+    // Create a proper DNA object from the incoming color data
+    const inputDNA = {
+        widthExt: Math.random() * 0.5,
+        heightExt: Math.random() * 0.5,
+        depthExt: Math.random() * 0.5,
+        color: new THREE.Color(data.hex),
+        speed: Math.random() * 0.02,
+        opacity: Math.max(0.2, Math.random()),
+        metalness: Math.random(),
+        healthScore: Math.random() * 100,
+        mass: Math.random() * 10,
+    };
+
+    inputLife(scene, agents, inputDNA);
+    console.log('Created agents with color:', data.hex);
 };
 
 let angle = 0;
@@ -89,21 +103,28 @@ const draw = () => {
     //         scene.remove(agent.mesh);
     //     }
     // })
+    // console.log(agents.map(agent => agent.dna));
     animateCluster(scene, agents, performance.now());
+
+    // const aliveNewCubes = newCubes.filter(cube => !cube.isDead);
     const aliveAgents = agents.filter(agent => !agent.isDead);
+    // const aliveShapes = (aliveNewCubes ? aliveNewCubes.length : 0) + (aliveAgents ? aliveAgents.length : 0);
+
+    // const deadCubes = newCubes.filter(cube => cube.isDead);
     const deadAgents = agents.filter(agent => agent.isDead);
+    // const deadShapes = (deadCubes ? deadCubes.length : 0) + (deadAgents ? deadAgents.length : 0);
 
     populationControl(scene, agents);
     controls.update();
     animateBlobs(blobsState, performance.now());
 
-    angle += 0.002;
+    // angle += 0.002;
 
-    camera.position.x = Math.cos(angle) * 9;
-    camera.position.z = Math.sin(angle) * 9;
-    camera.position.y = 0;
+    // camera.position.x = Math.cos(angle) * 9;
+    // camera.position.z = Math.sin(angle) * 9;
+    // camera.position.y = 0;
 
-    camera.lookAt(0, 0, 0);
+    // camera.lookAt(0, 0, 0);
 
     renderer.render(scene, camera);
     console.log("alive:", aliveAgents.length, "dead:", deadAgents.length);

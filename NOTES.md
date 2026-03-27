@@ -10,10 +10,12 @@
     // mass: rate to survive harsh conditions
 
 
-
+## to do
     make new particles small 
     Let them go without order in axis.
     finish user input 
     consider react for remote
     change material of blobs
+    glow up the parents that spawning the new cubes
+    spawn from the parent location? 
     
