@@ -1,28 +1,52 @@
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import Cube from './Cube.jsx';
-import React from 'react';
+import React, { useEffect, memo } from 'react';
 import Bounds from './Bounds.jsx';
 
-const Scene = ({ colour, size, showBounds }) => {
+const CameraUpdater = ({ sfov }) => {
+    const { camera } = useThree();
+
+    useEffect(() => {
+        camera.fov = sfov;
+        camera.updateProjectionMatrix();
+    }, [sfov, camera]);
+    return null;
+};
+
+const Scene = ({ colour, size, sceneNumber = 1 }) => {
+    const defaultCameraPos = [-1, 0.4, 0.5];
+
+    const sceneConfigs = {
+        1: { sfov: 53, showBounds: false, sh: '40%', sw: '50%', cameraP: defaultCameraPos, rotation: true },
+        2: { sfov: 100, showBounds: true, sh: '80%', sw: '90%', cameraP: [-1, 0.8, 1], rotation: false },
+        3: { sfov: 90, showBounds: false, sh: '40%', sw: '50%', cameraP: defaultCameraPos, rotation: true },
+        4: { sfov: 90, showBounds: false, sh: '80%', sw: '100%', cameraP: defaultCameraPos, rotation: true },
+        5: { sfov: 90, showBounds: false, sh: '80%', sw: '100%', cameraP: defaultCameraPos, rotation: true }
+    };
+
+    const config = sceneConfigs[sceneNumber] || sceneConfigs[2];
+    const { sfov, showBounds, sh, sw, cameraP, rotation } = config;
+
     return (
         <Canvas
-            style={{ width: '50%', height: '30%', position: 'absolute', top: '53%', left: '50%', transform: 'translate(-50%, -50%)' }}
-            camera={{ position: [-1, 0.4, 0.5], fov: 50 }}
+            key={sceneNumber}
+            style={{ width: sw, height: sh, position: 'absolute', top: '51%', left: '50%', transform: 'translate(-50%, -50%)' }}
+            camera={{ position: cameraP, fov: sfov }}
         >
+            <CameraUpdater sfov={sfov} />
             <ambientLight intensity={0.5} />
             <directionalLight position={[-1, 2, 1]} intensity={2} />
-            {/* {showBounds && (
-                <> */}
-            {/* <Bounds sizeX={size.x} sizeY={size.y * 3} sizeZ={size.z} />
-            <Bounds sizeX={size.x} sizeY={size.y} sizeZ={size.z * 2.7} /> */}
-            {/* </>
-            )} */}
-            <Cube color={colour} sizeX={size.x} sizeY={size.y} sizeZ={size.z} />
-
+            {showBounds && (
+                <>
+                    <Bounds sizeX={0.5} sizeY={0.5} sizeZ={1.9} />
+                    <Bounds sizeX={0.5} sizeY={1.9} sizeZ={0.5} />
+                    <Bounds sizeX={1.9} sizeY={0.5} sizeZ={0.5} />
+                </>
+            )}
+            <Cube color={colour} sizeX={size.x} sizeY={size.y} sizeZ={size.z} rotation={rotation} />
         </Canvas>
     )
 }
 
-export default Scene;
+export default memo(Scene);
 
-// add bounds to scene for the extension step. 

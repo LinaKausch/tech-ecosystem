@@ -22,7 +22,14 @@ export const InputData = ({ socket }) => {
     };
 
     const handleNext = () => {
-        socket.emit("send-to-display", data);
+        const dataToSend = {
+            ...data,
+            widthExt: size.x,
+            heightExt: size.y,
+            depthExt: size.z
+        };
+        console.log('Data sent to display:', dataToSend);
+        socket.emit("send-to-display", dataToSend);
         setCurrentStep((prev) => prev + 1);
     };
 
@@ -41,18 +48,22 @@ export const InputData = ({ socket }) => {
         return () => clearInterval(interval);
     }, []);
 
+    const steps = [
+        <ColorStep value={data} onChange={handleColorChange} />,
+        <ExtensionStep size={size} setSize={setSize} />,
+        // <SpeedStep />,
+        <MetalStep />,
+        <HealthStep />
+    ]
+
     return (
         <div>
             <p className="date">{dateTime}</p>
 
-            <ColorStep value={data} onChange={handleColorChange} />
-            {/* <ExtensionStep size={size} setSize={setSize} /> */}
-            {/* <SpeedStep /> */}
-            {/* <MetalStep /> */}
-            {/* <HealthStep /> */}
+            {steps[currentStep]}
 
-            <Scene colour={data.hex} size={size} />
-              {/* <Scene colour={data.hex} size={size} showBounds={currentStep === 2} /> */}
+            {/* <Scene colour={data.hex} size={size} /> */}
+            <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} />
             <button className="btn" onClick={handleNext}>
                 next
             </button>

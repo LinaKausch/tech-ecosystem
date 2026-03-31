@@ -12,7 +12,7 @@ export const createMesh = (agentDNA) => {
     // const cubeDim = cubeSize + (agentDNA?.extension ?? 0);
     const roundGeometry = new RoundedBoxGeometry(w, h, d, 1, 0.001);
 
-    const noise = 0.002;
+    const noise = 0;
     const displace = roundGeometry.attributes.position;
     for (let i = 0; i < displace.count; i++) {
         displace.setXYZ(i,
@@ -34,7 +34,8 @@ export const createMesh = (agentDNA) => {
         reflectivity: 1,
         clearcoat: 1,
         clearcoatRoughness: 0,
-        ior: 2
+        ior: 2,
+        // wireframe: true,
     });
     // const cube = new THREE.Mesh(roundGeometry, material);
     // cube.position.copy(agent.position);

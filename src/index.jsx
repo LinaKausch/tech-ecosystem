@@ -8,29 +8,18 @@ import { cubeCluster, animateCluster } from './components/three/cubes.js';
 import { populationControl, inputLife } from './components/three/evolution.js';
 import './style.css';
 
-console.log('%c=== INDEX.JSX LOADING ===', 'color: green; font-size: 16px;');
-console.log('socket.io available?', typeof window.io !== 'undefined');
-console.log('qrcode available?', typeof window.qrcode !== 'undefined');
-
 const socket = window.io();
 
-console.log('Socket created:', socket);
-
-// Disconnect any existing listeners first
 socket.off();
 
-// Set up socket listeners
 socket.on('connect', () => {
     console.log('%c✓ SOCKET CONNECTED', 'color: green; font-weight: bold;', 'ID:', socket.id);
-
+    //add connected socket id tot the screen
     const url = `${new URL(`remote.html?id=${socket.id}`, window.location)}`;
     console.log('Generated URL:', url);
 
-    // Get DOM elements
     const $url = document.getElementById('url');
     const $qr = document.getElementById('qr');
-
-    console.log('DOM elements:', { url: !!$url, qr: !!$qr });
 
     if ($url) {
         $url.textContent = url;
@@ -39,7 +28,7 @@ socket.on('connect', () => {
 
     // Generate QR code
     if (typeof window.qrcode !== 'function') {
-        console.error('❌ qrcode library not available');
+        console.error('qrcode library not available');
         return;
     }
 
@@ -51,7 +40,7 @@ socket.on('connect', () => {
 
         if ($qr) {
             $qr.innerHTML = qrHtml;
-            console.log('%c✓✓✓ QR CODE GENERATED', 'color: green; font-weight: bold;');
+
         }
     } catch (e) {
         console.error('Error generating QR:', e);
@@ -66,25 +55,23 @@ socket.on('error', (error) => {
     console.error('%c✗ SOCKET ERROR', 'color: red;', error);
 });
 
-// Store module-level refs for socket listeners
 let moduleSceneRef = null;
 let moduleAgentsRef = null;
 
-// Three.js scene component
 const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
     const { scene, camera, gl } = useThree();
     const controlsRef = useRef(null);
 
+    //INITIAL SETUP
     useEffect(() => {
         sceneRef.current = scene;
-        // Update module-level ref for socket listener
         moduleSceneRef = sceneRef;
 
-        // Setup lighting
+        // SETUP LIGHTING
         const ambient = new THREE.AmbientLight(0xffffff, 2);
         scene.add(ambient);
 
-        // Directional lights
+        // DIRECTIONAL LIGHTS
         // const directional = new THREE.DirectionalLight(0x220000, 200);
         // directional.position.set(10, 0, 7.5);
         // directional.target.position.set(0, 0, 0);
@@ -105,10 +92,8 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
         // directionalFront.target.position.set(0, 0, 0);
         // scene.add(directionalFront);
 
-        // Setup camera
+        //CAMERA AND CONTROLS
         camera.position.set(0, 0, 9);
-
-        // Setup controls
         const controls = new OrbitControls(camera, gl.domElement);
         controls.minPolarAngle = 0;
         controls.maxPolarAngle = Math.PI / 2;
@@ -116,13 +101,13 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
         controls.target.set(0, 0, 0);
         controlsRef.current = controls;
 
-        // Initialize agents and blobs
+        //CORE
         const blobsState = blobs(scene);
         blobsStateRef.current = blobsState;
 
+        //AGENTS
         const agents = cubeCluster(scene, 100);
         agentsRef.current = agents;
-        // Update module-level ref for socket listener
         moduleAgentsRef = agentsRef;
 
         return () => {
@@ -130,7 +115,7 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
         };
     }, [scene, camera, gl]);
 
-    // Animation loop
+    // ANIMATION LOOP
     useFrame(() => {
         if (controlsRef.current) controlsRef.current.update();
 
@@ -139,7 +124,6 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
             animateBlobs(blobsStateRef.current, performance.now());
             populationControl(scene, agentsRef.current);
 
-            // Update stats display
             const aliveAgents = agentsRef.current.filter(agent => !agent.isDead).length;
             const deadAgents = agentsRef.current.filter(agent => agent.isDead).length;
             const totalAgents = agentsRef.current.length;
@@ -147,9 +131,9 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
             const statsEl = document.getElementById('stats');
             if (statsEl) {
                 statsEl.innerHTML = `
-                    <div>🟢 Alive: ${aliveAgents}</div>
-                    <div>🔴 Dead: ${deadAgents}</div>
-                    <div>📊 Total: ${totalAgents}</div>
+                    <div>Alive: ${aliveAgents}</div>
+                    <div>Dead: ${deadAgents}</div>
+                    <div>Total: ${totalAgents}</div>
                 `;
             }
         }
@@ -158,7 +142,7 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
     return null;
 };
 
-// Handle remote data at module level
+//INPUT HANDLER
 const handleRemoteData = (data) => {
     if (!data || !data.hex || !moduleAgentsRef?.current || !moduleSceneRef?.current) return;
 
@@ -173,18 +157,15 @@ const handleRemoteData = (data) => {
         healthScore: Math.random() * 100,
         mass: Math.random() * 10,
     };
-
     inputLife(moduleSceneRef.current, moduleAgentsRef.current, inputDNA);
-    console.log('Created agents with color:', data.hex);
 };
 
-// Set up render-data listener at module level
 socket.on('render-data', (data) => {
-    console.log('Display performing action:', data.hex);
+    console.log('Display received data:', data);
     handleRemoteData(data);
 });
 
-// Main Display component
+// MAIN DISPLAY COMPONENT
 const Display = () => {
     const sceneRef = useRef(null);
     const agentsRef = useRef(null);
@@ -195,7 +176,6 @@ const Display = () => {
         socket.emit('join-display');
 
         return () => {
-            // Don't disconnect on unmount
         };
     }, []);
 
@@ -209,7 +189,7 @@ const Display = () => {
     );
 };
 
-// Render
+// RENDER
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
@@ -217,9 +197,3 @@ root.render(
     </React.StrictMode>
 );
 
-// Hot module replacement
-if (import.meta.hot) {
-    import.meta.hot.dispose(() => {
-        socket.disconnect();
-    });
-}

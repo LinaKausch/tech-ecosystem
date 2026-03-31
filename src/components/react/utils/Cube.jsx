@@ -1,13 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-const Cube = ({ color = 'red', sizeX = 1, sizeY = 1, sizeZ = 1 }) => {
+const Cube = ({ color = 'red', sizeX = 1, sizeY = 1, sizeZ = 1, rotation = true }) => {
     const meshRef = useRef();
-    const [rotation, setRotation] = useState(false);
     useFrame(() => {
         if (!meshRef.current) return;
-        meshRef.current.rotation.x += 0.005;
-        meshRef.current.rotation.y += 0.005;
+        if (rotation) {
+            meshRef.current.rotation.x += 0.005;
+            meshRef.current.rotation.y += 0.005;
+        }
     });
 
     return (
