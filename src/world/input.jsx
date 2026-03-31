@@ -5,6 +5,7 @@ import ExtensionStep from '../components/react/ExtensionStep.jsx';
 import SpeedStep from '../components/react/speedStep.jsx';
 import MetalStep from '../components/react/MetalStep.jsx';
 import HealthStep from '../components/react/HealthStep.jsx';
+import FinalStep from '../components/react/FinalStep.jsx';
 
 export const InputData = ({ socket }) => {
     const [data, setData] = useState({});
@@ -13,6 +14,8 @@ export const InputData = ({ socket }) => {
     const [size, setSize] = useState({ x: 0.5, y: 0.5, z: 0.5 });
     const [opacity, setOpacity] = useState(0.91);
     const [metalness, setMetalness] = useState(0.11);
+    const [health, setHealth] = useState(0.53);
+    const [mass, setMass] = useState(0.42);
 
     const handleColorChange = (payload) => {
         console.log("Payload received:", payload);
@@ -33,18 +36,36 @@ export const InputData = ({ socket }) => {
         setData((prev) => ({ ...prev, metalness: value }));
     };
 
+    const handleHealthChange = (value) => {
+        setHealth(value);
+        setData((prev) => ({ ...prev, healthScore: value }));
+    };
+
+    const handleMassChange = (value) => {
+        setMass(value);
+        setData((prev) => ({ ...prev, mass: value }));
+    };
+
     const handleNext = () => {
-        const dataToSend = {
-            ...data,
-            opacity: opacity,
-            metalness: metalness,
-            widthExt: size.x,
-            heightExt: size.y,
-            depthExt: size.z
-        };
-        console.log('Data sent to display:', dataToSend);
-        socket.emit("send-to-display", dataToSend);
-        setCurrentStep((prev) => prev + 1);
+        if (currentStep === steps.length - 1) {
+            // Last step - send data
+            const dataToSend = {
+                ...data,
+                hex: data.hex || '#c2260a',
+                opacity: opacity,
+                metalness: metalness,
+                healthScore: health * 100,
+                mass: mass * 10,
+                widthExt: size.x,
+                heightExt: size.y,
+                depthExt: size.z
+            };
+            console.log('Data sent to display:', dataToSend);
+            socket.emit("send-to-display", dataToSend);
+        } else {
+            // Not last step - increment
+            setCurrentStep((prev) => prev + 1);
+        }
     };
 
     useEffect(() => {
@@ -63,11 +84,12 @@ export const InputData = ({ socket }) => {
     }, []);
 
     const steps = [
-        // <ColorStep value={data} onChange={handleColorChange} />,
-        // <ExtensionStep size={size} setSize={setSize} />,
+        <ColorStep value={data} onChange={handleColorChange} />,
+        <ExtensionStep size={size} setSize={setSize} />,
         // <SpeedStep />,
         <MetalStep opacity={opacity} metalness={metalness} onOpacityChange={handleOpacityChange} onMetalnessChange={handleMetalnessChange} />,
-        <HealthStep />
+        <HealthStep health={health} mass={mass} onHealthChange={handleHealthChange} onMassChange={handleMassChange} />,
+        <FinalStep />
     ]
 
     return (
@@ -79,9 +101,9 @@ export const InputData = ({ socket }) => {
             {/* <Scene colour={data.hex} size={size} /> */}
             <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} opacity={opacity} metalness={metalness} />
             <button className="btn" onClick={handleNext}>
-                next
+                {currentStep === steps.length - 1 ? 'send' : 'next'}
             </button>
-            <p className="page">sys_data_[{currentStep + 1}|5]</p>
+            <p className="page">sys_data_[{currentStep + 1}|{steps.length}]</p>
         </div>
     );
 };

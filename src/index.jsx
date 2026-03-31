@@ -127,6 +127,10 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
             const aliveAgents = agentsRef.current.filter(agent => !agent.isDead).length;
             const deadAgents = agentsRef.current.filter(agent => agent.isDead).length;
             const totalAgents = agentsRef.current.length;
+            
+            const aliveAgentsList = agentsRef.current.filter(agent => !agent.isDead);
+            const totalHealthScore = aliveAgentsList.reduce((sum, agent) => sum + (agent.dna?.healthScore || 0), 0);
+            const avgHealthScore = aliveAgents > 0 ? (totalHealthScore / aliveAgents).toFixed(2) : 0;
 
             const statsEl = document.getElementById('stats');
             if (statsEl) {
@@ -134,6 +138,7 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
                     <div>Alive: ${aliveAgents}</div>
                     <div>Dead: ${deadAgents}</div>
                     <div>Total: ${totalAgents}</div>
+                    <div>Avg Health: ${avgHealthScore}</div>
                 `;
             }
         }
@@ -150,7 +155,7 @@ const handleRemoteData = (data) => {
         widthExt: data.widthExt || Math.random() * 0.5,
         heightExt: data.heightExt || Math.random() * 0.5,
         depthExt: data.depthExt || Math.random() * 0.5,
-        color: data.hex ? new THREE.Color(data.hex) : new THREE.Color(Math.random(), Math.random(), Math.random()),
+        color: data.hex ? new THREE.Color(data.hex) : new THREE.Color('#c2260a'),
         speed: data.speed || Math.random() * 0.02,
         opacity: data.opacity || Math.max(0.2, Math.random()),
         metalness: data.metalness || Math.random(),
