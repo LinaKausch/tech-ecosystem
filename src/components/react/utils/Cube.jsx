@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-const Cube = ({ color = 'red', sizeX = 1, sizeY = 1, sizeZ = 1, rotation = true }) => {
+const Cube = ({ color = 'red', sizeX = 1, sizeY = 1, sizeZ = 1, rotation = true, opacity = 1, metalness = 0 }) => {
     const meshRef = useRef();
     useFrame(() => {
         if (!meshRef.current) return;
@@ -14,7 +14,7 @@ const Cube = ({ color = 'red', sizeX = 1, sizeY = 1, sizeZ = 1, rotation = true 
     return (
         <mesh ref={meshRef}>
             <boxGeometry args={[sizeX, sizeY, sizeZ]} />
-            <meshStandardMaterial color={color} />
+            <meshStandardMaterial color={color} transparent={true} opacity={opacity} metalness={metalness} />
         </mesh>
     );
 };

@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 
 const ExtensionStep = ({ size, setSize }) => {
-    const MAX_VOLUME = 1;
+    const MAX_VOLUME = 0.9;
+    const MIN_VOLUME = 0.125; // 0.5 * 0.5 * 0.5
+    const MAX_SIZE = 1.9;
+    const MIN_SIZE = 0.1;
+
     const handleAxisChange = (axis, value) => {
-        const newValue = parseFloat(value) || 0;
+        const newValue = Math.min(MAX_SIZE, parseFloat(value) || 0);
 
         setSize((prev) => {
             const newSize = { ...prev, [axis]: newValue };
@@ -15,7 +19,15 @@ const ExtensionStep = ({ size, setSize }) => {
                 const otherAxes = axes.filter(a => a !== axis);
 
                 otherAxes.forEach(a => {
-                    newSize[a] = parseFloat((newSize[a] * scaleFactor).toFixed(2));
+                    newSize[a] = Math.min(MAX_SIZE, parseFloat((newSize[a] * scaleFactor).toFixed(2)));
+                });
+            } else if (volume < MIN_VOLUME) {
+                const scaleFactor = MIN_VOLUME / volume;
+                const axes = ['x', 'y', 'z'];
+                const otherAxes = axes.filter(a => a !== axis);
+
+                otherAxes.forEach(a => {
+                    newSize[a] = Math.min(MAX_SIZE, parseFloat((newSize[a] * scaleFactor).toFixed(2)));
                 });
             }
             return newSize;
@@ -43,7 +55,7 @@ const ExtensionStep = ({ size, setSize }) => {
                         type="range"
                         min="0.1"
                         max="1.9"
-                        step="0.1"
+                        step="0.01"
                         value={size.x}
                         onChange={(e) => handleAxisChange('x', e.target.value)}
                         style={{ display: 'block', width: '100%', marginTop: '0.3rem' }}
@@ -58,7 +70,7 @@ const ExtensionStep = ({ size, setSize }) => {
                         type="range"
                         min="0.1"
                         max="1.9"
-                        step="0.1"
+                        step="0.01"
                         value={size.y}
                         onChange={(e) => handleAxisChange('y', e.target.value)}
                         style={{ display: 'block', width: '100%', marginTop: '0.3rem' }}
@@ -73,7 +85,7 @@ const ExtensionStep = ({ size, setSize }) => {
                         type="range"
                         min="0.1"
                         max="1.9"
-                        step="0.1"
+                        step="0.01"
                         value={size.z}
                         onChange={(e) => handleAxisChange('z', e.target.value)}
                         style={{ display: 'block', width: '100%', marginTop: '0.3rem' }}

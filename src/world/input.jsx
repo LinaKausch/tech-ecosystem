@@ -11,6 +11,8 @@ export const InputData = ({ socket }) => {
     const [dateTime, setDateTime] = useState("");
     const [currentStep, setCurrentStep] = useState(0);
     const [size, setSize] = useState({ x: 0.5, y: 0.5, z: 0.5 });
+    const [opacity, setOpacity] = useState(0.91);
+    const [metalness, setMetalness] = useState(0.11);
 
     const handleColorChange = (payload) => {
         console.log("Payload received:", payload);
@@ -21,9 +23,21 @@ export const InputData = ({ socket }) => {
         });
     };
 
+    const handleOpacityChange = (value) => {
+        setOpacity(value);
+        setData((prev) => ({ ...prev, opacity: value }));
+    };
+
+    const handleMetalnessChange = (value) => {
+        setMetalness(value);
+        setData((prev) => ({ ...prev, metalness: value }));
+    };
+
     const handleNext = () => {
         const dataToSend = {
             ...data,
+            opacity: opacity,
+            metalness: metalness,
             widthExt: size.x,
             heightExt: size.y,
             depthExt: size.z
@@ -49,10 +63,10 @@ export const InputData = ({ socket }) => {
     }, []);
 
     const steps = [
-        <ColorStep value={data} onChange={handleColorChange} />,
-        <ExtensionStep size={size} setSize={setSize} />,
+        // <ColorStep value={data} onChange={handleColorChange} />,
+        // <ExtensionStep size={size} setSize={setSize} />,
         // <SpeedStep />,
-        <MetalStep />,
+        <MetalStep opacity={opacity} metalness={metalness} onOpacityChange={handleOpacityChange} onMetalnessChange={handleMetalnessChange} />,
         <HealthStep />
     ]
 
@@ -63,7 +77,7 @@ export const InputData = ({ socket }) => {
             {steps[currentStep]}
 
             {/* <Scene colour={data.hex} size={size} /> */}
-            <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} />
+            <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} opacity={opacity} metalness={metalness} />
             <button className="btn" onClick={handleNext}>
                 next
             </button>

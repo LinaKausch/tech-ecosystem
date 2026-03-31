@@ -13,13 +13,13 @@ const CameraUpdater = ({ sfov }) => {
     return null;
 };
 
-const Scene = ({ colour, size, sceneNumber = 1 }) => {
+const Scene = ({ colour, size, sceneNumber = 1, opacity, metalness }) => {
     const defaultCameraPos = [-1, 0.4, 0.5];
 
     const sceneConfigs = {
         1: { sfov: 53, showBounds: false, sh: '40%', sw: '50%', cameraP: defaultCameraPos, rotation: true },
         2: { sfov: 100, showBounds: true, sh: '80%', sw: '90%', cameraP: [-1, 0.8, 1], rotation: false },
-        3: { sfov: 90, showBounds: false, sh: '40%', sw: '50%', cameraP: defaultCameraPos, rotation: true },
+        3: { sfov: 120, showBounds: false, sh: '80%', sw: '90%', cameraP: [-1, 0.8, 0], rotation: true },
         4: { sfov: 90, showBounds: false, sh: '80%', sw: '100%', cameraP: defaultCameraPos, rotation: true },
         5: { sfov: 90, showBounds: false, sh: '80%', sw: '100%', cameraP: defaultCameraPos, rotation: true }
     };
@@ -43,7 +43,7 @@ const Scene = ({ colour, size, sceneNumber = 1 }) => {
                     <Bounds sizeX={1.9} sizeY={0.5} sizeZ={0.5} />
                 </>
             )}
-            <Cube color={colour} sizeX={size.x} sizeY={size.y} sizeZ={size.z} rotation={rotation} />
+            <Cube color={colour} sizeX={size.x} sizeY={size.y} sizeZ={size.z} rotation={rotation} opacity={opacity} metalness = {metalness} />
         </Canvas>
     )
 }

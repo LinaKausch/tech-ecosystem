@@ -144,18 +144,18 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
 
 //INPUT HANDLER
 const handleRemoteData = (data) => {
-    if (!data || !data.hex || !moduleAgentsRef?.current || !moduleSceneRef?.current) return;
+    if (!data || !moduleAgentsRef?.current || !moduleSceneRef?.current) return;
 
     const inputDNA = {
-        widthExt: Math.random() * 0.5,
-        heightExt: Math.random() * 0.5,
-        depthExt: Math.random() * 0.5,
-        color: new THREE.Color(data.hex),
-        speed: Math.random() * 0.02,
-        opacity: Math.max(0.2, Math.random()),
-        metalness: Math.random(),
-        healthScore: Math.random() * 100,
-        mass: Math.random() * 10,
+        widthExt: data.widthExt || Math.random() * 0.5,
+        heightExt: data.heightExt || Math.random() * 0.5,
+        depthExt: data.depthExt || Math.random() * 0.5,
+        color: data.hex ? new THREE.Color(data.hex) : new THREE.Color(Math.random(), Math.random(), Math.random()),
+        speed: data.speed || Math.random() * 0.02,
+        opacity: data.opacity || Math.max(0.2, Math.random()),
+        metalness: data.metalness || Math.random(),
+        healthScore: data.healthScore || Math.random() * 100,
+        mass: data.mass || Math.random() * 10,
     };
     inputLife(moduleSceneRef.current, moduleAgentsRef.current, inputDNA);
 };
