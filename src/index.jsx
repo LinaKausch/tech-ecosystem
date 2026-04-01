@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as THREE from 'three';
-import { blobs, animateBlobs } from './particles/blobs.js';
+import Blobs from './particles/blobs.jsx';
 import { cubeCluster, animateCluster } from './components/three/cubes.js';
 import { populationControl, inputLife } from './components/three/evolution.js';
 import './style.css';
@@ -58,7 +58,7 @@ socket.on('error', (error) => {
 let moduleSceneRef = null;
 let moduleAgentsRef = null;
 
-const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
+const Scene = ({ sceneRef, agentsRef }) => {
     const { scene, camera, gl } = useThree();
     const controlsRef = useRef(null);
 
@@ -68,29 +68,29 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
         moduleSceneRef = sceneRef;
 
         // SETUP LIGHTING
-        const ambient = new THREE.AmbientLight(0xffffff, 2);
-        scene.add(ambient);
+        // const ambient = new THREE.AmbientLight(0xffffff, 2);
+        // scene.add(ambient);
 
         // DIRECTIONAL LIGHTS
-        // const directional = new THREE.DirectionalLight(0x220000, 200);
-        // directional.position.set(10, 0, 7.5);
-        // directional.target.position.set(0, 0, 0);
-        // scene.add(directional);
+        const directional = new THREE.DirectionalLight(0x220000, 200);
+        directional.position.set(10, 0, 7.5);
+        directional.target.position.set(0, 0, 0);
+        scene.add(directional);
 
-        // const directional2 = new THREE.DirectionalLight(0x002000, 200);
-        // directional2.position.set(-10, 0, 7.5);
-        // directional2.target.position.set(0, 0, 0);
-        // scene.add(directional2);
+        const directional2 = new THREE.DirectionalLight(0x002000, 200);
+        directional2.position.set(-10, 0, 7.5);
+        directional2.target.position.set(0, 0, 0);
+        scene.add(directional2);
 
-        // const directionalTop = new THREE.DirectionalLight(0x0021FF, 200);
-        // directionalTop.position.set(0, 10, 0);
-        // directionalTop.target.position.set(0, 0, 0);
-        // scene.add(directionalTop);
+        const directionalTop = new THREE.DirectionalLight(0x0021FF, 200);
+        directionalTop.position.set(0, 10, 0);
+        directionalTop.target.position.set(0, 0, 0);
+        scene.add(directionalTop);
 
-        // const directionalFront = new THREE.DirectionalLight(0x220000, 200);
-        // directionalFront.position.set(0, 0, 10);
-        // directionalFront.target.position.set(0, 0, 0);
-        // scene.add(directionalFront);
+        const directionalFront = new THREE.DirectionalLight(0x220000, 200);
+        directionalFront.position.set(0, 0, 10);
+        directionalFront.target.position.set(0, 0, 0);
+        scene.add(directionalFront);
 
         //CAMERA AND CONTROLS
         camera.position.set(0, 0, 9);
@@ -102,10 +102,6 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
         controlsRef.current = controls;
 
         //CORE
-        const blobsState = blobs(scene);
-        blobsStateRef.current = blobsState;
-
-        //AGENTS
         const agents = cubeCluster(scene, 100);
         agentsRef.current = agents;
         moduleAgentsRef = agentsRef;
@@ -119,15 +115,14 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
     useFrame(() => {
         if (controlsRef.current) controlsRef.current.update();
 
-        if (agentsRef.current && blobsStateRef.current) {
+        if (agentsRef.current) {
             animateCluster(scene, agentsRef.current, performance.now());
-            animateBlobs(blobsStateRef.current, performance.now());
             populationControl(scene, agentsRef.current);
 
             const aliveAgents = agentsRef.current.filter(agent => !agent.isDead).length;
             const deadAgents = agentsRef.current.filter(agent => agent.isDead).length;
             const totalAgents = agentsRef.current.length;
-            
+
             const aliveAgentsList = agentsRef.current.filter(agent => !agent.isDead);
             const totalHealthScore = aliveAgentsList.reduce((sum, agent) => sum + (agent.dna?.healthScore || 0), 0);
             const avgHealthScore = aliveAgents > 0 ? (totalHealthScore / aliveAgents).toFixed(2) : 0;
@@ -144,7 +139,7 @@ const Scene = ({ sceneRef, agentsRef, blobsStateRef }) => {
         }
     });
 
-    return null;
+    return <Blobs />;
 };
 
 //INPUT HANDLER
@@ -174,7 +169,6 @@ socket.on('render-data', (data) => {
 const Display = () => {
     const sceneRef = useRef(null);
     const agentsRef = useRef(null);
-    const blobsStateRef = useRef(null);
 
     useEffect(() => {
         console.log('Display component mounted');
@@ -189,7 +183,7 @@ const Display = () => {
             style={{ width: '100vw', height: '100vh' }}
             camera={{ position: [0, 0, 9], fov: 40 }}
         >
-            <Scene sceneRef={sceneRef} agentsRef={agentsRef} blobsStateRef={blobsStateRef} />
+            <Scene sceneRef={sceneRef} agentsRef={agentsRef} />
         </Canvas>
     );
 };

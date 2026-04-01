@@ -20,7 +20,7 @@ export const blobs = (scene, options = {}) => {
     });
    
 
-    const blobs = new MarchingCubes(resolution, material, true, true);
+    const blobs = new MarchingCubes(resolution, material, false, true);
     blobs.position.set(0, 0, 0);
     const cubeScale = 0.9;
     blobs.scale.set(cubeScale, cubeScale, cubeScale);
