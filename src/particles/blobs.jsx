@@ -113,7 +113,7 @@ export const Blobs = ({ options = {} }) => {
                         // chromaticAberration={0.1}
                         // anisotropy={0.1}
                         backside
-                        samples={10}
+                        samples={1}
                         thickness={0.5}
                         chromaticAberration={0.05}
                         anisotropicBlur={0.1}

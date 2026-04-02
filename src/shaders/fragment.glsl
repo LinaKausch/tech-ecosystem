@@ -1,90 +1,57 @@
-#define Use_Simplex
+#ifdef GL_ES
+precision mediump float;
+#endif
 
 uniform float iTime;
 varying vec3 vLocalPos;
 
-#define MOD3 vec3(.1031,.11369,.13787)
-
-vec3 hash33(vec3 p3)
-{
-    p3 = fract(p3 * MOD3);
-    p3 += dot(p3, p3.yxz + 19.19);
-    return -1.0 + 2.0 * fract(vec3(
-        (p3.x + p3.y) * p3.z,
-        (p3.x + p3.z) * p3.y,
-        (p3.y + p3.z) * p3.x));
+// ------------------- Micro-tech lines -------------------
+float techLines(vec3 p) {
+    float l = 0.0;
+    l += smoothstep(0.995, 1.0, abs(sin(p.x*50.0 + iTime*3.0)));
+    l += smoothstep(0.995, 1.0, abs(cos(p.y*60.0 - iTime*2.5)));
+    l += smoothstep(0.995, 1.0, abs(sin(p.z*70.0 + iTime*4.0)));
+    l += smoothstep(0.995, 1.0, abs(sin((p.x+p.y+p.z)*40.0 + iTime*3.5)));
+    return l / 4.0;
 }
 
-float simplex_noise(vec3 p)
-{
-    const float K1 = 0.333333333;
-    const float K2 = 0.166666667;
-
-    vec3 i = floor(p + (p.x + p.y + p.z) * K1);
-    vec3 d0 = p - (i - (i.x + i.y + i.z) * K2);
-
-    vec3 e = step(vec3(0.0), d0 - d0.yzx);
-    vec3 i1 = e * (1.0 - e.zxy);
-    vec3 i2 = 1.0 - e.zxy * (1.0 - e);
-
-    vec3 d1 = d0 - (i1 - 1.0 * K2);
-    vec3 d2 = d0 - (i2 - 2.0 * K2);
-    vec3 d3 = d0 - (1.0 - 3.0 * K2);
-
-    vec4 h = max(0.6 - vec4(
-        dot(d0,d0),
-        dot(d1,d1),
-        dot(d2,d2),
-        dot(d3,d3)), 0.0);
-
-    vec4 n = h*h*h*h * vec4(
-        dot(d0, hash33(i)),
-        dot(d1, hash33(i+i1)),
-        dot(d2, hash33(i+i2)),
-        dot(d3, hash33(i+1.0)));
-
-    return dot(vec4(31.316), n);
+// ------------------- Frosted base -------------------
+float frosted(vec3 p) {
+    float n = 0.0;
+    n += fract(sin(dot(p, vec3(12.989,78.233, 37.719))) * 43758.5453);
+    n += fract(sin(dot(p*1.5, vec3(93.989, 67.345, 21.456))) * 24634.6345);
+    return n / 2.0;
 }
 
-float noise(vec3 p)
-{
-    return simplex_noise(p);
-}
+// ------------------- Main -------------------
+void main() {
+    vec3 pos = vLocalPos * 2.0;
 
-float noise_sum_abs(vec3 p)
-{
-    float f = 0.0;
-    p *= 3.0;
+    // subtle flowing movement
+    pos += vec3(
+        sin(pos.y*10.0 + iTime*0.5)*0.05,
+        cos(pos.z*10.0 + iTime*0.3)*0.05,
+        sin(pos.x*10.0 + iTime*0.7)*0.05
+    );
 
-    f += 1.0 * abs(noise(p)); p *= 2.0;
-    f += 0.5 * abs(noise(p)); p *= 2.0;
-    f += 0.25 * abs(noise(p)); p *= 2.0;
-    f += 0.125 * abs(noise(p)); p *= 2.0;
-    f += 0.0625 * abs(noise(p));
+    float linesVal = techLines(pos);
+    float baseFrost = frosted(pos) * 0.15;
 
-    return f;
-}
+    // Base translucent dark
+    vec3 col = vec3(0.01, 0.01, 0.05);
 
-vec3 draw_fire(float f)
-{
-    f = f * 0.5 + 0.5;
+    // Neon lines, amplified
+    col += vec3(0.0, 0.8, 1.0) * linesVal;
 
-    return mix(
-        vec3(0.0/255.0, 0.0/255.0, 57.0/255.0),
-        vec3(55.0/255.0, 91.0/255.0, 177.0/255.0),
-        pow(f,3.0));
-}
+    // Glow around lines
+    col += vec3(0.0, 0.4, 0.7) * linesVal * 1.2;
 
-void main()
-{
-    vec3 pos = vLocalPos * 3.0;
+    // Frosted soft glow at edges
+    float edgeGlow = 1.0 - length(vLocalPos);
+    col += vec3(0.0, 0.15, 0.25) * edgeGlow * 0.5;
 
-    // upward flame motion
-    pos.y -= iTime * 0.01;
+    // Alpha: base + amplified lines
+    float alpha = 0.2 + linesVal * 0.9 + baseFrost * 0.2;
 
-    float f = noise_sum_abs(pos);
-
-    vec3 col = draw_fire(f);
-
-    gl_FragColor = vec4(col,1.0);
+    gl_FragColor = vec4(col, alpha);
 }

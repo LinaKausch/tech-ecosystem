@@ -10,15 +10,23 @@ export const blobs = (scene, options = {}) => {
     } = options;
 
     const resolution = 64;
-    const material = new THREE.ShaderMaterial({
-        vertexShader: vertex,
-        fragmentShader: fragment,
-        uniforms: {
-            iTime: { value: 0 },
-            iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-        }
-    });
-   
+    // const material = new THREE.ShaderMaterial({
+    //     vertexShader: vertex,
+    //     fragmentShader: fragment,
+    //     uniforms: {
+    //         iTime: { value: 0 },
+    //         iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+    //     }
+    // });
+
+const material = new THREE.ShaderMaterial({
+    vertexShader: vertex,
+    fragmentShader: fragment,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide
+});
 
     const blobs = new MarchingCubes(resolution, material, false, true);
     blobs.position.set(0, 0, 0);
@@ -53,7 +61,7 @@ export const animateBlobs = (state, time = performance.now()) => {
     }
 
     const { blobs, particles, spread } = state;
-        blobs.material.uniforms.iTime.value = time * 0.0001;
+    // blobs.material.uniforms.iTime.value = time * 0.0001;
 
     const lastTime = state.lastTime ?? time;
     const dt = Math.min((time - lastTime) * 0.001, 0.05);

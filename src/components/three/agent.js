@@ -15,7 +15,7 @@ export const createAgent = (
         heightExt: Math.random() * 0.5,
         depthExt: Math.random() * 0.5,
         color: new THREE.Color(Math.random(), Math.random(), Math.random()),
-        speed: Math.random() * 0.02,
+        speed: 0.001,
         opacity: Math.max(0.2, Math.random()),
         metalness: Math.random(),
         healthScore: Math.random() * 100,
@@ -48,6 +48,7 @@ export const createAgent = (
 
 export const updateAgent = (agent, dt) => {
     float(agent.mesh, dt);
+    updateMesh(agent.mesh, dt);
 
     const burnEnergy = 0.1 / (1 + agent.dna.healthScore * 0.1);
     agent.energy -= burnEnergy;

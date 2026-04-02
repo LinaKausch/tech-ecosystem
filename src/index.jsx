@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as THREE from 'three';
-import Blobs from './particles/blobs.jsx';
+import { blobs as createBlobs, animateBlobs } from './particles/blobs.js';
 import { cubeCluster, animateCluster } from './components/three/cubes.js';
 import { populationControl, inputLife } from './components/three/evolution.js';
 import './style.css';
@@ -61,11 +61,18 @@ let moduleAgentsRef = null;
 const Scene = ({ sceneRef, agentsRef }) => {
     const { scene, camera, gl } = useThree();
     const controlsRef = useRef(null);
+    const blobsStateRef = useRef(null);
 
     //INITIAL SETUP
     useEffect(() => {
         sceneRef.current = scene;
         moduleSceneRef = sceneRef;
+
+        scene.background = new THREE.Color(0x000000);
+
+        // SETUP BLOBS
+        const blobsState = createBlobs(scene);
+        blobsStateRef.current = blobsState;
 
         // SETUP LIGHTING
         // const ambient = new THREE.AmbientLight(0xffffff, 2);
@@ -115,6 +122,10 @@ const Scene = ({ sceneRef, agentsRef }) => {
     useFrame(() => {
         if (controlsRef.current) controlsRef.current.update();
 
+        if (blobsStateRef.current) {
+            animateBlobs(blobsStateRef.current, performance.now());
+        }
+
         if (agentsRef.current) {
             animateCluster(scene, agentsRef.current, performance.now());
             populationControl(scene, agentsRef.current);
@@ -139,7 +150,7 @@ const Scene = ({ sceneRef, agentsRef }) => {
         }
     });
 
-    return <Blobs />;
+    return null;
 };
 
 //INPUT HANDLER
