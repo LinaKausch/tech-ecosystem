@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import * as THREE from 'three';
 import { blobs as createBlobs, animateBlobs } from './particles/blobs.js';
 import { cubeCluster, animateCluster } from './components/three/cubes.js';
@@ -62,11 +65,26 @@ const Scene = ({ sceneRef, agentsRef }) => {
     const { scene, camera, gl } = useThree();
     const controlsRef = useRef(null);
     const blobsStateRef = useRef(null);
+    const composerRef = useRef(null);
 
     //INITIAL SETUP
     useEffect(() => {
         sceneRef.current = scene;
         moduleSceneRef = sceneRef;
+
+        // SETUP BLOOM POST-PROCESSING
+        const composer = new EffectComposer(gl);
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(gl.domElement.clientWidth, gl.domElement.clientHeight),
+            0.05, // strength - increased
+            0.5, // radius - increased
+            0.05 // threshold - lowered so emissive materials glow
+        );
+        composer.addPass(bloomPass);
+        composerRef.current = composer;
 
         scene.background = new THREE.Color(0x000000);
 
@@ -75,29 +93,36 @@ const Scene = ({ sceneRef, agentsRef }) => {
         blobsStateRef.current = blobsState;
 
         // SETUP LIGHTING
-        // const ambient = new THREE.AmbientLight(0xffffff, 2);
-        // scene.add(ambient);
+        const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambient);
 
         // DIRECTIONAL LIGHTS
-        const directional = new THREE.DirectionalLight(0x220000, 200);
-        directional.position.set(10, 0, 7.5);
-        directional.target.position.set(0, 0, 0);
-        scene.add(directional);
+       
 
-        const directional2 = new THREE.DirectionalLight(0x002000, 200);
-        directional2.position.set(-10, 0, 7.5);
-        directional2.target.position.set(0, 0, 0);
-        scene.add(directional2);
+        // const directional2 = new THREE.DirectionalLight(0x002000, 20);
+        // directional2.position.set(-10, 0, 7.5);
+        // directional2.target.position.set(0, 0, 0);
+        // scene.add(directional2);
 
-        const directionalTop = new THREE.DirectionalLight(0x0021FF, 200);
+        const directionalTop = new THREE.DirectionalLight(0x0021FF, 5);
         directionalTop.position.set(0, 10, 0);
         directionalTop.target.position.set(0, 0, 0);
         scene.add(directionalTop);
 
-        const directionalFront = new THREE.DirectionalLight(0x220000, 200);
-        directionalFront.position.set(0, 0, 10);
-        directionalFront.target.position.set(0, 0, 0);
-        scene.add(directionalFront);
+        const directionalFrontLeft = new THREE.DirectionalLight(0x001B6E, 2);
+        directionalFrontLeft.position.set(5, 0, 10);
+        directionalFrontLeft.target.position.set(0, 0, 0);
+        scene.add(directionalFrontLeft);
+
+          const directionalFrontRight = new THREE.DirectionalLight(0x007047, 2);
+        directionalFrontRight.position.set(-5, 0, 10);
+        directionalFrontRight.target.position.set(0, 0, 0);
+        scene.add(directionalFrontRight);
+
+                 const directionalBackRight = new THREE.DirectionalLight(0x007047, 2);
+        directionalBackRight.position.set(-5, 0, -10);
+        directionalBackRight.target.position.set(0, 0, 0);
+        scene.add(directionalBackRight);
 
         //CAMERA AND CONTROLS
         camera.position.set(0, 0, 9);
@@ -126,6 +151,11 @@ const Scene = ({ sceneRef, agentsRef }) => {
             animateBlobs(blobsStateRef.current, performance.now());
         }
 
+       if (composerRef.current) {
+        gl.clear();
+        composerRef.current.render();
+        }
+
         if (agentsRef.current) {
             animateCluster(scene, agentsRef.current, performance.now());
             populationControl(scene, agentsRef.current);
@@ -148,7 +178,7 @@ const Scene = ({ sceneRef, agentsRef }) => {
                 `;
             }
         }
-    });
+    }, 1);
 
     return null;
 };
@@ -191,6 +221,10 @@ const Display = () => {
 
     return (
         <Canvas
+            gl={{ antialias: true }}
+            onCreated={({ gl }) => {
+                gl.autoClear = false;
+            }}
             style={{ width: '100vw', height: '100vh' }}
             camera={{ position: [0, 0, 9], fov: 40 }}
         >

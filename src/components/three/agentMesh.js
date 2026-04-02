@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { pcss, MeshTransmissionMaterial } from '@pmndrs/vanilla'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { float, floatInit, occupied, objectSize, snap } from '../../behaviour/float.js';
 import vertex from '../../shaders/vertex.glsl?raw';
@@ -25,6 +24,7 @@ export const createMesh = (agentDNA) => {
     }
     displace.needsUpdate = true;
     roundGeometry.computeVertexNormals();
+
 
     // const material = new THREE.MeshPhysicalMaterial({
     //     color: agentDNA.color,

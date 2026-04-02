@@ -57,11 +57,11 @@ export const animateCluster = (scene, objects, dt) => {
         updateAgent(agent, dt);
 
         if (agent.isDead) {
-            agent.mesh.material.opacity *= 0.9;
-            if (agent.mesh.material.opacity < 0.01) {
-                scene.remove(agent);
+            if (agent.mesh && agent.mesh.material) {
+                // Only remove if material exists, don't try to access opacity
                 scene.remove(agent.mesh);
             }
+            scene.remove(agent);
         }
     })
 }

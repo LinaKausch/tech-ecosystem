@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createMesh, updateMesh } from './agentMesh.js';
+import { agentCube, updateACube } from './agentCube.js';
 import { float, floatInit } from '../../behaviour/float.js';
 
 export const createAgent = (
@@ -38,7 +39,9 @@ export const createAgent = (
         isDead: false
     };
 
-    agent.mesh = createMesh(agent.dna);
+    // agent.mesh = createMesh(agent.dna);
+
+    agent.mesh = agentCube(scene, agent.dna);
     agent.mesh.position.copy(agent.position);
 
     floatInit(agent.mesh);
@@ -48,7 +51,8 @@ export const createAgent = (
 
 export const updateAgent = (agent, dt) => {
     float(agent.mesh, dt);
-    updateMesh(agent.mesh, dt);
+    // updateMesh(agent.mesh, dt);
+    updateACube(agent.mesh, dt);
 
     const burnEnergy = 0.1 / (1 + agent.dna.healthScore * 0.1);
     agent.energy -= burnEnergy;
