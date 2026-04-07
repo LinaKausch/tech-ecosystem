@@ -3,7 +3,7 @@ import { createMesh, updateMesh } from './agentMesh.js';
 import { agentCube, updateACube } from './agentCube.js';
 import { float, floatInit } from '../../behaviour/float.js';
 
-export const createAgent = (
+export const createAgent = async (
     scene,
     dna = null,
     position = new THREE.Vector3()
@@ -41,7 +41,7 @@ export const createAgent = (
 
     // agent.mesh = createMesh(agent.dna);
 
-    agent.mesh = agentCube(scene, agent.dna);
+    agent.mesh = await agentCube(scene, agent.dna);
     agent.mesh.position.copy(agent.position);
 
     floatInit(agent.mesh);

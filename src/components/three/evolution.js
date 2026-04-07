@@ -57,8 +57,9 @@ export const populationControl = (scene, agents) => {
             if (survivor1 != survivor2) {
                 const newDNA = mixDNA(survivor1.dna, survivor2.dna);
                 const spawnPos = new THREE.Vector3(0, 0, 0);
-                const newAgent = createAgent(scene, newDNA, spawnPos);
-                agents.push(newAgent);
+                createAgent(scene, newDNA, spawnPos).then(newAgent => {
+                    agents.push(newAgent);
+                });
             }
         }
     }
@@ -72,8 +73,9 @@ export const inputLife = (scene, agents, inputDNA) => {
         for (let i = 0; i < 30; i++) {
             const newDNA = mixDNA(mostSimilarSurvivor.dna, inputDNA);
             const spawnPos = new THREE.Vector3(0, 0, 0);
-            const newAgent = createAgent(scene, newDNA, spawnPos);
-            agents.push(newAgent);
+            createAgent(scene, newDNA, spawnPos).then(newAgent => {
+                agents.push(newAgent);
+            });
         }
     }
 }

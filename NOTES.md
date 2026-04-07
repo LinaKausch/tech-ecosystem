@@ -19,4 +19,5 @@
     glow up the parents that spawning the new cubes
     spawn from the parent location? 
     check the spawning opacity, there is no = 1 
+    new cubes are way too big
     

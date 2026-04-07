@@ -1,14 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { OrbitControls as OrbitControlsComponent, PerspectiveCamera } from '@react-three/drei';
+import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { blobs as createBlobs, animateBlobs } from './particles/blobs.js';
 import { cubeCluster, animateCluster } from './components/three/cubes.js';
 import { populationControl, inputLife } from './components/three/evolution.js';
+import HealthDiagram from './components/react/HealthDiagram.jsx';
 import './style.css';
 
 const socket = window.io();
@@ -58,103 +57,50 @@ socket.on('error', (error) => {
     console.error('%c✗ SOCKET ERROR', 'color: red;', error);
 });
 
+// Global refs for socket handlers
 let moduleSceneRef = null;
 let moduleAgentsRef = null;
+let moduleBlobsRef = null;
 
-const Scene = ({ sceneRef, agentsRef }) => {
-    const { scene, camera, gl } = useThree();
-    const controlsRef = useRef(null);
-    const blobsStateRef = useRef(null);
-    const composerRef = useRef(null);
+// Scene Setup Component
+const SceneSetup = ({ agentsRef }) => {
+    const { scene } = useThree();
 
-    //INITIAL SETUP
     useEffect(() => {
-        sceneRef.current = scene;
-        moduleSceneRef = sceneRef;
-
-        // SETUP BLOOM POST-PROCESSING
-        const composer = new EffectComposer(gl);
-        const renderPass = new RenderPass(scene, camera);
-        composer.addPass(renderPass);
-
-        const bloomPass = new UnrealBloomPass(
-            new THREE.Vector2(gl.domElement.clientWidth, gl.domElement.clientHeight),
-            0.05, // strength - increased
-            0.5, // radius - increased
-            0.05 // threshold - lowered so emissive materials glow
-        );
-        composer.addPass(bloomPass);
-        composerRef.current = composer;
-
-        scene.background = new THREE.Color(0x000000);
-
-        // SETUP BLOBS
-        const blobsState = createBlobs(scene);
-        blobsStateRef.current = blobsState;
-
-        // SETUP LIGHTING
-        const ambient = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambient);
-
-        // DIRECTIONAL LIGHTS
-       
-
-        // const directional2 = new THREE.DirectionalLight(0x002000, 20);
-        // directional2.position.set(-10, 0, 7.5);
-        // directional2.target.position.set(0, 0, 0);
-        // scene.add(directional2);
-
-        const directionalTop = new THREE.DirectionalLight(0x0021FF, 5);
-        directionalTop.position.set(0, 10, 0);
-        directionalTop.target.position.set(0, 0, 0);
-        scene.add(directionalTop);
-
-        const directionalFrontLeft = new THREE.DirectionalLight(0x001B6E, 2);
-        directionalFrontLeft.position.set(5, 0, 10);
-        directionalFrontLeft.target.position.set(0, 0, 0);
-        scene.add(directionalFrontLeft);
-
-          const directionalFrontRight = new THREE.DirectionalLight(0x007047, 2);
-        directionalFrontRight.position.set(-5, 0, 10);
-        directionalFrontRight.target.position.set(0, 0, 0);
-        scene.add(directionalFrontRight);
-
-                 const directionalBackRight = new THREE.DirectionalLight(0x007047, 2);
-        directionalBackRight.position.set(-5, 0, -10);
-        directionalBackRight.target.position.set(0, 0, 0);
-        scene.add(directionalBackRight);
-
-        //CAMERA AND CONTROLS
-        camera.position.set(0, 0, 9);
-        const controls = new OrbitControls(camera, gl.domElement);
-        controls.minPolarAngle = 0;
-        controls.maxPolarAngle = Math.PI / 2;
-        controls.enableDamping = true;
-        controls.target.set(0, 0, 0);
-        controlsRef.current = controls;
-
-        //CORE
-        const agents = cubeCluster(scene, 100);
-        agentsRef.current = agents;
+        moduleSceneRef = { current: scene };
         moduleAgentsRef = agentsRef;
 
+        // Setup background and fog
+        scene.background = new THREE.Color(0x1C1C1C);
+        const fog = new THREE.FogExp2(0x1C1C1C, 0.01);
+        scene.fog = fog;
+
+        // Setup blobs
+        // const blobsState = createBlobs(scene);
+        // moduleBlobsRef = blobsState;
+
         return () => {
-            controls.dispose();
         };
-    }, [scene, camera, gl]);
+    }, [scene, agentsRef]);
 
-    // ANIMATION LOOP
+    return null;
+};
+
+// Lights Component
+const Lights = () => {
+    return (
+        <pointLight position={[0, 0, 0]} intensity={2} distance={100} color={0x1E7D01} />
+    );
+};
+
+// Animation Loop Component
+const AnimationController = ({ agentsRef }) => {
+    const { scene } = useThree();
+
     useFrame(() => {
-        if (controlsRef.current) controlsRef.current.update();
-
-        if (blobsStateRef.current) {
-            animateBlobs(blobsStateRef.current, performance.now());
-        }
-
-       if (composerRef.current) {
-        gl.clear();
-        composerRef.current.render();
-        }
+        // if (moduleBlobsRef) {
+        //     animateBlobs(moduleBlobsRef, performance.now());
+        // }
 
         if (agentsRef.current) {
             animateCluster(scene, agentsRef.current, performance.now());
@@ -178,12 +124,59 @@ const Scene = ({ sceneRef, agentsRef }) => {
                 `;
             }
         }
-    }, 1);
+    });
 
     return null;
 };
 
-//INPUT HANDLER
+// Agents Component
+const Agents = ({ agentsRef }) => {
+    const { scene } = useThree();
+
+    useEffect(() => {
+        (async () => {
+            const agents = await cubeCluster(scene, 100);
+            agentsRef.current = agents;
+        })();
+    }, [scene, agentsRef]);
+
+    return null;
+};
+
+// Main Scene Component
+const Scene = ({ agentsRef }) => {
+    return (
+        <>
+            <PerspectiveCamera position={[0, 0, 9]} fov={40} makeDefault />
+            <OrbitControlsComponent
+                minPolarAngle={0}
+                maxPolarAngle={Math.PI / 2}
+                enableDamping
+                target={[0, 0, 0]}
+            />
+
+            <SceneSetup agentsRef={agentsRef} />
+            <Lights />
+            <Agents agentsRef={agentsRef} />
+            <AnimationController agentsRef={agentsRef} />
+            <mesh>
+                <boxGeometry args={[10, 10, 10]} />
+                <meshPhysicalMaterial color={0xffffff} side={THREE.BackSide} roughness={0} metalness={1} />
+            </mesh>
+            <EffectComposer>
+                <Bloom
+                    luminanceThreshold={0.8}
+                    luminanceSmoothing={1}
+                    height={500}
+                    intensity={5}
+                    mipmapBlur={true}
+                />
+            </EffectComposer>
+        </>
+    );
+};
+
+// Handle remote data
 const handleRemoteData = (data) => {
     if (!data || !moduleAgentsRef?.current || !moduleSceneRef?.current) return;
 
@@ -206,9 +199,8 @@ socket.on('render-data', (data) => {
     handleRemoteData(data);
 });
 
-// MAIN DISPLAY COMPONENT
+// Display Component
 const Display = () => {
-    const sceneRef = useRef(null);
     const agentsRef = useRef(null);
 
     useEffect(() => {
@@ -216,24 +208,24 @@ const Display = () => {
         socket.emit('join-display');
 
         return () => {
+            // Cleanup
         };
     }, []);
 
     return (
-        <Canvas
-            gl={{ antialias: true }}
-            onCreated={({ gl }) => {
-                gl.autoClear = false;
-            }}
-            style={{ width: '100vw', height: '100vh' }}
-            camera={{ position: [0, 0, 9], fov: 40 }}
-        >
-            <Scene sceneRef={sceneRef} agentsRef={agentsRef} />
-        </Canvas>
+        <>
+            <Canvas
+                gl={{ antialias: true }}
+                style={{ width: '100vw', height: '100vh' }}
+            >
+                <Scene agentsRef={agentsRef} />
+            </Canvas>
+            <HealthDiagram agentsRef={agentsRef} />
+        </>
     );
 };
 
-// RENDER
+// Render
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>

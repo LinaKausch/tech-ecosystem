@@ -16,13 +16,13 @@ const directions = [
     [0, 0, -cubeSize]
 ];
 
-export const cubeCluster = (scene, amount) => {
+export const cubeCluster = async (scene, amount) => {
     const currentPos = new THREE.Vector3(0, 0, 0);
     occupied.clear();
 
     const agents = [];
     // cubes.push(cube(scene, currentPos));
-    const firstAgent = createAgent(scene, null, currentPos);
+    const firstAgent = await createAgent(scene, null, currentPos);
     agents.push(firstAgent);
     occupied.add(`${snap(currentPos.x)},${snap(currentPos.y)},${snap(currentPos.z)}`);
 
@@ -42,7 +42,7 @@ export const cubeCluster = (scene, amount) => {
 
 
         if (!occupied.has(key)) {
-            const newAgent = createAgent(scene, null, snappedPos);
+            const newAgent = await createAgent(scene, null, snappedPos);
             agents.push(newAgent);
             occupied.add(key);
             created++;

@@ -4,7 +4,6 @@ const occupied = new Set();
 const objectSize = 0.3;
 const snap = (v) => Math.round(v / objectSize) * objectSize;
 
-// Easing functions
 const easeInOutBack = (t) => {
     const c1 = 1.70158;
     const c2 = c1 * 1.525;
@@ -38,7 +37,7 @@ export const float = (object, dt) => {
 
     const floatTarget = target.userData.target;
     const speed = 0.002;
-      const moveDuration = 4000;
+      const moveDuration = 6000;
 
     if (target.userData.state === "idle") {
         if (dt < target.userData.waitUntil) {

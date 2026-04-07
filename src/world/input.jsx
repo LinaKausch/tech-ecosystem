@@ -56,9 +56,9 @@ export const InputData = ({ socket }) => {
                 metalness: metalness,
                 healthScore: health * 100,
                 mass: mass * 10,
-                widthExt: size.x,
-                heightExt: size.y,
-                depthExt: size.z
+                widthExt: size.x * 0.25,
+                heightExt: size.y * 0.25,
+                depthExt: size.z * 0.25
             };
             console.log('Data sent to display:', dataToSend);
             socket.emit("send-to-display", dataToSend);
@@ -87,7 +87,7 @@ export const InputData = ({ socket }) => {
         <ColorStep value={data} onChange={handleColorChange} />,
         <ExtensionStep size={size} setSize={setSize} />,
         // <SpeedStep />,
-        <MetalStep opacity={opacity} metalness={metalness} onOpacityChange={handleOpacityChange} onMetalnessChange={handleMetalnessChange} />,
+        // <MetalStep opacity={opacity} metalness={metalness} onOpacityChange={handleOpacityChange} onMetalnessChange={handleMetalnessChange} />,
         <HealthStep health={health} mass={mass} onHealthChange={handleHealthChange} onMassChange={handleMassChange} />,
         <FinalStep />
     ]
