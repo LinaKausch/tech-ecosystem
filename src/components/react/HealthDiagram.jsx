@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const HealthDiagram = ({ agentsRef }) => {
     const canvasRef = useRef(null);
-    const [healthHistory, setHealthHistory] = useState([]);
+    const [energyHistory, setEnergyHistory] = useState([]);
     const maxHistoryPoints = 100;
 
     // Update health data on interval
@@ -13,11 +13,11 @@ const HealthDiagram = ({ agentsRef }) => {
             const aliveAgents = agentsRef.current.filter(agent => !agent.isDead);
             if (aliveAgents.length === 0) return;
 
-            const totalHealthScore = aliveAgents.reduce((sum, agent) => sum + (agent.dna?.healthScore || 0), 0);
-            const avgHealth = totalHealthScore / aliveAgents.length;
+            const totalEnergy = aliveAgents.reduce((sum, agent) => sum + (agent.energy || 0), 0);
+            const avgEnergy = totalEnergy / aliveAgents.length;
 
-            setHealthHistory(prev => {
-                const newHistory = [...prev, avgHealth];
+            setEnergyHistory(prev => {
+                const newHistory = [...prev, avgEnergy];
                 return newHistory.length > maxHistoryPoints ? newHistory.slice(-maxHistoryPoints) : newHistory;
             });
         }, 100); // Update every 100ms
@@ -28,7 +28,7 @@ const HealthDiagram = ({ agentsRef }) => {
     // Draw on canvas
     useEffect(() => {
         const canvas = canvasRef.current;
-        if (!canvas || healthHistory.length === 0) return;
+        if (!canvas || energyHistory.length === 0) return;
 
         const ctx = canvas.getContext('2d');
         const width = canvas.width;
@@ -62,14 +62,14 @@ const HealthDiagram = ({ agentsRef }) => {
         ctx.fillText('100', padding - 10, padding + 5);
         ctx.fillText('0', padding - 10, height - padding + 5);
 
-        // Draw health line graph
+        // Draw energy line graph
         ctx.strokeStyle = '#00ff00';
         ctx.lineWidth = 2;
         ctx.beginPath();
 
-        healthHistory.forEach((health, index) => {
-            const x = padding + (index / (healthHistory.length - 1 || 1)) * (width - padding * 2);
-            const y = height - padding - (health / 100) * (height - padding * 2);
+        energyHistory.forEach((energy, index) => {
+            const x = padding + (index / (energyHistory.length - 1 || 1)) * (width - padding * 2);
+            const y = height - padding - (energy / 100) * (height - padding * 2);
 
             if (index === 0) {
                 ctx.moveTo(x, y);
@@ -80,10 +80,10 @@ const HealthDiagram = ({ agentsRef }) => {
         ctx.stroke();
 
         // Draw current value circle
-        if (healthHistory.length > 0) {
-            const currentHealth = healthHistory[healthHistory.length - 1];
+        if (energyHistory.length > 0) {
+            const currentEnergy = energyHistory[energyHistory.length - 1];
             const x = width - padding;
-            const y = height - padding - (currentHealth / 100) * (height - padding * 2);
+            const y = height - padding - (currentEnergy / 100) * (height - padding * 2);
 
             ctx.fillStyle = '#00ff00';
             ctx.beginPath();
@@ -94,22 +94,22 @@ const HealthDiagram = ({ agentsRef }) => {
             ctx.fillStyle = '#00ff00';
             ctx.font = 'bold 14px Arial';
             ctx.textAlign = 'right';
-            ctx.fillText(currentHealth.toFixed(1), width - padding - 15, padding + 20);
+            ctx.fillText(currentEnergy.toFixed(1), width - padding - 15, padding + 20);
         }
 
         // Draw title
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('Average Health Score', width / 2, 20);
-    }, [healthHistory]);
+        ctx.fillText('Average Energy Score', width / 2, 20);
+    }, [energyHistory]);
 
     return (
         <div
             style={{
                 position: 'fixed',
                 bottom: 20,
-                right: 20,
+                left: 20,
                 background: 'rgba(20, 20, 20, 0.95)',
                 padding: '10px',
                 borderRadius: '8px',
@@ -120,11 +120,8 @@ const HealthDiagram = ({ agentsRef }) => {
             <canvas
                 ref={canvasRef}
                 width={300}
-                height={200}
-                style={{
-                    display: 'block',
-                    borderRadius: '4px',
-                }}
+                height={150}
+                style={{ display: 'block' }}
             />
         </div>
     );

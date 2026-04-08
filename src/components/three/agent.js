@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { createMesh, updateMesh } from './agentMesh.js';
 import { agentCube, updateACube } from './agentCube.js';
 import { float, floatInit } from '../../behaviour/float.js';
+import { order, orderInit } from '../../behaviour/order.js';
+import { or } from 'three/tsl';
 
 export const createAgent = async (
     scene,
@@ -44,15 +46,17 @@ export const createAgent = async (
     agent.mesh = await agentCube(scene, agent.dna);
     agent.mesh.position.copy(agent.position);
 
-    floatInit(agent.mesh);
+    // floatInit(agent.mesh);
+    orderInit(agent.mesh);
     scene.add(agent.mesh);
     return agent;
 }
 
 export const updateAgent = (agent, dt) => {
-    float(agent.mesh, dt);
+    order(agent.mesh, dt);
+    // float(agent.mesh, dt);
     // updateMesh(agent.mesh, dt);
-    updateACube(agent.mesh, dt);
+    // updateACube(agent.mesh, dt);  // Removed to avoid conflict with order behavior
 
     const burnEnergy = 0.1 / (1 + agent.dna.healthScore * 0.1);
     agent.energy -= burnEnergy;

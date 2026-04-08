@@ -12,7 +12,7 @@ export const agentCube = async (scene, agentDNA) => {
     const base = await loadModel();
     const baseModel = base.clone(true);
     const placeholder = new THREE.Object3D();
-    const cubeSize = 0.05;
+    const cubeSize = 0.1;
 
     const scaleX = cubeSize + (agentDNA.widthExt || 0);
     const scaleY = cubeSize + (agentDNA.heightExt || 0);

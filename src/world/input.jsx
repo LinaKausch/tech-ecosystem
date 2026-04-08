@@ -56,9 +56,9 @@ export const InputData = ({ socket }) => {
                 metalness: metalness,
                 healthScore: health * 100,
                 mass: mass * 10,
-                widthExt: size.x * 0.25,
-                heightExt: size.y * 0.25,
-                depthExt: size.z * 0.25
+                widthExt: size.x * 0.5,
+                heightExt: size.y * 0.5,
+                depthExt: size.z * 0.5
             };
             console.log('Data sent to display:', dataToSend);
             socket.emit("send-to-display", dataToSend);

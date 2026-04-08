@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { occupied, objectSize, snap } from '../../behaviour/float.js';
+import { orderCleanup } from '../../behaviour/order.js';
 import { createAgent, updateAgent } from './agent.js';
 
 const cubeSize = objectSize;
@@ -57,8 +58,21 @@ export const animateCluster = (scene, objects, dt) => {
         updateAgent(agent, dt);
 
         if (agent.isDead) {
-            if (agent.mesh && agent.mesh.material) {
-                // Only remove if material exists, don't try to access opacity
+            if (agent.mesh) {
+                orderCleanup(agent.mesh);
+                
+                // Dispose all geometries and materials
+                agent.mesh.traverse((child) => {
+                    if (child.geometry) child.geometry.dispose();
+                    if (child.material) {
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach(mat => mat.dispose());
+                        } else {
+                            child.material.dispose();
+                        }
+                    }
+                });
+                
                 scene.remove(agent.mesh);
             }
             scene.remove(agent);

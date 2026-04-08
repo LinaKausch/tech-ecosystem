@@ -62,8 +62,9 @@ export const populationControl = (scene, agents) => {
                 });
             }
         }
+        return 1; 
     }
-    return agents.filter(agent => !agent.isDead);
+    return 0; 
 }
 
 export const inputLife = (scene, agents, inputDNA) => {
@@ -77,7 +78,9 @@ export const inputLife = (scene, agents, inputDNA) => {
                 agents.push(newAgent);
             });
         }
+        return 1;
     }
+    return 0; 
 }
 
 const calculateDNASimilarity = (dna1, dna2) => {
