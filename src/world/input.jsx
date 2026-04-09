@@ -94,7 +94,7 @@ export const InputData = ({ socket }) => {
     ]
 
     return (
-        <div>
+        <div className='data-bg'>
             <p className="date">{dateTime}</p>
 
             {steps[currentStep]}

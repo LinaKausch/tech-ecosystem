@@ -127,6 +127,7 @@ export const ColorWheel = ({ onChange }) => {
     //DOM
     return (
         <div style={{ position: "relative", width: size, height: size }}>
+          {/* marker */}
             <div
                 style={{
                     width: 8,
@@ -141,17 +142,20 @@ export const ColorWheel = ({ onChange }) => {
                     pointerEvents: "none",
                 }}
             ></div>
+            {/* circle */}
             <div
                 style={{
                     width: size,
                     height: size,
                     borderRadius: "50%",
                     border: "1px solid #7ECCF8",
+                    background: "#1C1C1C",
                     position: "absolute",
                     top: 0,
                     left: 0,
                 }}>
             </div>
+            {/* wheel */}
             <div
                 ref={wheelRef}
                 onPointerDown={handlePointerDown}
@@ -170,6 +174,7 @@ export const ColorWheel = ({ onChange }) => {
                     top: 0,
                     left: 0,
                 }}> </div>
+                {/* center circle */}
             <div
                 style={{
                     width: size - 100,

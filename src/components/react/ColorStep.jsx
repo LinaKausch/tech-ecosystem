@@ -18,7 +18,7 @@ const ColorStep = ({ onChange, value }) => {
 
     return (
         <div>
-            <h1>
+            {/* <h1>
                 {"What is your system state today?"
                     .split(" ")
                     .map((word, i) => (
@@ -26,13 +26,13 @@ const ColorStep = ({ onChange, value }) => {
                             {word}
                         </span>)
                     )}
-            </h1>
+            </h1> */}
             <p className='data hex'>{selectedColor.hex}</p>
-            <div style={{ display: "flex", justifyContent: "center", marginTop: "-2rem" }}>
+            <div style={{ height: "100dvh", display: "flex", flexWrap: "wrap", justifyContent: "center", alignContent: "center"}}>
                 <ColorWheel onChange={handleColorChange} />
             </div>
-            <p className='data colorname'>`{selectedColor.colorName}`</p>
-            <p className='data rgba'>rgba({selectedColor.rgbObj.r},{selectedColor.rgbObj.g},{selectedColor.rgbObj.b},1)</p>
+            {/* <p className='data colorname'>`{selectedColor.colorName}`</p> */}
+            {/* <p className='data rgba'>rgba({selectedColor.rgbObj.r},{selectedColor.rgbObj.g},{selectedColor.rgbObj.b},1)</p> */}
         </div>
     )
 }

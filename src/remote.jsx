@@ -1,17 +1,18 @@
 import React from 'react';
 import { InputData } from "./world/input.jsx";
+import Background from './components/react/Background.jsx';
 
 const socket = io();
 
 const RemoteApp = () => {
 
     return (
-        <div
-            style={{
-                background: "#1C1C1C"
-            }}>
-            <InputData socket={socket} />
-        </div>
+        <>
+            <Background />
+            <div className='bckg' style={{  zIndex: 1 }}>
+                <InputData socket={socket} />
+            </div>
+        </>
     );
 };
 
