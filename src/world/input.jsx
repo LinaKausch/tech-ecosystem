@@ -6,12 +6,14 @@ import SpeedStep from '../components/react/speedStep.jsx';
 import MetalStep from '../components/react/MetalStep.jsx';
 import HealthStep from '../components/react/HealthStep.jsx';
 import FinalStep from '../components/react/FinalStep.jsx';
+import { Stars } from '@react-three/drei';
+
 
 export const InputData = ({ socket }) => {
     const [data, setData] = useState({});
     const [dateTime, setDateTime] = useState("");
     const [currentStep, setCurrentStep] = useState(0);
-    const [size, setSize] = useState({ x: 0.5, y: 0.5, z: 0.5 });
+    const [size, setSize] = useState({ x: 0.25, y: 0.25, z: 0.25 });
     const [opacity, setOpacity] = useState(0.91);
     const [metalness, setMetalness] = useState(0.11);
     const [health, setHealth] = useState(0.53);
@@ -48,7 +50,6 @@ export const InputData = ({ socket }) => {
 
     const handleNext = () => {
         if (currentStep === steps.length - 1) {
-            // Last step - send data
             const dataToSend = {
                 ...data,
                 hex: data.hex || '#c2260a',
@@ -56,9 +57,9 @@ export const InputData = ({ socket }) => {
                 metalness: metalness,
                 healthScore: health * 100,
                 mass: mass * 10,
-                widthExt: size.x * 0.5,
-                heightExt: size.y * 0.5,
-                depthExt: size.z * 0.5
+                widthExt: size.x,
+                heightExt: size.y,
+                depthExt: size.z
             };
             console.log('Data sent to display:', dataToSend);
             socket.emit("send-to-display", dataToSend);
@@ -97,8 +98,6 @@ export const InputData = ({ socket }) => {
             <p className="date">{dateTime}</p>
 
             {steps[currentStep]}
-
-            {/* <Scene colour={data.hex} size={size} /> */}
             <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} opacity={opacity} metalness={metalness} />
             <button className="btn" onClick={handleNext}>
                 {currentStep === steps.length - 1 ? 'send' : 'next'}

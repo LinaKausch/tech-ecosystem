@@ -79,8 +79,8 @@ export const ColorWheel = ({ onChange }) => {
     //COLOUR CODES
     let hue = Math.round((-angle % 360 + 360) % 360);
     let colorName = getColorName(hue);
-    let color = `hsl(${hue}, 90%, 70%)`;
-    const [r, g, b] = hslToRgb(hue, 90, 60);
+    let color = `hsl(${hue}, 90%, 40%)`;
+    const [r, g, b] = hslToRgb(hue, 90, 40);
     let rgb = `rgb(${r}, ${g}, ${b})`;
     let rgbObj = { r, g, b };
     let hex = rgbToHex(r, g, b);

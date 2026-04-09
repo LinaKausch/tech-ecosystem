@@ -27,7 +27,7 @@ const HealthStep = ({ onHealthChange, onMassChange, health = 0.53, mass = 0.42 }
                         style={{ display: 'block', width: '100%', marginTop: '0.3rem' }}
                     />
                 </div>
-                <div style={{ marginBottom: '1rem' }}>
+                {/* <div style={{ marginBottom: '1rem' }}>
                     <label style={{ fontSize: '12px', fontWeight: 'bold' }}></label>
                     <input
                         type="range"
@@ -38,8 +38,8 @@ const HealthStep = ({ onHealthChange, onMassChange, health = 0.53, mass = 0.42 }
                         onChange={(e) => onMassChange(parseFloat(e.target.value))}
                         style={{ display: 'block', width: '100%', marginTop: '0.3rem' }}
                     />
-                </div>
-                <p className='data'>{`h: ${health.toFixed(2)} | m: ${mass.toFixed(2)}`}</p>
+                </div> */}
+                <p className='data'>{`h: ${health.toFixed(2)}`}</p>
             </div>
         </div>
     )

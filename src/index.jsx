@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, OrbitControls as OrbitControlsComponent, PerspectiveCamera } from '@react-three/drei';
+import { Environment, Stars, AccumulativeShadows, RandomizedLight, OrbitControls as OrbitControlsComponent, PerspectiveCamera, useHelper } from '@react-three/drei';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { blobs as createBlobs, animateBlobs } from './particles/blobs.js';
@@ -109,8 +109,29 @@ const SceneSetup = ({ agentsRef }) => {
 
 // Lights Component
 const Lights = () => {
+    const lightRef = useRef();
+    const lightColor = new THREE.Color(0x1E7D01);
+    useHelper(lightRef, THREE.PointLightHelper, 0.5);
     return (
-        <pointLight position={[0, 0, 0]} intensity={2} distance={100} color={0x1E7D01} />
+        <>
+            <directionalLight position={[-1, 0, 1]} intensity={0.5} color={lightColor} />
+            <directionalLight position={[1, 0, 1]} intensity={0.5} color={lightColor} />
+            {/* <ambientLight intensity={0.3} color={lightColor} /> */}
+            {/* <rectAreaLight
+                position={[5, 0, 0]}
+                width={10}
+                height={10}
+                intensity={20}
+                color={lightColor}
+                lookAt={[0, 0, 0]}
+            /> */}
+            <Stars radius={100} depth={100} count={5000} factor={4} saturation={0} fade speed={1} />
+            {/* <RandomizedLight color={lightColor} castShadow radius={5} intensity={5} amount={8} frames={100} position={[5, 5, -10]} /> */}
+            <pointLight ref={lightRef} position={[0, 0, 0]} intensity={5} distance={100} color={lightColor} />
+            {/* <pointLight ref={lightRef} position={[0, 5, 0]} intensity={5} distance={100} color={lightColor} /> */}
+            {/* <pointLight ref={lightRef} position={[5, 0, 0]} intensity={5} distance={100} color={lightColor} /> */}
+            {/* <pointLight ref={lightRef} position={[-5, 0, 0]} intensity={5} distance={100} color={lightColor} /> */}
+        </>
     );
 };
 
@@ -190,7 +211,7 @@ const Agents = ({ agentsRef }) => {
 
     useEffect(() => {
         (async () => {
-            const agents = await cubeCluster(scene, 100);
+            const agents = await cubeCluster(scene, 150);
             agentsRef.current = agents;
         })();
     }, [scene, agentsRef]);
@@ -219,11 +240,12 @@ const Scene = ({ agentsRef }) => {
             </mesh>
             <EffectComposer>
                 <Bloom
-                    luminanceThreshold={1}
-                    luminanceSmoothing={1}
-                    height={500}
-                    intensity={5}
+                    luminanceThreshold={0.5}
+                    luminanceSmoothing={5}
+                    height={50}
+                    intensity={1.8}
                     mipmapBlur={true}
+                    radius={0.5}
                 />
             </EffectComposer>
         </>
@@ -276,9 +298,9 @@ const Display = () => {
                 gl={{ antialias: true }}
                 style={{ width: '100vw', height: '100vh' }}
             >
-               
+
                 <Scene agentsRef={agentsRef} />
-             {/* <Environment preset="warehouse" background /> */}
+                {/* <Environment preset="warehouse" background /> */}
             </Canvas>
             <HealthDiagram agentsRef={agentsRef} />
             <MovementHeatmap agentsRef={agentsRef} />

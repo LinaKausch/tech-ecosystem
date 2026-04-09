@@ -16,13 +16,13 @@ const Cube = ({ color = 'red', sizeX = 1, sizeY = 1, sizeZ = 1, rotation = true,
     return (
         <mesh ref={meshRef}>
             {/* <boxGeometry args={[sizeX, sizeY, sizeZ]} /> */}
-            <CubeModel sizeX={sizeX} sizeY={sizeY} sizeZ={sizeZ} />
+            <CubeModel sizeX={sizeX} sizeY={sizeY} sizeZ={sizeZ} color={color} />
             <meshStandardMaterial color={color} transparent={true} opacity={opacity} metalness={metalness} />
         </mesh>
     );
 };
 
-const CubeModel = ({ sizeX, sizeY, sizeZ}) => {
+const CubeModel = ({ sizeX, sizeY, sizeZ, color }) => {
     const gltf = useLoader(GLTFLoader, '/cube16.glb');
 
     useEffect(() => {
@@ -33,10 +33,22 @@ const CubeModel = ({ sizeX, sizeY, sizeZ}) => {
 
             gltf.scene.position.sub(center);
 
-            const scale = Math.max(sizeX, sizeY, sizeZ) / Math.max(size.x, size.y, size.z);
-            gltf.scene.scale.multiplyScalar(scale);
+            gltf.scene.scale.set(sizeX, sizeY, sizeZ);
+
+            // Apply color wheel to light mesh
+            gltf.scene.traverse((child) => {
+                if (child.isMesh && child.name === 'light') {
+                    child.material = child.material.clone();
+                    const lightColor = color?.hex || color;
+                    child.material.color.set(lightColor);
+                    child.material.emissive.set(lightColor);
+                    child.material.emissiveIntensity = 2.5;
+                    child.material.transparent = true;
+                    child.material.opacity = 0.5;
+                }
+            });
         }
-    }, [gltf, sizeX, sizeY, sizeZ]);
+    }, [gltf, sizeX, sizeY, sizeZ, color]);
 
     return <primitive object={gltf.scene} />;
 }

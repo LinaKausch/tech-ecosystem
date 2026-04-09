@@ -50,8 +50,8 @@ export const mixDNA = (dna1, dna2) => {
 
 export const populationControl = (scene, agents) => {
     const aliveAgents = agents.filter(agent => !agent.isDead);
-    if (aliveAgents.length < 50 && aliveAgents.length > 2) {
-        for (let i = 0; i < 60; i++) {
+    if (aliveAgents.length < 100 && aliveAgents.length > 2) {
+        for (let i = 0; i < 100; i++) {
             const survivor1 = aliveAgents[Math.floor(Math.random() * aliveAgents.length)];
             const survivor2 = aliveAgents[Math.floor(Math.random() * aliveAgents.length)];
             if (survivor1 != survivor2) {
@@ -71,7 +71,7 @@ export const inputLife = (scene, agents, inputDNA) => {
     const aliveAgents = agents.filter(agent => !agent.isDead);
     if (inputDNA && aliveAgents.length > 0) {
         const mostSimilarSurvivor = findMostSimilarSurvivor(aliveAgents, inputDNA);
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 40; i++) {
             const newDNA = mixDNA(mostSimilarSurvivor.dna, inputDNA);
             const spawnPos = new THREE.Vector3(0, 0, 0);
             createAgent(scene, newDNA, spawnPos).then(newAgent => {

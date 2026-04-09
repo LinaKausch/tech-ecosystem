@@ -27,14 +27,14 @@ export const agentCube = async (scene, agentDNA) => {
 
     baseModel.traverse((child) => {
         if (child.isMesh) {
-            console.log(child.name);
+            // console.log(child.name);
             if (child.name === 'light') {
                 child.renderOrder = 2;
 
                 child.material = child.material.clone();
                 child.material.color.set(agentDNA.color);
                 child.material.emissive.set(agentDNA.color);
-                child.material.emissiveIntensity = 2.5;
+                child.material.emissiveIntensity = 5;
                 child.material.transparent = true;
                 child.material.opacity = 0.5;
 
@@ -64,7 +64,7 @@ export const agentCube = async (scene, agentDNA) => {
             }
             if (child.name === 'main') {
                 child.renderOrder = 1;
-                console.log(child.material);
+                // console.log(child.material);
                 // child.material.emissiveIntensity = 0.1;
                 // child.material.transparent = true; // enable transparency
                 // child.material.opacity = 0.97;

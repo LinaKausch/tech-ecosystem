@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
 const ExtensionStep = ({ size, setSize }) => {
-    const MAX_VOLUME = 0.9;
-    const MIN_VOLUME = 0.125; // 0.5 * 0.5 * 0.5
-    const MAX_SIZE = 1.9;
+    const MAX_VOLUME = 0.15;
+    const MIN_VOLUME = 0.008; // 0.5 * 0.5 * 0.5
+    const MAX_SIZE = 1;
     const MIN_SIZE = 0.1;
 
     const handleAxisChange = (axis, value) => {
@@ -54,7 +54,7 @@ const ExtensionStep = ({ size, setSize }) => {
                     <input
                         type="range"
                         min="0.1"
-                        max="1.9"
+                        max="1"
                         step="0.01"
                         value={size.x}
                         onChange={(e) => handleAxisChange('x', e.target.value)}
@@ -69,7 +69,7 @@ const ExtensionStep = ({ size, setSize }) => {
                     <input
                         type="range"
                         min="0.1"
-                        max="1.9"
+                        max="1"
                         step="0.01"
                         value={size.y}
                         onChange={(e) => handleAxisChange('y', e.target.value)}
@@ -84,7 +84,7 @@ const ExtensionStep = ({ size, setSize }) => {
                     <input
                         type="range"
                         min="0.1"
-                        max="1.9"
+                        max="1"
                         step="0.01"
                         value={size.z}
                         onChange={(e) => handleAxisChange('z', e.target.value)}

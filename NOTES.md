@@ -14,7 +14,6 @@
     make new particles small 
     finish user input 
     glow up the parents that spawning the new cubes
-    spawn from the parent location? 
 
     storage for the whole system, no refresh, maybe hard refresh
 
@@ -23,11 +22,12 @@
     display stats
     design stats
 
+    camera animations
+
     system collapse
-    movement
     design environment
     design user input screens
 
-    figure it the colors (limit color palete? new input colors don't bloom, too dark?) monochrome over time changing color? how? what is the logic behind? 
+    figure out the colors (limit color palete? new input colors don't bloom, too dark?) monochrome over time changing color? how? what is the logic behind? 
 
     If I make system collapse when the fps reaches less than 30, then i have to figure it out when population control happens, is it less than 50 agents or at certain time
