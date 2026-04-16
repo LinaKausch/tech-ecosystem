@@ -34,7 +34,7 @@ export const agentCube = async (scene, agentDNA) => {
                 child.material = child.material.clone();
                 child.material.color.set(agentDNA.color);
                 child.material.emissive.set(agentDNA.color);
-                child.material.emissiveIntensity = 5;
+                child.material.emissiveIntensity = 2.5;
                 child.material.transparent = true;
                 child.material.opacity = 0.5;
 

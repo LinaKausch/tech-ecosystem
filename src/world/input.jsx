@@ -90,7 +90,7 @@ export const InputData = ({ socket }) => {
         // <SpeedStep />,
         // <MetalStep opacity={opacity} metalness={metalness} onOpacityChange={handleOpacityChange} onMetalnessChange={handleMetalnessChange} />,
         <HealthStep health={health} mass={mass} onHealthChange={handleHealthChange} onMassChange={handleMassChange} />,
-        <FinalStep />
+        // <FinalStep />
     ]
 
     return (
