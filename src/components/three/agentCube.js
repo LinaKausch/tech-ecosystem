@@ -28,6 +28,11 @@ export const agentCube = async (scene, agentDNA) => {
     baseModel.traverse((child) => {
         if (child.isMesh) {
             // console.log(child.name);
+            child.material = child.material.clone();
+            if (child.material.color) {
+                child.material.color.set(agentDNA.color);
+            }
+
             if (child.name === 'light') {
                 child.renderOrder = 2;
 

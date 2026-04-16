@@ -1,6 +1,26 @@
 import * as THREE from 'three';
 import { createAgent } from './agent.js';
 
+const SPAWN_DELAY_MS = 35;
+export const INPUT_SPAWN_DELAY_MS = 120;
+export const INPUT_SPAWN_COUNT = 40;
+
+const spawnAgentWithDelay = (
+    scene,
+    agents,
+    dna,
+    index,
+    delayMs = SPAWN_DELAY_MS,
+    startDelayMs = 0
+) => {
+    const spawnPos = new THREE.Vector3(0, 0, 0);
+    setTimeout(() => {
+        createAgent(scene, dna, spawnPos).then(newAgent => {
+            agents.push(newAgent);
+        });
+    }, startDelayMs + index * delayMs);
+};
+
 const mutateColor = (color, mutationRate = 0.3) => {
     const newColor = color.clone();
     if (Math.random() > mutationRate) return newColor;
@@ -12,12 +32,39 @@ const mutateColor = (color, mutationRate = 0.3) => {
     hsl.l += (Math.random() * 2 - 1) * 0.05;
 
     hsl.h = (hsl.h + 1) % 1;
-    hsl.s = THREE.MathUtils.clamp(hsl.s, 0, 1);
+    hsl.s = THREE.MathUtils.clamp(hsl.s, 0.35, 1);
     hsl.l = THREE.MathUtils.clamp(hsl.l, 0, 1);
 
     newColor.setHSL(hsl.h, hsl.s, hsl.l);
     return newColor;
 }
+
+const mixColors = (color1, color2) => {
+    const hsl1 = {};
+    const hsl2 = {};
+
+    color1.getHSL(hsl1);
+    color2.getHSL(hsl2);
+
+    let hueDelta = hsl2.h - hsl1.h;
+    if (hueDelta > 0.5) hueDelta -= 1;
+    if (hueDelta < -0.5) hueDelta += 1;
+
+    const mixFactor = Math.random();
+    const mixedHue = (hsl1.h + hueDelta * mixFactor + 1) % 1;
+    const mixedSaturation = THREE.MathUtils.clamp(
+        THREE.MathUtils.lerp(hsl1.s, hsl2.s, mixFactor),
+        0.35,
+        1
+    );
+    const mixedLightness = THREE.MathUtils.clamp(
+        THREE.MathUtils.lerp(hsl1.l, hsl2.l, mixFactor),
+        0.2,
+        0.8
+    );
+
+    return new THREE.Color().setHSL(mixedHue, mixedSaturation, mixedLightness);
+};
 
 export const mixDNA = (dna1, dna2) => {
     const mutationRate = 0.5;
@@ -28,7 +75,7 @@ export const mixDNA = (dna1, dna2) => {
         return value + delta;
     };
 
-    const baseColor = dna1.color.clone().lerp(dna2.color, Math.random());
+    const baseColor = mixColors(dna1.color, dna2.color);
     const newHealth = THREE.MathUtils.clamp(
         mutate(THREE.MathUtils.lerp(dna1.healthScore - 20, dna2.healthScore + 20, Math.random())),
         0,
@@ -40,7 +87,7 @@ export const mixDNA = (dna1, dna2) => {
         heightExt: Math.random() > 0.5 ? dna1.heightExt : dna2.heightExt,
         depthExt: THREE.MathUtils.lerp(dna1.depthExt, dna2.depthExt, Math.random()),
         color: mutateColor(baseColor),
-        speed: mutate(Math.random() - 0.5 ? dna1.speed : dna2.speed),
+        speed: mutate(Math.random() > 0.5 ? dna1.speed : dna2.speed),
         opacity: Math.max(0.2, THREE.MathUtils.lerp(dna1.opacity, dna2.opacity, Math.random())),
         metalness: mutate(THREE.MathUtils.lerp(dna1.metalness, dna2.metalness, Math.random())),
         healthScore: newHealth,
@@ -56,10 +103,7 @@ export const populationControl = (scene, agents) => {
             const survivor2 = aliveAgents[Math.floor(Math.random() * aliveAgents.length)];
             if (survivor1 != survivor2) {
                 const newDNA = mixDNA(survivor1.dna, survivor2.dna);
-                const spawnPos = new THREE.Vector3(0, 0, 0);
-                createAgent(scene, newDNA, spawnPos).then(newAgent => {
-                    agents.push(newAgent);
-                });
+                spawnAgentWithDelay(scene, agents, newDNA, i);
             }
         }
         return 1; 
@@ -67,16 +111,13 @@ export const populationControl = (scene, agents) => {
     return 0; 
 }
 
-export const inputLife = (scene, agents, inputDNA) => {
+export const inputLife = (scene, agents, inputDNA, startDelayMs = 0) => {
     const aliveAgents = agents.filter(agent => !agent.isDead);
     if (inputDNA && aliveAgents.length > 0) {
         const mostSimilarSurvivor = findMostSimilarSurvivor(aliveAgents, inputDNA);
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < INPUT_SPAWN_COUNT; i++) {
             const newDNA = mixDNA(mostSimilarSurvivor.dna, inputDNA);
-            const spawnPos = new THREE.Vector3(0, 0, 0);
-            createAgent(scene, newDNA, spawnPos).then(newAgent => {
-                agents.push(newAgent);
-            });
+            spawnAgentWithDelay(scene, agents, newDNA, i, INPUT_SPAWN_DELAY_MS, startDelayMs);
         }
         return 1;
     }

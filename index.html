@@ -3,6 +3,9 @@
 
 <head>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee+Hairline&display=swap" rel="stylesheet">
   <title>Tech Ecosystem - Display</title>
   <style>
     body,
@@ -14,17 +17,17 @@
       height: 100%;
       overflow: hidden;
       background-color: #1C1C1C;
+       font-family: "Bungee Hairline", sans-serif;
     }
 
     #qr {
       position: fixed;
-      top: 20px;
-      left: 20px;
+      bottom: 20px;
+      right: 20px;
       z-index: 99999;
       background: rgba(0, 0, 0, 0.95);
       padding: 20px;
-      border-radius: 8px;
-      border: 0.5px solid #7ECCF8;
+      border: 1px solid #444444;
     }
 
     /* #url {
@@ -47,19 +50,66 @@
 
     #stats {
       position: fixed;
-      bottom: 20px;
+      top: 140px;
       right: 20px;
       z-index: 99999;
       background: rgba(0, 0, 0, 0.95);
       padding: 15px;
-      border-radius: 8px;
-      border: 0.5px solid #7ECCF8;
+      border: 1px solid #444444;
       color: #7ECCF8;
-      font-family: monospace;
-      font-size: 12px;
+      /* font-family: monospace; */
+      font-size: 1rem;
       line-height: 1.6;
       min-width: 150px;
     }
+
+    #color-dom {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 99999;
+      background: rgba(0, 0, 0, 0.95);
+      padding: 15px;
+      border: 1px solid #444444;
+      color: #7ECCF8;
+      /* font-family: monospace; */
+      font-size: 1rem;
+      line-height: 1.6;
+      min-width: 150px;
+    }
+
+    #time {
+      position: fixed;
+      top: 20px;
+      left: 270px;
+      z-index: 99999;
+      background: rgba(0, 0, 0, 0.95);
+      padding: 15px;
+      border: 1px solid #444444;
+      color: #7ECCF8;
+      /* font-family: monospace; */
+      font-size: 2.5rem;
+      line-height: 1.6;
+      min-width: 250px;
+      text-align: center;
+    }
+
+    #message {
+      position: fixed;
+      bottom: 155px;
+      right: 240px;
+      z-index: 99999;
+      background: rgba(0, 0, 0, 0.95);
+      padding: 1.3rem 1rem;
+      border: 1px solid #444444;
+      color: #7ECCF8;
+      /* font-family: monospace; */
+      font-size: 2rem;
+      line-height: 2rem;
+      min-width: 500px;
+      text-align: center;
+    }
+
   </style>
 </head>
 
@@ -68,6 +118,9 @@
   <div id="qr"></div>
   <!-- <a id="url" href=""></a> -->
   <div id="stats"></div>
+  <div id="time"></div>
+  <div id="color-dom"></div>
+  <div id="message"> </div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
   <script type="module" src="/src/index.jsx"></script>
