@@ -5,6 +5,7 @@ import ExtensionStep from '../components/react/ExtensionStep.jsx';
 import SpeedStep from '../components/react/speedStep.jsx';
 import MetalStep from '../components/react/MetalStep.jsx';
 import HealthStep from '../components/react/HealthStep.jsx';
+import Onboarding from '../components/react/Onboarding.jsx';
 import FinalStep from '../components/react/FinalStep.jsx';
 import { Stars } from '@react-three/drei';
 
@@ -85,6 +86,7 @@ export const InputData = ({ socket }) => {
     }, []);
 
     const steps = [
+        <Onboarding />,
         <ColorStep value={data} onChange={handleColorChange} />,
         <ExtensionStep size={size} setSize={setSize} />,
         // <SpeedStep />,
@@ -96,11 +98,11 @@ export const InputData = ({ socket }) => {
     return (
         <div className='data-bg'>
             <p className="date">{dateTime}</p>
-
             {steps[currentStep]}
             <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} opacity={opacity} metalness={metalness} />
             <button className="btn" onClick={handleNext}>
-                {currentStep === steps.length - 1 ? 'send' : 'next'}
+                {currentStep === 0 ? 'continue' : currentStep === steps.length - 1 ? 'send' : 'next'}
+
             </button>
             <p className="page">sys_data_[{currentStep + 1}|{steps.length}]</p>
         </div>
