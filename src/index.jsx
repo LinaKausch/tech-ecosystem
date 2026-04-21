@@ -6,7 +6,7 @@ import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { blobs as createBlobs, animateBlobs } from './particles/blobs.js';
 import { cubeCluster, animateCluster } from './components/three/cubes.js';
-import { populationControl, inputLife } from './components/three/evolution.js';
+import { populationControl, inputLife, INPUT_SPAWN_DELAY_MS, INPUT_SPAWN_COUNT } from './components/three/evolution.js';
 import HealthDiagram from './components/react/HealthDiagram.jsx';
 import MovementHeatmap from './components/react/MovementHeatmap.jsx';
 import './style.css';
@@ -62,6 +62,12 @@ socket.on('error', (error) => {
 let moduleSceneRef = null;
 let moduleAgentsRef = null;
 let moduleBlobsRef = null;
+let connectedPhones = 0;
+let lastConnectedPhones = 0;
+let identificationUntil = 0;
+let processingUntil = 0;
+let analysingUntil = 0;
+let generatingUntil = 0;
 let generationTracker = {
     total: 1,
     fromPopulationControl: 1,
@@ -135,6 +141,22 @@ const Lights = () => {
     );
 };
 
+const messages = [
+    'Normal operation...', // default nothing happens
+    'Identifying user...', // phone connection detected - duration:5 sec, then go to default message
+    'Processing request...', // when sends data from phone
+    'Analysing data...', // after previous message
+    'Generating output...', // When new agents are being spawned
+    '! System overload...!', // when many agents are alive (300), when many users are connected (3)
+    '! System failure...!', // when too manu agents are alive (450), when too many users are connected (4)
+    'Rebooting...', // when system failure happens "restarting", duration: 10 sec, then go to default message 
+]
+
+const PROCESSING_DURATION_MS = 2000;
+const ANALYSING_DURATION_MS = 2000;
+const OVERLOAD_AGENT_THRESHOLD = 300;
+const OVERLOAD_PHONE_THRESHOLD = 3;
+
 // Animation Loop Component
 const AnimationController = ({ agentsRef }) => {
     const { scene } = useThree();
@@ -152,6 +174,7 @@ const AnimationController = ({ agentsRef }) => {
             if (popControlGen > 0) {
                 generationTracker.fromPopulationControl += popControlGen;
                 generationTracker.total += popControlGen;
+                generatingUntil = Math.max(generatingUntil, Date.now() + 2500);
             }
 
             const aliveAgents = agentsRef.current.filter(agent => !agent.isDead).length;
@@ -176,29 +199,61 @@ const AnimationController = ({ agentsRef }) => {
             const dominantColors = getDominantColors(aliveAgentsList);
             const colorHtml = dominantColors.map(c =>
                 `<div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 20px; height: 20px; background-color: ${c.hex}; border: 1px solid #666; border-radius: 2px;"></div>
-                    <span>${c.hex} (${c.count})</span>
+                    <div style="width: 20px; height: 20px; background-color: ${c.hex}; border: 1px solid #444;"></div>
+                    <span>${c.hex}</span>
                 </div>`
             ).join('');
 
-            const statsEl = document.getElementById('stats');
-            if (statsEl) {
-                statsEl.innerHTML = `
-                    <div>Runtime: ${timeString}</div>
-                    <div>Alive: ${aliveAgents}</div>
-                    <div>Dead: ${deadAgents}</div>
-                    <div>Total: ${totalAgents}</div>
-                    <div>Avg Health: ${avgHealthScore}</div>
-                    <div>Avg Energy: ${avgEnergy}</div>
-                    <div>Generations: ${generationTracker.total}</div>
-                    <div>Population Gen: ${generationTracker.fromPopulationControl}</div>
-                    <div>User Input Gen: ${generationTracker.fromUserInput}</div>
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #666;">
-                        <div style="font-weight: bold; margin-bottom: 5px;">Dominant Colors:</div>
-                        ${colorHtml}
-                    </div>
+            const $statsEl = document.getElementById('stats');
+            if ($statsEl) {
+                $statsEl.innerHTML = `
+                <div>
+                    <div>${aliveAgents}</div>
+                    <div>${deadAgents}</div>
+                    <div>${totalAgents}</div>
+                </div>
+                <div>
+                    <div>${avgHealthScore}</div>
+                    <div>${avgEnergy}</div>
+                </div>
+                    <div>${generationTracker.total}</div>
+                    <div>${generationTracker.fromPopulationControl}</div>
+                    <div>${generationTracker.fromUserInput}</div>
                 `;
             }
+            const $colorDomEl = document.getElementById('color-dom');
+            if ($colorDomEl) {
+                $colorDomEl.innerHTML = `
+                    ${colorHtml}
+                `;
+            }
+            const $timeCounter = document.getElementById('time');
+            if ($timeCounter) {
+                $timeCounter.innerHTML = `
+                <div>${timeString}</div>
+                `;
+            }
+
+            const $message = document.getElementById('message');
+            if ($message) {
+                const now = Date.now();
+                const isOverloaded = aliveAgents >= OVERLOAD_AGENT_THRESHOLD || connectedPhones >= OVERLOAD_PHONE_THRESHOLD;
+                const activeMessage = isOverloaded
+                    ? messages[5]
+                    : now < processingUntil
+                        ? messages[2]
+                        : now < analysingUntil
+                            ? messages[3]
+                            : now < generatingUntil
+                                ? messages[4]
+                                : now < identificationUntil
+                                    ? messages[1]
+                                    : messages[0];
+                $message.innerHTML = `
+                    <div>${activeMessage}</div>
+                `;
+            }
+
         }
     });
 
@@ -253,7 +308,7 @@ const Scene = ({ agentsRef }) => {
 };
 
 // Handle remote data
-const handleRemoteData = (data) => {
+const handleRemoteData = (data, startDelayMs = 0) => {
     if (!data || !moduleAgentsRef?.current || !moduleSceneRef?.current) return;
 
     const inputDNA = {
@@ -267,7 +322,7 @@ const handleRemoteData = (data) => {
         healthScore: data.healthScore || Math.random() * 100,
         mass: data.mass || Math.random() * 10,
     };
-    const generatedCount = inputLife(moduleSceneRef.current, moduleAgentsRef.current, inputDNA);
+    const generatedCount = inputLife(moduleSceneRef.current, moduleAgentsRef.current, inputDNA, startDelayMs);
     if (generatedCount > 0) {
         generationTracker.fromUserInput += generatedCount;
         generationTracker.total += generatedCount;
@@ -276,7 +331,23 @@ const handleRemoteData = (data) => {
 
 socket.on('render-data', (data) => {
     console.log('Display received data:', data);
-    handleRemoteData(data);
+    const now = Date.now();
+    const generatingStartDelay = PROCESSING_DURATION_MS + ANALYSING_DURATION_MS;
+    const spawnBurstDuration = (INPUT_SPAWN_COUNT - 1) * INPUT_SPAWN_DELAY_MS + 1000;
+
+    processingUntil = now + PROCESSING_DURATION_MS;
+    analysingUntil = now + generatingStartDelay;
+    generatingUntil = now + generatingStartDelay + spawnBurstDuration;
+    handleRemoteData(data, generatingStartDelay);
+});
+
+socket.on('remote-count', (count) => {
+    const safeCount = Number.isFinite(count) ? count : 0;
+    if (safeCount > lastConnectedPhones) {
+        identificationUntil = Date.now() + 3000;
+    }
+    connectedPhones = safeCount;
+    lastConnectedPhones = safeCount;
 });
 
 // Display Component
@@ -309,8 +380,8 @@ const Display = () => {
 };
 
 // Render
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+const $root = ReactDOM.createRoot(document.getElementById('root'));
+$root.render(
     <React.StrictMode>
         <Display />
     </React.StrictMode>

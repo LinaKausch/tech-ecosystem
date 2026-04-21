@@ -12,20 +12,16 @@
 
 ## to do
     make new particles small 
-    finish user input 
     glow up the parents that spawning the new cubes
 
     storage for the whole system, no refresh, maybe hard refresh
-
-    random injection of illness?
   
-    display stats
-    design stats
+    <!-- display stats
+    design stats -->
 
     camera animations
 
     system collapse
-    design environment
     design user input screens
 
     figure out the colors (limit color palete? new input colors don't bloom, too dark?) monochrome over time changing color? how? what is the logic behind? 

@@ -12,6 +12,12 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server);
 
+const broadcastRemoteCount = () => {
+    const remoteRoom = io.sockets.adapter.rooms.get('remote');
+    const remoteCount = remoteRoom ? remoteRoom.size : 0;
+    io.to('display').emit('remote-count', remoteCount);
+};
+
 app.use(express.static(join(__dirname, '..')));
 
 app.get('/', (req, res) => {
@@ -33,6 +39,7 @@ io.on('connection', (socket) => {
         }
         socket.join('display');
         console.log('Display connected! Socket ID:', socket.id);
+        broadcastRemoteCount();
     });
     socket.on('join-remote', () => {
         const room = io.sockets.adapter.rooms.get('remote');
@@ -43,6 +50,7 @@ io.on('connection', (socket) => {
         }
         socket.join('remote');
         console.log('Remote connected! Socket ID:', socket.id);
+        broadcastRemoteCount();
     });
 
     socket.on('send-to-display', (data) => {
@@ -52,6 +60,7 @@ io.on('connection', (socket) => {
     // console.log('User connected! Socket ID:', socket.id);
     socket.on('disconnect', () => {
         console.log('User disconnected. Socket ID:', socket.id);
+        broadcastRemoteCount();
     });
 });
 

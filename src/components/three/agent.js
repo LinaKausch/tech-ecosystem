@@ -5,6 +5,16 @@ import { float, floatInit } from '../../behaviour/float.js';
 import { order, orderInit } from '../../behaviour/order.js';
 import { or } from 'three/tsl';
 
+const createVividColor = () => {
+    const color = new THREE.Color();
+    color.setHSL(
+        Math.random(),
+        THREE.MathUtils.randFloat(0.8, 1),
+        THREE.MathUtils.randFloat(0.45, 0.65)
+    );
+    return color;
+};
+
 export const createAgent = async (
     scene,
     dna = null,
@@ -17,7 +27,7 @@ export const createAgent = async (
         widthExt: Math.random() * 0.5,
         heightExt: Math.random() * 0.5,
         depthExt: Math.random() * 0.5,
-        color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+        color: createVividColor(),
         speed: 0.001,
         opacity: Math.max(0.2, Math.random()),
         metalness: Math.random(),
