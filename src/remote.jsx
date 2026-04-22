@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { InputData } from "./world/input.jsx";
-import Background from './components/react/Background.jsx';
+import Background from './components/react/utils/Background.jsx';
 
 const socket = io();
 
