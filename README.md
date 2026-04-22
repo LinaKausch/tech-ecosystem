@@ -1,135 +1,120 @@
 # Tech Ecosystem
 
-An experimental 3D visualization where a digital ecosystem evolves in real time through procedural blob generation, powered by agent-driven behaviors and remote input.
+Interactive 3D ecosystem installation built with React + Three.js, where phone users inject DNA-like input and influence how agents evolve over time.
 
-## Concept
+## What It Does
 
-Tech Ecosystem is an interactive visualization that simulates living behavior in a 3D space:
-- **Agents** move through the environment, consuming energy at rates determined by their health traits
-- **Marching Cubes** algorithm creates dynamic blob geometry from agent positions
-- **Evolution** occurs through reproduction—low population spawns new offspring with inherited and mutated traits
-- **Remote input** (via phone) injects DNA-like parameters that influence the ecosystem's genetic composition
-- **Multi-directional lighting** and custom shaders create an immersive visual presentation
+- Renders a live 3D agent ecosystem on the display screen
+- Accepts remote user input through Socket.IO (phone flow)
+- Generates offspring through population control and DNA mixing
+- Tracks system pressure states (normal, overload, failure, reboot)
+- Runs a full system lifecycle called a "system try"
 
-## Core Features
+## System Try Lifecycle
 
-### Energy & Survival
-- Each agent burns energy proportional to its inverse health score
-- When energy reaches zero, agents die
-- Population control automatically spawns offspring when population drops below 50
+One complete cycle is one system try:
 
-### Visual Generation
-- Blobs are rendered using **MarchingCubes** algorithm, with strength and isolation values driving the mesh
-- Particle positions create implicit density fields that influence blob morphology
-- **GLSL shaders** apply time-based animations to the geometry
+1. Normal operation (IDLE / GENERATING / OVERLOAD)
+2. FAILURE when alive agents cross threshold
+3. Camera zooms out and agents collapse
+4. REBOOT wait period
+5. Camera RECOVERING zoom-in
+6. New agent batch spawns using dominant colors from previous system
+7. System returns to IDLE and increments system tries
 
-### Evolution Loop
-- Initial agents spawn with randomized DNA traits
-- When population is low, random survivors are selected for breeding
-- New offspring inherit blended DNA with mutation
-- Remote DNA input can be merged into generation evolution
+Core state machine and timing live in `src/world/system.jsx`.
 
-### Phone Connection
-- Display screen generates QR code and shareable URL
-- Connected phones open a remote interface with:
-  - **Color buttons** (Blue, Red, Green) to send color input
-  - **Shape sliders** to adjust width, height, depth parameters
-- Socket.IO forwards remote input to the display for ecosystem injection
+## Current Camera States
+
+- `IDLE`
+- `GENERATING`
+- `OVERLOAD`
+- `FAILURE`
+- `REBOOT`
+- `RECOVERING`
+
+Camera behavior is implemented in `src/components/react/CameraAnimations.jsx`.
+
+## Stats
+
+Implemented stats:
+
+- Timer (per system)
+- Alive agents (per system)
+- Dead agents (per system)
+- Total agents (per system)
+- Average health (current)
+- Average energy (current)
+- Total generations (per system)
+- Population control generations (per system)
+- User inputs (per system)
+- System tries (universal)
+- Total user inputs (universal)
+- Currently connected remotes (`x/5`)
+
+Planned later:
+
+- Longest system try (universal)
+
+## Key Files
+
+- `src/index.jsx`
+  - Main display app, animation controller, stats DOM updates, reboot respawn flow
+- `src/world/system.jsx`
+  - Centralized state machine, messages, thresholds, reboot/recovery transitions
+- `src/components/react/CameraAnimations.jsx`
+  - Camera motion per state including failure zoom-out and recovery zoom-in
+- `src/components/three/evolution.js`
+  - DNA mixing, population control, input spawning, trigger cooldown
+- `server/index.js`
+  - Express + Socket.IO relay
 
 ## Run Locally
 
-### 1) Install dependencies
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-### 2) Start the backend/Socket.IO server
+2. Start Socket/Express server:
 
 ```bash
 npm run start
 ```
 
-Server runs on `http://localhost:3000`.
-
-### 3) Start the Vite dev server
+3. Start Vite dev server:
 
 ```bash
 npm run dev
 ```
 
-Vite runs on `http://localhost:5173` (with proxy to Socket.IO on port 3000).
+4. Open:
 
-### 4) Open in browser
-
-- **Display**: `http://localhost:5173/` (or `http://localhost:3000/`)
-- **Remote**: Scan the QR code or use the generated URL to connect a phone
-
-## Architecture
-
-### Scene (`src/world/scene.js`)
-- Three.js Scene with camera, directional lights, and blob renderer
-- Animation loop updates particle positions and renders MarchingCubes mesh
-- OrbitControls for interactive camera
-
-### Agents (`src/components/agent.js`)
-- DNA: extension, color, speed, opacity, metalness, healthScore, mass
-- Energy: decreases each frame based on health (healthier = lower burn rate)
-- Mesh: RoundedBoxGeometry with procedural displacement
-
-### Blobs (`src/particles/blobs.js`)
-- 15 particles with random positions and velocities
-- Each particle bounces within a defined spread
-- MarchingCubes updates every frame using particle density
-- Vertex/Fragment shaders apply time-based effects
-
-### Evolution (`src/components/evolution.js`)
-- `mixDNA()`: Blends parent traits with mutation
-- `populationControl()`: Spawns offspring when population drops
-
-### Input (`src/world/input.js`)
-- Color buttons and shape sliders trigger callbacks
-- Events are emitted through Socket.IO to remote interface
-
-## Socket Events
-
-| Event | Direction | Purpose |
-|-------|-----------|---------|
-| `join-display` | Remote → Server | Register as display viewport |
-| `send-to-display` | Remote → Server | Send color/shape input |
-| `render-data` | Server → Display | Forward user input to scene |
+- Display: `http://localhost:5173/`
+- Remote: Use generated QR code / URL from display
 
 ## Scripts
 
 ```bash
-npm run dev      # Vite dev server with HMR
-npm run build    # Production frontend build
-npm run preview  # Preview built frontend
-npm run start    # Node/Express/Socket.IO server
+npm run dev
+npm run build
+npm run preview
+npm run start
 ```
 
-## Tech Stack
+## Stack
 
-- **Three.js** — 3D graphics engine
-- **GLSL** — Vertex and fragment shaders
-- **Marching Cubes** — Mesh generation from particle density
-- **Socket.IO** — Real-time client-server communication
-- **Rapier** — Physics engine for agent interactions
-- **Vite** — Frontend build tool
-- **Express** — Backend server
+- React
+- @react-three/fiber / drei / postprocessing
+- Three.js
+- Socket.IO
+- Express
+- Vite
 
-## Future Enhancements
+## Notes
 
-- [ ] Real-time population/health metrics display
-- [ ] Selectable agent tracking and inspection
-- [ ] Advanced remote controls (mutation rate, energy thresholds)
-- [ ] Persistent ecosystem state and replay functionality
-- [ ] Multi-user ecosystem influence and competition
-- [ ] Performance optimization for larger agent populations
-- [ ] Behavior variations beyond float/wander (predator/prey dynamics)
+- Population control can be called frequently per frame, so a cooldown guard is applied in `evolution.js` to avoid burst overlap.
+- During failure/reboot, spawn logic is blocked and agents are energy-drained; during recovery, new reboot agents are preserved.
 
-## Status
-
-**Active development** — Currently exploring blob-based visualization and population dynamics.
-
-Last updated: March 2026
+Last updated: April 2026

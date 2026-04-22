@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { createAgent } from './agent.js';
 
 const SPAWN_DELAY_MS = 35;
+const POPULATION_CONTROL_BURST_COUNT = 100;
+const POPULATION_CONTROL_COOLDOWN_MS = SPAWN_DELAY_MS * POPULATION_CONTROL_BURST_COUNT + 250;
+let nextPopulationControlAt = 0;
 export const INPUT_SPAWN_DELAY_MS = 120;
 export const INPUT_SPAWN_COUNT = 40;
 
@@ -96,9 +99,14 @@ export const mixDNA = (dna1, dna2) => {
 }
 
 export const populationControl = (scene, agents) => {
+    const now = Date.now();
+    if (now < nextPopulationControlAt) return 0;
+
     const aliveAgents = agents.filter(agent => !agent.isDead);
     if (aliveAgents.length < 100 && aliveAgents.length > 2) {
-        for (let i = 0; i < 100; i++) {
+        nextPopulationControlAt = now + POPULATION_CONTROL_COOLDOWN_MS;
+
+        for (let i = 0; i < POPULATION_CONTROL_BURST_COUNT; i++) {
             const survivor1 = aliveAgents[Math.floor(Math.random() * aliveAgents.length)];
             const survivor2 = aliveAgents[Math.floor(Math.random() * aliveAgents.length)];
             if (survivor1 != survivor2) {
@@ -106,9 +114,9 @@ export const populationControl = (scene, agents) => {
                 spawnAgentWithDelay(scene, agents, newDNA, i);
             }
         }
-        return 1; 
+        return 1;
     }
-    return 0; 
+    return 0;
 }
 
 export const inputLife = (scene, agents, inputDNA, startDelayMs = 0) => {
@@ -121,7 +129,7 @@ export const inputLife = (scene, agents, inputDNA, startDelayMs = 0) => {
         }
         return 1;
     }
-    return 0; 
+    return 0;
 }
 
 const calculateDNASimilarity = (dna1, dna2) => {
