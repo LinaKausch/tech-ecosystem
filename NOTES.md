@@ -9,6 +9,10 @@
     // healthScore: probability to reproduce
     // mass: rate to survive harsh conditions?
 
+## Thursday to do
+Fix the stars
+ui on the display
+
 
 ## to do
     make new particles small 
