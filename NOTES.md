@@ -15,28 +15,56 @@
     glow up the parents that spawning the new cubes
 
     storage for the whole system, no refresh, maybe hard refresh
-  
+<!--   
     <!-- display stats
-    design stats -->
+    design stats --> 
+<!-- 
+    design qr code  -->
 
-    camera animations
+    camera animations +/-
+    Add extra view on spawn and don't change the main view
+    Think of overload animation
 
-    system collapse
+    
+<!-- 
+    system collapse -->
     design user input screens
 
     figure out the colors (limit color palete? new input colors don't bloom, too dark?) monochrome over time changing color? how? what is the logic behind? 
 
-    If I make system collapse when the fps reaches less than 30, then i have to figure it out when population control happens, is it less than 50 agents or at certain time
+Do i want to add the button of not contributing to the system, what do i say then? 
+
+
+## Rules for system load / try
+If the number of alive agents reaches 300, then the message = '! System overload...!' and agents start pulsing shake. 
+If the number of agents reaches 500, then the message = '! System failure...!' and agents falls down (y--) - system collapsed - true.
+If the system is collapsed = true, then camera zooms out, spins, zooms in to the "new system".
+New system start with dominant colors agents, starts again. adds +1 to the "system tries", counter starts over again,  stats: total agents restarts, dead agents restarts, number of total generations restarts and grows only on the current system inputs and population controls (not overall), user input number stays and continious growing, population control stays and continious growing
+When the spawning new agents message = 'Generating output...' and camera shakes. 
+
+STATS:
+timer - per system (done)
+alive agents - per system (done)
+dead agents - per system  (done)
+total agents - per system (done)
+average health - current (done)
+average energy - current (done)
+total generations - per system (done)
+population control generations - per system (done)
+user inputs - per system (done)
+system tries - universl (done)
+total user inputs - universal (done)
+currently connected - current (2/5) (done)
+Record of longest system try - universal
 
 
 ## oboarding
 You are connected to the system.
-
 You can contribute, but not control it.
-
 Your input influences the system.
-
 The system has limits.
+
+
 
 
 ## Technical Summary for AI
@@ -302,3 +330,52 @@ A **dark, minimalist multi-step wizard** where users design new creatures to inj
 - ⏳ Advanced stats display
 - ⏳ Multi-behavior selection (not just "order")
 - ⏳ Predator/prey or other complex interactions
+
+---
+
+## CODE QUALITY RATING
+
+**Overall Score: 6.5/10**
+
+### Individual Ratings:
+
+| Category | Score | Notes |
+|----------|-------|-------|
+| **Rate/Quality** | 7/10 | Core ecosystem mechanics work well. Good Three.js + React integration. Animations are smooth. Some architectural issues. |
+| **Feasibility** | 8/10 | Highly functional. Uses proven libraries (React, Three.js, Socket.IO). Scales reasonably well. Easy to add features. |
+| **Understandability** | 6/10 | Good component naming and structure in places, but hard to follow state flow due to global variables. `index.jsx` is monolithic (500+ lines). Lacks documentation/JSDoc. |
+| **Professionalism** | 7/10 | Good: React hooks, proper error handling, Socket.IO patterns. Bad: Global state management anti-pattern, no formal state manager, commented-out dead code. |
+| **Cleanness** | 6/10 | Problems: `index.jsx` does too much, global variables scattered, ~50 lines of commented-out code. Good: Component separation in `/components/`. |
+| **Optimised** | 5/10 | **Major issue**: `AnimationController` updates DOM every useFrame call (60fps) - inefficient. Re-filters alive agents 3+ times. No memoization. Good: Canvas rendering, Three.js mesh reuse. |
+
+### Key Issues:
+
+1. **DOM Updates Every Frame** ⚠️ Critical
+   - Move stats/message updates to separate useEffect with state
+   - Use refs for DOM elements, update only when values change
+
+2. **Global State Antipattern**
+   - `generatingUntil`, `isUserInputGeneration`, `processingUntil`, etc.
+   - Replace with Context API or Zustand
+
+3. **Monolithic index.jsx**
+   - Extract: CameraAnimations, AnimationController, QR generation
+   - Extract: Message logic, color calculations
+
+4. **Dead Code**
+   - Remove: `createBlobs`, `CameraShake` component, commented lights
+
+5. **Agent Filtering**
+   - Cache `aliveAgentsList` result, reuse instead of refiltering
+
+### Strengths:
+
+✅ Working ecosystem with evolution mechanics  
+✅ Real-time Socket.IO sync  
+✅ Smooth Three.js camera choreography  
+✅ Good color palette and visual design  
+✅ DNA mixing logic is elegant  
+
+### Summary:
+
+Solid **working prototype** (7-8/10 functionality) held back by **architectural/optimization debt** (5-6/10 implementation). With cleanup, easily 8+/10.
