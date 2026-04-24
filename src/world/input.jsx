@@ -2,12 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ColorStep from '../components/react/ColorStep.jsx';
 import Scene from '../components/react/utils/Scene.jsx';
 import ExtensionStep from '../components/react/ExtensionStep.jsx';
-import SpeedStep from '../components/react/speedStep.jsx';
-import MetalStep from '../components/react/MetalStep.jsx';
 import HealthStep from '../components/react/HealthStep.jsx';
 import Onboarding from '../components/react/Onboarding.jsx';
-import FinalStep from '../components/react/FinalStep.jsx';
-import { Stars } from '@react-three/drei';
 
 
 export const InputData = ({ socket }) => {
