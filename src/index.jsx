@@ -14,6 +14,8 @@ import { getFormattedTime } from './components/react/utils/timer.jsx';
 import * as System from './world/system.jsx';
 import './style.css';
 
+const persistedSaveData = System.loadPersistedStats();
+
 
 //SOCKETS
 const socket = window.io();
@@ -120,6 +122,40 @@ const buildRebootDNA = (hexColor) => ({
     mass: Math.random() * 10,
 });
 
+const getInitialAgentCount = () => {
+    const savedAlive = persistedSaveData?.system?.alive;
+    return Number.isFinite(savedAlive) && savedAlive > 0 ? savedAlive : 150;
+};
+
+const getInitialDominantPalette = () => {
+    const savedColors = persistedSaveData?.system?.dominantColors;
+    if (!Array.isArray(savedColors) || savedColors.length === 0) return null;
+    return savedColors.map((color) => color.hex).filter(Boolean);
+};
+
+const applyPaletteToAgent = (agent, hexColor) => {
+    const color = new THREE.Color(hexColor || '#c2260a');
+    agent.dna.color = color;
+
+    if (!agent.mesh?.traverse) return;
+
+    agent.mesh.traverse((child) => {
+        if (!child.isMesh || !child.material) return;
+
+        child.material = child.material.clone();
+
+        if (child.material.color) {
+            child.material.color.set(color);
+        }
+
+        if (child.material.emissive) {
+            child.material.emissive.set(color);
+        }
+
+        child.material.needsUpdate = true;
+    });
+};
+
 const rebootSystemWithDominantColors = async (scene, agentsRef, dominantColors) => {
     // Remove old meshes from scene and reset agent list.
     agentsRef.current.forEach((agent) => {
@@ -151,8 +187,8 @@ const rebootSystemWithDominantColors = async (scene, agentsRef, dominantColors) 
 // ANIMATION CONTROLLER
 const AnimationController = ({ agentsRef }) => {
     const { scene } = useThree();
-    const startTimeRef = useRef(Date.now());
     const rebootSpawnInProgressRef = useRef(false);
+    const lastPersistSignatureRef = useRef('');
 
     useFrame(() => {
         if (agentsRef.current) {
@@ -165,8 +201,9 @@ const AnimationController = ({ agentsRef }) => {
             }
 
             const aliveAgents = agentsRef.current.filter(agent => !agent.isDead).length;
-            const deadAgents = agentsRef.current.filter(agent => agent.isDead).length;
-            const totalAgents = agentsRef.current.length;
+            const runtimeDeadAgents = agentsRef.current.filter(agent => agent.isDead).length;
+            const deadAgents = System.systemState.deadAgentsOffset + runtimeDeadAgents;
+            const totalAgents = aliveAgents + deadAgents;
 
             const aliveAgentsList = agentsRef.current.filter(agent => !agent.isDead);
             const totalEnergy = aliveAgentsList.reduce((sum, agent) => sum + (agent.energy || 0), 0);
@@ -174,7 +211,7 @@ const AnimationController = ({ agentsRef }) => {
             const totalHealthScore = aliveAgentsList.reduce((sum, agent) => sum + (agent.dna?.healthScore || 0), 0);
             const avgHealthScore = aliveAgents > 0 ? (totalHealthScore / aliveAgents).toFixed(2) : 0;
 
-            const timeString = getFormattedTime(startTimeRef.current);
+            const timeString = getFormattedTime(System.systemState.currentTryStartTime);
 
             // Get dominant colors
             const dominantColors = System.getDominantColors(aliveAgentsList);
@@ -198,7 +235,7 @@ const AnimationController = ({ agentsRef }) => {
                     <div>${avgEnergy}</div>
                 </div>
                 <div>
-                    <div>${System.systemState.generationTracker.total}</div>
+                    <div>${System.getTotalGenerations()}</div>
                     <div>${System.systemState.generationTracker.fromPopulationControl}</div>
                     <div>${System.systemState.generationTracker.fromUserInput}</div>
                 </div>
@@ -219,9 +256,25 @@ const AnimationController = ({ agentsRef }) => {
             }
             const activeMessage = System.updateSystemState(agentsRef, aliveAgents, dominantColors);
 
+            const persistSignature = [
+                aliveAgents,
+                deadAgents,
+                totalAgents,
+                dominantColors.map(color => color.hex).join('|'),
+                Math.floor((Date.now() - System.systemState.currentTryStartTime) / 1000),
+                System.systemState.systemTries,
+                System.systemState.totalUserInputs,
+                System.systemState.generationTracker.fromPopulationControl,
+                System.systemState.generationTracker.fromUserInput,
+            ].join('::');
+
+            if (persistSignature !== lastPersistSignatureRef.current) {
+                lastPersistSignatureRef.current = persistSignature;
+                System.savePersistedStats(aliveAgents, deadAgents, dominantColors);
+            }
+
             if (System.checkAndRestartAfterReboot() && !rebootSpawnInProgressRef.current) {
                 rebootSpawnInProgressRef.current = true;
-                startTimeRef.current = Date.now();
                 rebootSystemWithDominantColors(scene, agentsRef, System.systemState.dominantColorsAtCollapse)
                     .catch((err) => {
                         console.error('Reboot spawn failed:', err);
@@ -259,7 +312,16 @@ const Agents = ({ agentsRef }) => {
 
     useEffect(() => {
         (async () => {
-            const agents = await cubeCluster(scene, 150);
+            const spawnCount = getInitialAgentCount();
+            const initialPalette = getInitialDominantPalette();
+            const agents = await cubeCluster(scene, spawnCount);
+
+            if (initialPalette && initialPalette.length > 0) {
+                agents.forEach((agent, index) => {
+                    applyPaletteToAgent(agent, initialPalette[index % initialPalette.length]);
+                });
+            }
+
             agentsRef.current = agents;
         })();
     }, [scene, agentsRef]);

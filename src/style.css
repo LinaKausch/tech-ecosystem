@@ -67,11 +67,17 @@ h1 {
     font-size: 1.2rem;
 }
 
+.onboarding-container {
+    display: grid;
+    grid-template-rows: 50% 0.5fr 1fr;
+    height: 100dvh;
+}
+
 .onboarding {
     color: #ffffff;
     font-family: 'Share Tech', monospace;
     font-size: 3.5rem;
     /* letter-spacing: 0.01px; */
     z-index: 1;
-    margin-top: 10rem;
+    margin-top: 5rem;
 }

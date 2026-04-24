@@ -38,6 +38,14 @@ ui on the display
 
 Do i want to add the button of not contributing to the system, what do i say then? 
 
+### User UI feedback
+- System is busy right now, wait a second. 
+- System is ready for your input
+- System failed and currently rebooting
+- Your input has been sent
+- System is overloaded, you input might destroy it Are you sure you want to send it? 
+- System / Server is full
+
 
 ## Rules for system load / try
 If the number of alive agents reaches 300, then the message = '! System overload...!' and agents start pulsing shake. 
@@ -68,6 +76,20 @@ You can contribute, but not control it.
 Your input influences the system.
 The system has limits.
 
+### Dominant colors
+    { name: 'red', start: 0, end: 30 },
+    { name: 'orange', start: 30, end: 60 },
+    { name: 'yellow', start: 60, end: 90 },
+    { name: 'lime', start: 90, end: 120 },
+    { name: 'green', start: 120, end: 150 },
+    { name: 'teal', start: 150, end: 180 },
+    { name: 'cyan', start: 180, end: 210 },
+    { name: 'sky blue', start: 210, end: 240 },
+    { name: 'blue', start: 240, end: 270 },
+    { name: 'purple', start: 270, end: 300 },
+    { name: 'magenta', start: 300, end: 330 },
+    { name: 'pink', start: 330, end: 360 }
+Check if the color code belongs to one of these names of the color, on the display only one color code can be displayed from the same name group. if there is nothing else to display check which name has the most cubes in that color and display another color from the same name. 
 
 
 

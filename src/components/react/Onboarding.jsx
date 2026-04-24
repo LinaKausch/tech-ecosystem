@@ -21,7 +21,7 @@ const Onboarding = () => {
     }, []);
 
     return (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div className="onboarding-container">
             <motion.h2
                 className="onboarding"
                 key={currentSentence}
@@ -39,7 +39,10 @@ const Onboarding = () => {
                         {char}
                     </motion.span>
                 ))}
-            </motion.h2>
+            </motion.h2> 
+             <div className="onboarding-cta" style={{zIndex: 1}}>
+                <p>Do you want to contribute?</p>
+            </div>
         </div>
     );
 }

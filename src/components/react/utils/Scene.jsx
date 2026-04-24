@@ -21,7 +21,7 @@ const Scene = ({ colour, size, sceneNumber = 1, opacity, metalness }) => {
     const defaultColor = '#c20a20';
 
     const sceneConfigs = {
-        1: { sfov: 50, showBounds: false, sh: '100%', sw: '100%', cameraP: [-1, 0.8, 1], rotation: true },
+        1: { sfov: 50, showBounds: false, sh: '0%', sw: '0%', cameraP: [-1, 0.8, 1], rotation: true },
         2: { sfov: 53, showBounds: false, sh: '40%', sw: '50%', cameraP: defaultCameraPos, rotation: true },
         3: { sfov: 100, showBounds: true, sh: '80%', sw: '90%', cameraP: [-1, 0.8, 1], rotation: false },
         4: { sfov: 100, showBounds: false, sh: '100%', sw: '100%', cameraP: [-1, 0.8, 0], rotation: true },
@@ -41,6 +41,7 @@ const Scene = ({ colour, size, sceneNumber = 1, opacity, metalness }) => {
             <CameraUpdater sfov={sfov} />
             <ambientLight intensity={0.5} />
             <directionalLight position={[-1, 2, 1]} intensity={0.5} />
+            {/* <directionalLight position={[0, 0, -4]} intensity={1} /> */}
             {showBounds && (
                 <>
                     <Bounds sizeX={0.5} sizeY={0.5} sizeZ={1.9} />
