@@ -18,15 +18,8 @@ const broadcastRemoteCount = () => {
     io.to('display').emit('remote-count', remoteCount);
 };
 
-app.use(express.static(join(__dirname, '..')));
+app.use(express.static(join(__dirname, '../dist')));
 
-app.get('/', (req, res) => {
-    res.sendFile(join(__dirname, '..', 'index.html'));
-});
-
-app.get('/remote', (req, res) => {
-    res.sendFile(join(__dirname, '..', 'remote.html'));
-});
 
 //maybe i need unlimited displays but limited remotes?
 io.on('connection', (socket) => {
