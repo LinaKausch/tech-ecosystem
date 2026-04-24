@@ -10,7 +10,7 @@ import { populationControl, inputLife } from './components/three/evolution.js';
 import HealthDiagram from './components/react/utils/HealthDiagram.jsx';
 import MovementHeatmap from './components/react/utils/MovementHeatmap.jsx';
 import { CameraAnimations } from './components/react/CameraAnimations.jsx';
-import { getFormattedTime } from './components/react/utils/timer.jsx';
+import { getFormattedTime } from './components/react/utils/Timer.jsx';
 import * as System from './world/system.jsx';
 import './style.css';
 
