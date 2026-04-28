@@ -17,7 +17,7 @@
       height: 100%;
       overflow: hidden;
       background-color: #1C1C1C;
-       font-family: "Bungee Hairline", sans-serif;
+      font-family: "Bungee Hairline", sans-serif;
     }
 
     #qr {
@@ -110,6 +110,19 @@
       text-align: center;
     }
 
+    #users {
+      position: fixed;
+      bottom: 155px;
+      left: 20px;
+      z-index: 99999;
+      background: rgba(0, 0, 0, 0.95);
+      padding: 1.3rem 1rem;
+      border: 1px solid #444444;
+      color: #7ECCF8;
+      font-size: 2rem;
+      line-height: 2rem;
+      min-width: 60px;
+    }
   </style>
 </head>
 
@@ -119,6 +132,7 @@
   <!-- <a id="url" href=""></a> -->
   <div id="stats"></div>
   <div id="time"></div>
+  <div id="users"></div>
   <div id="color-dom"></div>
   <div id="message"> </div>
   <script src="/socket.io/socket.io.js"></script>
