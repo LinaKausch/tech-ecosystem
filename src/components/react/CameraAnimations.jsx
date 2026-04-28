@@ -9,17 +9,22 @@ export const CameraAnimations = () => {
     const angleRef = useRef(0);
     const collapseStartPosRef = useRef(null);
     const recoveryFromPosRef = useRef(null);
+    const IDLE_BASE_RADIUS = 8;
+    const IDLE_RADIUS_AMPLITUDE = 3;
+    const IDLE_RADIUS_SPEED = 0.25;
 
     useFrame((state, delta) => {
+        const currentIdleRadius =
+            IDLE_BASE_RADIUS + Math.sin(state.clock.elapsedTime * IDLE_RADIUS_SPEED) * IDLE_RADIUS_AMPLITUDE;
+
         switch (System.systemState.currentCameraState) {
             case System.camera_States.IDLE:
                 angleRef.current += delta * 0.1;
-                camera.position.x = Math.sin(angleRef.current) * 9;
-                camera.position.z = Math.cos(angleRef.current) * 9;
-                camera.position.y = Math.sin(angleRef.current * 0.5) * 9;
+                camera.position.x = Math.sin(angleRef.current) * currentIdleRadius;
+                camera.position.z = Math.cos(angleRef.current) * currentIdleRadius;
+                camera.position.y = Math.sin(angleRef.current * 0.5) * currentIdleRadius;
                 break;
             case System.camera_States.GENERATING:
-                // Subtle shake during generation
                 const shakeIntensity = 0.05;
                 const shakeX = (Math.random() - 0.5) * shakeIntensity;
                 const shakeY = (Math.random() - 0.5) * shakeIntensity;
@@ -29,7 +34,8 @@ export const CameraAnimations = () => {
                 camera.position.z += shakeZ;
                 break;
             case System.camera_States.OVERLOAD:
-                angleRef.current += delta * 0.3; // 3x faster than IDLE
+                angleRef.current += delta * 0.3;
+                
                 const overloadBaseX = Math.sin(angleRef.current) * 9;
                 const overloadBaseZ = Math.cos(angleRef.current) * 9;
                 const overloadBaseY = Math.sin(angleRef.current * 0.5) * 9;
@@ -46,15 +52,12 @@ export const CameraAnimations = () => {
             case System.camera_States.FAILURE:
                 const collapseElapsedTime = Date.now() - System.systemState.collapseStartTime;
                 const collapseProg = Math.min(collapseElapsedTime / System.COLLAPSE_ANIMATION_DURATION, 1);
-
-                // Store initial position on first frame
                 if (!collapseStartPosRef.current) {
                     collapseStartPosRef.current = camera.position.clone();
                 }
                 recoveryFromPosRef.current = null;
 
-                // Zoom out straight away from current position
-                const zoomProg = Math.min(collapseProg / 0.4, 1); // Complete in 0.4s
+                const zoomProg = Math.min(collapseProg / 0.4, 1);
                 const direction = collapseStartPosRef.current.clone().normalize();
                 const distance = collapseStartPosRef.current.length();
                 const newDistance = distance + (zoomProg * 200);
@@ -62,7 +65,6 @@ export const CameraAnimations = () => {
                 camera.position.copy(direction.multiplyScalar(newDistance));
                 break;
             case System.camera_States.REBOOT:
-                // Stay at far position from collapse
                 if (collapseStartPosRef.current) {
                     const direction = collapseStartPosRef.current.clone().normalize();
                     const finalDistance = collapseStartPosRef.current.length() + 200;
@@ -76,16 +78,12 @@ export const CameraAnimations = () => {
 
                 const recoveryElapsed = Date.now() - System.systemState.recoveryStartTime;
                 const recoveryProg = Math.min(recoveryElapsed / System.RECOVERY_ZOOM_DURATION, 1);
-
-                // Recover to the current orbit position to avoid a jump when IDLE resumes.
                 const idleTarget = new THREE.Vector3(
-                    Math.sin(angleRef.current) * 9,
-                    Math.sin(angleRef.current * 0.5) * 9,
-                    Math.cos(angleRef.current) * 9
+                    Math.sin(angleRef.current) * currentIdleRadius,
+                    Math.sin(angleRef.current * 0.5) * currentIdleRadius,
+                    Math.cos(angleRef.current) * currentIdleRadius
                 );
-
                 camera.position.lerpVectors(recoveryFromPosRef.current, idleTarget, recoveryProg);
-
                 if (recoveryProg >= 1) {
                     System.finishRecovery();
                     collapseStartPosRef.current = null;

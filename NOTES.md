@@ -9,9 +9,9 @@
     // healthScore: probability to reproduce
     // mass: rate to survive harsh conditions?
 
-## Thursday to do
-Fix the stars
-ui on the display
+<!-- ## Thursday to do -->
+<!-- Fix the stars -->
+<!-- ui on the display -->
 
 
 ## to do
@@ -29,7 +29,8 @@ ui on the display
     Add extra view on spawn and don't change the main view
     Think of overload animation
 
-    
+    Responsive UI
+
 <!-- 
     system collapse -->
     design user input screens
