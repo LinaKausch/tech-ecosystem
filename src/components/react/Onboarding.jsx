@@ -77,8 +77,8 @@ export const OnboardingCTA = ({ onNext, onNoClick }) => {
         <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <p style={{ fontFamily: 'Share Tech Mono', fontSize: '1.2rem' }}>Do you want to contribute?</p>
             <div style={{ display: 'flex', gap: '2rem' }}>
-                <button className="onboard-btn btn-n" onClick={() => onNoClick && onNoClick()}>No</button>
-                <button className="onboard-btn btn-y" onClick={() => onNext && onNext()}>Yes</button>
+                <button className="glass-btn btn-n" onClick={() => onNoClick && onNoClick()}>No</button>
+                <button className="glass-btn btn-y" onClick={() => onNext && onNext()}>Yes</button>
             </div>
         </div>
     )

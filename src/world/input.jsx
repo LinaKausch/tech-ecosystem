@@ -56,25 +56,28 @@ export const InputData = ({ socket }) => {
         setData((prev) => ({ ...prev, mass: value }));
     };
 
+    const sendData = () => {
+        const dataToSend = {
+            ...data,
+            hex: data.hex || '#c2260a',
+            opacity: opacity,
+            metalness: metalness,
+            healthScore: health * 100,
+            mass: mass * 10,
+            widthExt: size.x,
+            heightExt: size.y,
+            depthExt: size.z
+        };
+        console.log('Data sent to display:', dataToSend);
+        socket.emit("send-to-display", dataToSend);
+        setDataSent(true);
+        setIsBusy(true);
+    };
+
     const handleNext = () => {
         if (currentStep === steps.length - 1) {
-            const dataToSend = {
-                ...data,
-                hex: data.hex || '#c2260a',
-                opacity: opacity,
-                metalness: metalness,
-                healthScore: health * 100,
-                mass: mass * 10,
-                widthExt: size.x,
-                heightExt: size.y,
-                depthExt: size.z
-            };
-            console.log('Data sent to display:', dataToSend);
-            socket.emit("send-to-display", dataToSend);
-            setDataSent(true);
-            setIsBusy(true);
+            sendData();
         } else {
-            // Not last step - increment
             setCurrentStep((prev) => prev + 1);
         }
     };
@@ -123,7 +126,7 @@ export const InputData = ({ socket }) => {
         <Onboarding socket={socket} onNext={() => setCurrentStep(1)} onNoClick={() => { setNoContribution(true); setCurrentStep(3); }} />,
         <ColorStep value={data} onChange={handleColorChange} />,
         <ExtensionStep size={size} setSize={setSize} />,
-        <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} />,
+        <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} />,
         // <SpeedStep />,
         // <MetalStep opacity={opacity} metalness={metalness} onOpacityChange={handleOpacityChange} onMetalnessChange={handleMetalnessChange} />,
         // <HealthStep health={health} mass={mass} onHealthChange={handleHealthChange} onMassChange={handleMassChange} />,
@@ -135,12 +138,11 @@ export const InputData = ({ socket }) => {
             <p className="date">{dateTime}</p>
             {steps[currentStep]}
             <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} opacity={opacity} metalness={metalness} />
-            {currentStep > 0 && (
+            {currentStep > 0 && currentStep < steps.length - 1 && (
                 <button className="btn" onClick={handleNext}>
-                    {currentStep === steps.length - 1 ? 'send' : 'next'}
+                    next
                 </button>
             )}
-            {/* <p className="page">sys_data_[{currentStep + 1}|{steps.length}]</p> */}
         </div>
     );
 };

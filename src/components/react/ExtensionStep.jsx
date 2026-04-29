@@ -36,17 +36,7 @@ const ExtensionStep = ({ size, setSize }) => {
 
     return (
         <div>
-            <h1>
-                {"Measure system stress from social media input"
-                    .split(" ")
-                    .map((word, i) => (
-                        <span key={i} style={{ display: "block" }}>
-                            {word}
-                        </span>)
-                    )}
-            </h1>
-
-            <div style={{ position: 'fixed', bottom: '-12%', left: '25%', transform: 'translate(-50%, -50%)', zIndex: 1000, padding: '1.5rem', pointerEvents: 'auto', borderRadius: '8px', color: 'white', maxWidth: '300px' }}>
+            <div style={{ position: 'fixed', bottom: '-12%', left: '25%', transform: 'translate(-50%, -50%)', zIndex: 1000, padding: '1.5rem', pointerEvents: 'auto', color: 'white', maxWidth: '300px' }}>
                 <div style={{ marginBottom: '0.8rem' }}>
                     <label style={{ fontSize: '12px', fontWeight: 'bold' }}>
                         X: {size.x.toFixed(2)}
@@ -93,7 +83,7 @@ const ExtensionStep = ({ size, setSize }) => {
                 </div>
             </div>
 
-            <p className='data rgba' style={{ position: 'fixed', top: '10%', right: '5%', zIndex: 1000, margin: 0, pointerEvents: 'auto' }}>&#123;x: {size.x.toFixed(2)}, y: {size.y.toFixed(2)}, z: {size.z.toFixed(2)}&#125;</p>
+            {/* <p className='data rgba' style={{ position: 'fixed', top: '10%', right: '5%', zIndex: 1000, margin: 0, pointerEvents: 'auto' }}>&#123;x: {size.x.toFixed(2)}, y: {size.y.toFixed(2)}, z: {size.z.toFixed(2)}&#125;</p> */}
         </div>
     )
 }
