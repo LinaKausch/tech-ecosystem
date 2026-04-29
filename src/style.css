@@ -56,19 +56,35 @@ h1 {
 }
 
 .btn {
-       background: rgba(223, 223, 223, 0.04);
+    background: rgba(223, 223, 223, 0.04);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(2.5px);
     -webkit-backdrop-filter: blur(2.5px);
     border: 0.5px solid rgba(126, 204, 248, 0.5);
-    color: white;
+    color: rgba(255, 255, 255, 0.5);
     padding: 1rem 1.5rem;
     position: absolute;
     bottom: 3%;
     right: 5%;
     font-family: "Bungee Hairline", sans-serif;
-    font-weight: 300;
+    font-weight: 600;
     font-size: 1.2rem;
+}
+
+.about-btn {
+    background: none;
+    border: none;
+    z-index: 999;
+    color: rgba(126, 204, 248, 0.5);
+    padding: 0.5rem 1rem;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 200;
+    font-size: 1.2rem;
+    letter-spacing: -0.5px;
+    text-decoration: underline;
+    text-decoration-color: rgba(126, 204, 248, 0.5);
+    text-decoration-thickness: 0.1px;
+    text-underline-offset: 3px;
 }
 
 .onboarding-container {
@@ -91,10 +107,10 @@ h1 {
     backdrop-filter: blur(2.5px);
     -webkit-backdrop-filter: blur(2.5px);
     border: 0.5px solid rgba(126, 204, 248, 0.5);
-    color: rgb(255, 255, 255);
+    color: rgba(255, 255, 255, 0.5);
     padding: 1rem 1.5rem;
     font-family: "Bungee Hairline", sans-serif;
-    font-weight: 300;
+    font-weight: 600;
     font-size: 1.2rem;
 }
 
@@ -141,4 +157,83 @@ border: 1px solid rgba(223, 223, 223, 0.09); */
     bottom: 0;
     background: radial-gradient(circle at 80% 80%, rgba(126, 204, 248, 0.05) 0%, transparent 50%);
     pointer-events: none;
+}
+
+.about-step {
+    position: fixed;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(12, 12, 12, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    z-index: 10000;
+    padding: 0.5rem 1rem;
+    overflow: auto;
+}
+
+.about-step-content {
+    color: white;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 200;
+    letter-spacing: -0.5px;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.about-step-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #7ECCF8;
+    font-family: 'Bungee Hairline', sans-serif;
+}
+
+.about-step-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #7ECCF8;
+    font-family: 'Bungee Hairline', sans-serif;
+}
+
+.about-step-content p {
+    margin-bottom: 1.5rem;
+}
+
+.about-step-content strong {
+    color: #7ECCF8;
+    font-weight: 200;
+    /* font-style: italic; */
+}
+
+.about-step-content em {
+    font-weight: 200;
+    font-style: italic;
+    letter-spacing: -0.8px;
+}
+
+.about-step-close-btn {
+    padding: 0.75rem 1.2rem;
+    background: rgba(223, 223, 223, 0.04);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(2.5px);
+    -webkit-backdrop-filter: blur(2.5px);
+    border: 0.5px solid rgba(126, 204, 248, 0.5);
+    color: rgba(255, 255, 255, 0.5);
+    font-family: 'Roboto Mono', sans-serif;
+    font-weight: 300;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    position: sticky;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10001;
+    align-self: flex-end;
 }

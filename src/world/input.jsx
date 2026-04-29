@@ -9,6 +9,7 @@ import Onboarding from '../components/react/Onboarding.jsx';
 import FinalStep from '../components/react/FinalStep.jsx';
 import { Stars } from '@react-three/drei';
 import FeedbackStep from '../components/react/FeedbackStep.jsx';
+import AboutStep from '../components/react/AboutStep.jsx';
 
 
 export const InputData = ({ socket }) => {
@@ -26,6 +27,7 @@ export const InputData = ({ socket }) => {
     const [noContribution, setNoContribution] = useState(false);
     const [isFailure, setIsFailure] = useState(false);
     const [isRebooting, setIsRebooting] = useState(false);
+    const [showAbout, setShowAbout] = useState(false);
 
     const handleColorChange = (payload) => {
         console.log("Payload received:", payload);
@@ -143,6 +145,15 @@ export const InputData = ({ socket }) => {
                     next
                 </button>
             )}
+            <div style={{ display: "flex", justifyContent: 'center', marginTop: '-1.5rem', position: 'fixed', bottom: '3rem', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
+                {(currentStep === 0 || currentStep === steps.length - 1) && (
+                    <button className="about-btn" onClick={() => setShowAbout(true)}>
+                        Insight
+                    </button>
+                )}
+            </div>
+            {showAbout && <AboutStep onClose={() => setShowAbout(false)} />}
+            {/* <img src="/img/logo.png" alt="logo" style={{ position: 'absolute', bottom: '5%', left: '38%', width: '20vw', height: 'auto', zIndex: 0, opacity: 0.8 }} /> */}
         </div>
     );
 };

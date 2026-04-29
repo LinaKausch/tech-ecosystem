@@ -96,11 +96,9 @@ Check if the color code belongs to one of these names of the color, on the displ
 
 
 ## Remote todo
-- Button in the input.jsx, show only on the color and extension steps
-- colorStep ui: add slider for the health
 - think of the type of controls for extensions step
-- Fix the background: too dark
-- add text under the button for some steps so people can read behind the scenes
+- add text so people can read behind the scenes
+- responsive design of canvas and buttons and texts
 
 ## Display todo 
 - Look into the camera for generating. maybe make it to be always in the same position and go back to the idle - more cinematic?
@@ -111,3 +109,26 @@ Check if the color code belongs to one of these names of the color, on the displ
 - Clean up the not used dna
 
 do I need slider for the health?
+
+
+## The Intake project
+This project was created by Lina Kausch during an internship at PlusOne. It explores a real-time interactive system in which visual elements behave as data carriers inside a continuous digital environment.
+
+The idea was born from the overwhelming feeling caused by growing technology. We rely on it every day for information, communication, and almost every step of our lives. Social media and evolving AI agents make things faster and more accessible, but they also demand constant attention. There is always more to consume, more to process, more to interact with. Over time, this constant intake of quick dopamine sources and easy results becomes overwhelming and can damage our attention.
+
+This project became a system that absorbs every input it receives. Each interaction leaves a trace. Some fade, while others become part of the system and shape its appearance.
+
+The system is designed to remain stable, but it has its limits. As more input is introduced, it becomes increasingly fragile. It can heal itself, but if pushed too far, it fails, collapses, and restarts.
+
+This reflects a tension I notice in everyday life. Input is sometimes necessary for change, but it also has consequences. The system mirrors us, as humans become overwhelmed when there is no pause, no filter, and no limit.
+
+You can interpret this work in your own way. It is not a fixed statement, but an invitation to observe how continuous input shapes both systems and ourselves.
+
+Process
+
+This project was developed through experimentation with Three.js and React. There was no clear vision of the outcome in the beginning. Many iterations were created, tested, and discarded along the way.
+
+The process focused on building a system that evolves over time and responds to live input. Rather than following a strict plan, decisions were made through exploration, balancing technical possibilities with visual and interactive behavior.
+
+The result is both a technical experiment and a way to express an idea through interaction, leaving space for interpretation.
+
