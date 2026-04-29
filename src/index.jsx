@@ -189,6 +189,7 @@ const AnimationController = ({ agentsRef }) => {
     const { scene } = useThree();
     const rebootSpawnInProgressRef = useRef(false);
     const lastPersistSignatureRef = useRef('');
+    const lastBroadcastStateRef = useRef('');
 
     useFrame(() => {
         if (agentsRef.current) {
@@ -255,6 +256,18 @@ const AnimationController = ({ agentsRef }) => {
                 $timeCounter.innerHTML = `<div>${timeString}</div>`;
             }
             const activeMessage = System.updateSystemState(agentsRef, aliveAgents, dominantColors);
+            const currentBroadcastState = JSON.stringify({
+                cameraState: System.systemState.currentCameraState,
+                systemCollapsed: System.systemState.systemCollapsed,
+            });
+
+            if (currentBroadcastState !== lastBroadcastStateRef.current) {
+                lastBroadcastStateRef.current = currentBroadcastState;
+                socket.emit('system-state', {
+                    cameraState: System.systemState.currentCameraState,
+                    systemCollapsed: System.systemState.systemCollapsed,
+                });
+            }
 
             const persistSignature = [
                 aliveAgents,

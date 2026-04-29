@@ -9,8 +9,29 @@ const sentences = [
     "The _system has limits."
 ];
 
-const Onboarding = () => {
+const Onboarding = ({ onNext, socket }) => {
     const [currentSentence, setCurrentSentence] = useState(0);
+    const [cameraState, setCameraState] = useState('IDLE');
+    const [isAdmitted, setIsAdmitted] = useState(true);
+    const [queuePosition, setQueuePosition] = useState(0);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleSystemState = (state) => setCameraState(state?.cameraState || 'IDLE');
+        const handleRemoteAccess = (state) => {
+            setIsAdmitted(Boolean(state?.admitted));
+            setQueuePosition(Number(state?.queuePosition) || 0);
+        };
+
+        socket.on('system-state', handleSystemState);
+        socket.on('remote-access', handleRemoteAccess);
+
+        return () => {
+            socket.off('system-state', handleSystemState);
+            socket.off('remote-access', handleRemoteAccess);
+        };
+    }, [socket]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -39,12 +60,46 @@ const Onboarding = () => {
                         {char}
                     </motion.span>
                 ))}
-            </motion.h2> 
-             <div className="onboarding-cta" style={{zIndex: 1}}>
-                <p>Do you want to contribute?</p>
-            </div>
+            </motion.h2>
+            {(cameraState === 'FAILURE' || cameraState === 'REBOOT') ? (
+                <Rebooting />
+            ) : !isAdmitted ? (
+                <ServerFull queuePosition={queuePosition} />
+            ) : (
+                <OnboardingCTA onNext={onNext} />
+            )}
         </div>
     );
+}
+
+export const OnboardingCTA = ({ onNext }) => {
+    return (
+        <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <p style={{ fontFamily: 'Share Tech Mono', fontSize: '1.2rem' }}>Do you want to contribute?</p>
+            <div style={{ display: 'flex', gap: '2rem' }}>
+                <button className="onboard-btn btn-n">No</button>
+                <button className="onboard-btn btn-y" onClick={() => onNext && onNext()}>Yes</button>
+            </div>
+        </div>
+    )
+}
+
+export const ServerFull = () => {
+    return (
+        <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <p style={{ fontFamily: 'Share Tech Mono', fontSize: '1.2rem' }}>Server is full.</p>
+            <p>Wait...</p>
+        </div>
+    )
+}
+
+export const Rebooting = () => {
+    return (
+        <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <p style={{ fontFamily: 'Share Tech Mono', fontSize: '1.2rem', textAlign: 'center', maxWidth: "70%" }}>System failed and currently rebooting</p>
+            <p>Wait...</p>
+        </div>
+    )
 }
 
 export default Onboarding;

@@ -8,6 +8,7 @@ import HealthStep from '../components/react/HealthStep.jsx';
 import Onboarding from '../components/react/Onboarding.jsx';
 import FinalStep from '../components/react/FinalStep.jsx';
 import { Stars } from '@react-three/drei';
+import FeedbackStep from '../components/react/FeedbackStep.jsx';
 
 
 export const InputData = ({ socket }) => {
@@ -86,12 +87,13 @@ export const InputData = ({ socket }) => {
     }, []);
 
     const steps = [
-        <Onboarding />,
+        <FeedbackStep />,
+        <Onboarding socket={socket} onNext={() => setCurrentStep(1)} />,
         <ColorStep value={data} onChange={handleColorChange} />,
         <ExtensionStep size={size} setSize={setSize} />,
         // <SpeedStep />,
         // <MetalStep opacity={opacity} metalness={metalness} onOpacityChange={handleOpacityChange} onMetalnessChange={handleMetalnessChange} />,
-        <HealthStep health={health} mass={mass} onHealthChange={handleHealthChange} onMassChange={handleMassChange} />,
+        // <HealthStep health={health} mass={mass} onHealthChange={handleHealthChange} onMassChange={handleMassChange} />,
         // <FinalStep />
     ]
 
@@ -100,13 +102,12 @@ export const InputData = ({ socket }) => {
             <p className="date">{dateTime}</p>
             {steps[currentStep]}
             <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} opacity={opacity} metalness={metalness} />
-            <button className="btn" onClick={handleNext}>
-                {currentStep === 0 ? 'continue' : currentStep === steps.length - 1 ? 'send' : 'next'}
-
-            </button>
-            <p className="page">sys_data_[{currentStep + 1}|{steps.length}]</p>
+            {currentStep > 0 && (
+                <button className="btn" onClick={handleNext}>
+                    {currentStep === steps.length - 1 ? 'send' : 'next'}
+                </button>
+            )}
+            {/* <p className="page">sys_data_[{currentStep + 1}|{steps.length}]</p> */}
         </div>
     );
 };
-
-
