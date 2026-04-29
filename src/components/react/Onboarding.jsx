@@ -9,7 +9,7 @@ const sentences = [
     "The _system has limits."
 ];
 
-const Onboarding = ({ onNext, socket }) => {
+const Onboarding = ({ onNext, socket, onNoClick }) => {
     const [currentSentence, setCurrentSentence] = useState(0);
     const [cameraState, setCameraState] = useState('IDLE');
     const [isAdmitted, setIsAdmitted] = useState(true);
@@ -66,18 +66,18 @@ const Onboarding = ({ onNext, socket }) => {
             ) : !isAdmitted ? (
                 <ServerFull queuePosition={queuePosition} />
             ) : (
-                <OnboardingCTA onNext={onNext} />
+                <OnboardingCTA onNext={onNext} onNoClick={onNoClick} />
             )}
         </div>
     );
 }
 
-export const OnboardingCTA = ({ onNext }) => {
+export const OnboardingCTA = ({ onNext, onNoClick }) => {
     return (
         <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <p style={{ fontFamily: 'Share Tech Mono', fontSize: '1.2rem' }}>Do you want to contribute?</p>
             <div style={{ display: 'flex', gap: '2rem' }}>
-                <button className="onboard-btn btn-n">No</button>
+                <button className="onboard-btn btn-n" onClick={() => onNoClick && onNoClick()}>No</button>
                 <button className="onboard-btn btn-y" onClick={() => onNext && onNext()}>Yes</button>
             </div>
         </div>

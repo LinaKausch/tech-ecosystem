@@ -20,6 +20,12 @@ export const InputData = ({ socket }) => {
     const [metalness, setMetalness] = useState(0.11);
     const [health, setHealth] = useState(0.53);
     const [mass, setMass] = useState(0.42);
+    const [isOverloaded, setIsOverloaded] = useState(false);
+    const [isBusy, setIsBusy] = useState(false);
+    const [dataSent, setDataSent] = useState(false);
+    const [noContribution, setNoContribution] = useState(false);
+    const [isFailure, setIsFailure] = useState(false);
+    const [isRebooting, setIsRebooting] = useState(false);
 
     const handleColorChange = (payload) => {
         console.log("Payload received:", payload);
@@ -65,6 +71,8 @@ export const InputData = ({ socket }) => {
             };
             console.log('Data sent to display:', dataToSend);
             socket.emit("send-to-display", dataToSend);
+            setDataSent(true);
+            setIsBusy(true);
         } else {
             // Not last step - increment
             setCurrentStep((prev) => prev + 1);
@@ -86,11 +94,36 @@ export const InputData = ({ socket }) => {
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleSystemState = (state) => {
+            const cameraState = state?.cameraState || 'IDLE';
+            setIsOverloaded(cameraState === 'OVERLOAD');
+            setIsFailure(cameraState === 'FAILURE');
+            setIsRebooting(cameraState === 'REBOOT');
+            setIsBusy(cameraState === 'GENERATING' || cameraState === 'PROCESSING' || cameraState === 'ANALYSING');
+        };
+
+        const handleSystemProcessing = (isProcessing) => {
+            // Immediately mark system as busy when another phone sends data
+            setIsBusy(isProcessing);
+        };
+
+        socket.on('system-state', handleSystemState);
+        socket.on('system-processing', handleSystemProcessing);
+
+        return () => {
+            socket.off('system-state', handleSystemState);
+            socket.off('system-processing', handleSystemProcessing);
+        };
+    }, [socket]);
+
     const steps = [
-        <FeedbackStep />,
-        <Onboarding socket={socket} onNext={() => setCurrentStep(1)} />,
+        <Onboarding socket={socket} onNext={() => setCurrentStep(1)} onNoClick={() => { setNoContribution(true); setCurrentStep(3); }} />,
         <ColorStep value={data} onChange={handleColorChange} />,
         <ExtensionStep size={size} setSize={setSize} />,
+        <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} />,
         // <SpeedStep />,
         // <MetalStep opacity={opacity} metalness={metalness} onOpacityChange={handleOpacityChange} onMetalnessChange={handleMetalnessChange} />,
         // <HealthStep health={health} mass={mass} onHealthChange={handleHealthChange} onMassChange={handleMassChange} />,

@@ -125,6 +125,8 @@ io.on('connection', (socket) => {
     socket.on('send-to-display', (data) => {
         console.log('Forwarding data to display:', data);
         io.to('display').emit('render-data', data);
+        // Notify all other remotes that system is now processing this data
+        socket.broadcast.emit('system-processing', true);
     });
     socket.on('system-state', (state) => {
         latestSystemState = {
