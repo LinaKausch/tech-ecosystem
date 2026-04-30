@@ -127,7 +127,7 @@ export const ColorWheel = ({ onChange }) => {
     //DOM
     return (
         <div style={{ position: "relative", width: size, height: size }}>
-          {/* marker */}
+            {/* marker */}
             <div
                 style={{
                     width: 8,
@@ -148,8 +148,11 @@ export const ColorWheel = ({ onChange }) => {
                     width: size,
                     height: size,
                     borderRadius: "50%",
+                     backdropFilter: "blur(2.5px)",
+                    WebkitBackdropFilter: "blur(2.5px)",
                     border: "1px solid #7ECCF8",
-                    background: "#1C1C1C",
+                    // background: "#1C1C1C",
+                    background: "rgba(153, 153, 153, 0.04)",
                     position: "absolute",
                     top: 0,
                     left: 0,
@@ -174,7 +177,7 @@ export const ColorWheel = ({ onChange }) => {
                     top: 0,
                     left: 0,
                 }}> </div>
-                {/* center circle */}
+            {/* center circle */}
             <div
                 style={{
                     width: size - 100,
@@ -189,7 +192,7 @@ export const ColorWheel = ({ onChange }) => {
                 }}
             ></div>
 
-        </div>
+        </div >
     )
 }
 
