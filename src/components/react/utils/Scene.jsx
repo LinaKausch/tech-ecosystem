@@ -15,13 +15,13 @@ const CameraUpdater = ({ sfov }) => {
     return null;
 };
 
-const Scene = ({ colour, size, sceneNumber = 1, opacity, metalness }) => {
+const Scene = ({ colour, size, sceneNumber = 1, opacity = 1, metalness = 0 }) => {
     const defaultCameraPos = [-1, 0.4, 0.5];
     // const defaultColor = '#c2260a';
     const defaultColor = '#c20a20';
 
     const sceneConfigs = {
-        1: { sfov: 50, showBounds: false, sh: '0%', sw: '0%', cameraP: [-1, 0.8, 1], rotation: true },
+        1: { sfov: 0, showBounds: false, sh: '40%', sw: '50%', cameraP: [-1, 0.8, 1], rotation: true },
         2: { sfov: 53, showBounds: false, sh: '40%', sw: '50%', cameraP: defaultCameraPos, rotation: true },
         3: { sfov: 100, showBounds: true, sh: '80%', sw: '90%', cameraP: [-1, 0.8, 1], rotation: false },
         4: { sfov: 60, showBounds: false, sh: '100%', sw: '100%', cameraP: [-1, 0.8, 0], rotation: true },

@@ -94,10 +94,9 @@ Check if the color code belongs to one of these names of the color, on the displ
  - SystemBusy: If the system is already working on the data sent, the messages of the system: Processing request, ianalysing data, generating output. after that check if system status overloaded (show systemOverloaded) or normal (show Ready)
 
 
-
 ## Remote todo
 - think of the type of controls for extensions step
-- add text so people can read behind the scenes
+- to about text add links to the github, my website, plusone website. 
 - responsive design of canvas and buttons and texts
 
 ## Display todo 

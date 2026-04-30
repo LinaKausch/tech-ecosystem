@@ -116,10 +116,7 @@ const buildRebootDNA = (hexColor) => ({
     depthExt: Math.random() * 0.5,
     color: new THREE.Color(hexColor || '#c2260a'),
     speed: Math.random() * 0.02,
-    opacity: Math.max(0.2, Math.random()),
-    metalness: Math.random(),
     healthScore: Math.random() * 100,
-    mass: Math.random() * 10,
 });
 
 const getInitialAgentCount = () => {

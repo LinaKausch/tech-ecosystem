@@ -220,10 +220,10 @@ border: 1px solid rgba(223, 223, 223, 0.09); */
 
 .about-step-close-btn {
     padding: 0.75rem 1.2rem;
-    background: rgba(223, 223, 223, 0.04);
+    background: rgba(55, 55, 55, 0.1);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(2.5px);
-    -webkit-backdrop-filter: blur(2.5px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 0.5px solid rgba(126, 204, 248, 0.5);
     color: rgba(255, 255, 255, 0.5);
     font-family: 'Roboto Mono', sans-serif;

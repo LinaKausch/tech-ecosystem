@@ -82,10 +82,7 @@ export const handleRemoteData = (data) => {
         depthExt: Math.random() * 0.5,
         color: new THREE.Color(data.hex),
         speed: Math.random() * 0.02,
-        opacity: Math.max(0.2, Math.random()),
-        metalness: Math.random(),
         healthScore: Math.random() * 100,
-        mass: Math.random() * 10,
     };
 
     inputLife(scene, agents, inputDNA);
