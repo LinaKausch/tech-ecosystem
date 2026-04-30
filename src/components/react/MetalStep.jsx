@@ -29,7 +29,7 @@ const MetalStep = ({ onOpacityChange, onMetalnessChange, opacity = 0.99, metalne
                 </div>
                 <div style={{ marginBottom: '1rem' }}>
                     <label style={{ fontSize: '12px', fontWeight: 'bold' }}>
-
+                      
                     </label>
                     <input
                         type="range"

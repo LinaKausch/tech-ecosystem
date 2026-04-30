@@ -36,9 +36,26 @@ const ExtensionStep = ({ size, setSize }) => {
 
     return (
         <div>
-            <div style={{ position: 'fixed', bottom: '-12%', left: '25%', transform: 'translate(-50%, -50%)', zIndex: 1000, padding: '1.5rem', pointerEvents: 'auto', color: 'white', maxWidth: '300px' }}>
-                <div style={{ marginBottom: '0.8rem' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 'bold' }}>
+            <div className="slider-container extension">
+
+                <div className="slider-group vertical">
+                    <label>
+                        Y: {size.y.toFixed(2)}
+                    </label>
+                    <div className='vertical-wrapper'>
+                        <input
+                            type="range"
+                            min="0.1"
+                            max="1"
+                            step="0.01"
+                            value={size.y}
+                            onChange={(e) => handleAxisChange('y', e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div className="slider-group horizontal">
+                    <label>
                         X: {size.x.toFixed(2)}
                     </label>
                     <input
@@ -48,27 +65,11 @@ const ExtensionStep = ({ size, setSize }) => {
                         step="0.01"
                         value={size.x}
                         onChange={(e) => handleAxisChange('x', e.target.value)}
-                        style={{ display: 'block', width: '100%', marginTop: '0.3rem' }}
                     />
                 </div>
 
-                <div style={{ marginBottom: '0.8rem' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 'bold' }}>
-                        Y: {size.y.toFixed(2)}
-                    </label>
-                    <input
-                        type="range"
-                        min="0.1"
-                        max="1"
-                        step="0.01"
-                        value={size.y}
-                        onChange={(e) => handleAxisChange('y', e.target.value)}
-                        style={{ display: 'block', width: '100%', marginTop: '0.3rem' }}
-                    />
-                </div>
-
-                <div style={{ marginBottom: '0.8rem' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 'bold' }}>
+                <div className="slider-group horizontal">
+                    <label>
                         Z: {size.z.toFixed(2)}
                     </label>
                     <input
@@ -78,7 +79,6 @@ const ExtensionStep = ({ size, setSize }) => {
                         step="0.01"
                         value={size.z}
                         onChange={(e) => handleAxisChange('z', e.target.value)}
-                        style={{ display: 'block', width: '100%', marginTop: '0.3rem' }}
                     />
                 </div>
             </div>
