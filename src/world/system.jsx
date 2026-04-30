@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { formatDurationMs } from '../components/react/utils/Timer.jsx';
+import { formatDurationMs } from '../components/react/utils/timer.jsx';
 
 // ============================================================================
 // CAMERA STATES
