@@ -5,6 +5,8 @@ import ExtensionStep from '../components/react/ExtensionStep.jsx';
 import Onboarding from '../components/react/Onboarding.jsx';
 import FeedbackStep from '../components/react/FeedbackStep.jsx';
 import AboutStep from '../components/react/AboutStep.jsx';
+import HealthStep from '../components/react/HealthStep.jsx';
+import Onboarding from '../components/react/Onboarding.jsx';
 
 
 export const InputData = ({ socket }) => {

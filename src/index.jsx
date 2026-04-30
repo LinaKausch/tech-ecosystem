@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars, OrbitControls as OrbitControlsComponent, PerspectiveCamera } from '@react-three/drei';
-import { Bloom, EffectComposer } from '@react-three/postprocessing';
+import { Bloom, EffectComposer, Glitch, DotScreen, Vignette, DepthOfField, BrightnessContrast } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { cubeCluster, animateCluster } from './components/three/cubes.js';
 import { createAgent } from './components/three/agent.js';
@@ -10,7 +10,7 @@ import { populationControl, inputLife } from './components/three/evolution.js';
 import HealthDiagram from './components/react/utils/HealthDiagram.jsx';
 import MovementHeatmap from './components/react/utils/MovementHeatmap.jsx';
 import { CameraAnimations } from './components/react/CameraAnimations.jsx';
-import { getFormattedTime } from './components/react/utils/timer.jsx';
+import { getFormattedTime } from './components/react/utils/Timer.jsx';
 import * as System from './world/system.jsx';
 import './style.css';
 
@@ -104,7 +104,7 @@ const Lights = () => {
         <>
             <directionalLight position={[-1, 0, 1]} intensity={0.5} color={lightColor} />
             <directionalLight position={[1, 0, 1]} intensity={0.5} color={lightColor} />
-            <Stars radius={200} depth={200} count={5000} factor={6} saturation={0} fade speed={1} />
+            <Stars radius={100} depth={100} count={5000} factor={6} saturation={10} fade speed={1} />
             <pointLight ref={lightRef} position={[0, 0, 0]} intensity={5} distance={100} color={lightColor} />
         </>
     );
@@ -154,7 +154,6 @@ const applyPaletteToAgent = (agent, hexColor) => {
 };
 
 const rebootSystemWithDominantColors = async (scene, agentsRef, dominantColors) => {
-    // Remove old meshes from scene and reset agent list.
     agentsRef.current.forEach((agent) => {
         if (agent?.mesh) {
             scene.remove(agent.mesh);
@@ -191,8 +190,6 @@ const AnimationController = ({ agentsRef }) => {
     useFrame(() => {
         if (agentsRef.current) {
             animateCluster(scene, agentsRef.current, performance.now());
-
-            // Only spawn new agents if system is not collapsed or rebooting
             if (!System.systemState.systemCollapsed && System.systemState.currentCameraState !== System.camera_States.REBOOT) {
                 const popControlGen = populationControl(scene, agentsRef.current);
                 System.handlePopulationControl(popControlGen);
@@ -240,8 +237,14 @@ const AnimationController = ({ agentsRef }) => {
                 <div>
                     <div>${System.systemState.systemTries}</div>
                     <div>${System.systemState.totalUserInputs}</div>
-                    <div>${System.systemState.connectedPhones}/5</div>
                 </div>
+                `;
+            }
+
+            const $usersEl = document.getElementById('users');
+            if ($usersEl) {
+                $usersEl.innerHTML =
+                    ` <div>${System.systemState.connectedPhones}/5</div>
                 `;
             }
             const $colorDomEl = document.getElementById('color-dom');
@@ -299,7 +302,6 @@ const AnimationController = ({ agentsRef }) => {
                 System.systemState.currentCameraState === System.camera_States.REBOOT;
 
             if (isCollapseDrainPhase) {
-                // Deplete only during failure/reboot; avoid killing fresh agents during recovery.
                 agentsRef.current.forEach(agent => {
                     if (!agent.isDead) {
                         agent.energy -= 2;
@@ -368,6 +370,13 @@ const Scene = ({ agentsRef }) => {
                     mipmapBlur={true}
                     radius={0.5}
                 />
+                {/* <Glitch delay={[0.3, 0.5]} duration={[0.01, 0.1]} strength={[0.01, 0.02]} /> */}
+                <Vignette eskil={false} offset={0.1} darkness={1.1} />
+                {/* <DepthOfField focusDistance={0.3}
+                    focalLength={0.02}
+                    bokehScale={2} height={480} /> */}
+                {/* <Pixelation granularity={4} /> */}
+                {/* <BrightnessContrast brightness={0} contrast={-1} /> */}
             </EffectComposer>
         </>
     );
