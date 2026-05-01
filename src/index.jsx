@@ -357,10 +357,10 @@ const Scene = ({ agentsRef }) => {
             <Lights />
             <Agents agentsRef={agentsRef} />
             <AnimationController agentsRef={agentsRef} />
-            <mesh>
+            {/* <mesh>
                 <boxGeometry args={[10, 10, 10, 10, 10, 10]} />
                 <meshBasicMaterial color={0x424242} side={THREE.BackSide} roughness={0} metalness={1} wireframe={true} />
-            </mesh>
+            </mesh> */}
             <EffectComposer>
                 <Bloom
                     luminanceThreshold={0.5}
@@ -370,7 +370,7 @@ const Scene = ({ agentsRef }) => {
                     mipmapBlur={true}
                     radius={0.5}
                 />
-                {/* <Glitch delay={[0.3, 0.5]} duration={[0.01, 0.1]} strength={[0.01, 0.02]} /> */}
+                <Glitch delay={[0.3, 0.5]} duration={[0.01, 0.1]} strength={[0.01, 0.02]} />
                 <Vignette eskil={false} offset={0.1} darkness={1.1} />
                 {/* <DepthOfField focusDistance={0.3}
                     focalLength={0.02}
