@@ -93,17 +93,7 @@ const HealthDiagram = ({ agentsRef }) => {
     }, [priceHistory]);
 
     return (
-        <div
-            style={{
-                position: 'fixed',
-                bottom: 20,
-                left: 20,
-                background: 'rgba(0, 0, 0, 0.95)',
-                padding: '10px',
-                border: '1px solid #444444',
-                zIndex: 100,
-            }}
-        >
+        <div className='health-diagram'>
             <canvas
                 ref={canvasRef}
                 width={800}
@@ -114,4 +104,4 @@ const HealthDiagram = ({ agentsRef }) => {
     );
 };
 
-export default HealthDiagram;
+export default HealthDiagram; 
