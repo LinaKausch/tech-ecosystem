@@ -9,7 +9,7 @@ export const CameraAnimations = () => {
     const angleRef = useRef(0);
     const collapseStartPosRef = useRef(null);
     const recoveryFromPosRef = useRef(null);
-    const IDLE_BASE_RADIUS = 8;
+    const IDLE_BASE_RADIUS = 10;
     const IDLE_RADIUS_AMPLITUDE = 3;
     const IDLE_RADIUS_SPEED = 0.25;
 
@@ -35,10 +35,10 @@ export const CameraAnimations = () => {
                 break;
             case System.camera_States.OVERLOAD:
                 angleRef.current += delta * 0.3;
-                
-                const overloadBaseX = Math.sin(angleRef.current) * 9;
-                const overloadBaseZ = Math.cos(angleRef.current) * 9;
-                const overloadBaseY = Math.sin(angleRef.current * 0.5) * 9;
+
+                const overloadBaseX = Math.sin(angleRef.current) * 11;
+                const overloadBaseZ = Math.cos(angleRef.current) * 11;
+                const overloadBaseY = Math.sin(angleRef.current * 0.5) * 11;
 
                 const overloadShakeIntensity = 0.1;
                 const overloadShakeX = (Math.random() - 0.5) * overloadShakeIntensity;

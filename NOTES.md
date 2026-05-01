@@ -13,6 +13,11 @@
 <!-- Fix the stars -->
 <!-- ui on the display -->
 
+# Errors to fix: 
+- On the display screen it's too close up than on the computer screen
+- On remote phone when it's system overloaded, and at the same time processing the data, allows to send new data, even though it's busy. 
+- 
+
 
 ## to do
     <!-- make new particles small  -->
