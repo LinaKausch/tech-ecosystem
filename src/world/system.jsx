@@ -410,7 +410,7 @@ export const initializeRemoteDataHandler = (inputLife) => {
             depthExt: data.depthExt || Math.random() * 0.5,
             color: data.hex ? new THREE.Color(data.hex) : new THREE.Color('#c2260a'),
             speed: data.speed || Math.random() * 0.02,
-            healthScore: data.healthScore || Math.random() * 100,
+            healthScore: data.healthScore || Math.random() * 50 + 50,
         };
         const generatedCount = inputLife(moduleSceneRef.current, moduleAgentsRef.current, inputDNA, startDelayMs);
         if (generatedCount > 0) {
