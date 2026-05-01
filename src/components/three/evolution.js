@@ -6,7 +6,7 @@ const POPULATION_CONTROL_BURST_COUNT = 100;
 const POPULATION_CONTROL_COOLDOWN_MS = SPAWN_DELAY_MS * POPULATION_CONTROL_BURST_COUNT + 250;
 let nextPopulationControlAt = 0;
 export const INPUT_SPAWN_DELAY_MS = 120;
-export const INPUT_SPAWN_COUNT = 40;
+export const INPUT_SPAWN_COUNT = 67;
 
 const spawnAgentWithDelay = (
     scene,
