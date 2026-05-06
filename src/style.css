@@ -350,25 +350,26 @@ html,
 /* System Message Display */
 #message {
     position: fixed;
-    bottom: 155px;
-    right: 240px;
+    bottom: 124px;
+    left: 127px;
     z-index: 99999;
     background: rgba(20, 20, 20, 0.2);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
         border: 0.5px solid rgba(126, 204, 248, 0.12);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    padding: 1.3rem 1rem;
+    padding: 2.3rem 2rem;
     color: #7ECCF8;
-    font-size: 2rem;
+    font-size: 2.5rem;
     line-height: 2rem;
     min-width: 500px;
+font-weight: 600;
     text-align: center;
 }
 
 #users {
     position: fixed;
-    bottom: 155px;
+    bottom: 124px;
     left: 20px;
     z-index: 99999;
     background: rgba(20, 20, 20, 0.2);
@@ -376,13 +377,12 @@ html,
     border: 0.5px solid rgba(126, 204, 248, 0.12);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    padding: 1.3rem 1rem;
+    padding: 2.3rem 1rem;
     color: #7ECCF8;
     font-size: 2rem;
     line-height: 2rem;
     min-width: 60px;
 }
-
 
 .slider-container {
     position: fixed;
@@ -490,5 +490,4 @@ input[type="range"]:active::-moz-range-thumb {
 
 .vertical-wrapper input[type="range"] {
     transform: rotate(-90deg) translateY(-500%);
-
 }

@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const HealthDiagram = ({ agentsRef }) => {
     const canvasRef = useRef(null);
+    const containerRef = useRef(null);
     const [aliveHistory, setAliveHistory] = useState([]);
-    const [priceHistory, setPriceHistory] = useState([]);
+    const [numHistory, setNumHistory] = useState([]);
+    const [canvasDimensions, setCanvasDimensions] = useState({ width: 800, height: 100 });
     const maxHistoryPoints = 100;
 
-    // Generate fake price data that follows the alive agent count
+    // Generate fake num data that follows the alive agent count
     useEffect(() => {
         const interval = setInterval(() => {
             if (!agentsRef?.current || agentsRef.current.length === 0) return;
@@ -19,16 +21,16 @@ const HealthDiagram = ({ agentsRef }) => {
                 return newHistory.length > maxHistoryPoints ? newHistory.slice(-maxHistoryPoints) : newHistory;
             });
 
-            // Generate fake crypto-like price data with random volatility
-            setPriceHistory(prev => {
-                const lastPrice = prev.length > 0 ? prev[prev.length - 1] : 1000 + (newAliveCount * 2);
-                const basePrice = 1000 + (newAliveCount * 2);
-                const trendFollowing = (basePrice - lastPrice) * 0.15;
+            // Generate fake crypto-like num data with random volatility
+            setNumHistory(prev => {
+                const lastNum = prev.length > 0 ? prev[prev.length - 1] : 1000 + (newAliveCount * 2);
+                const baseNum = 1000 + (newAliveCount * 2);
+                const trendFollowing = (baseNum - lastNum) * 0.15;
                 const randomWalk = (Math.random() - 0.5) * 60;
                 const occasionalSpike = Math.random() > 0.85 ? (Math.random() - 0.5) * 200 : 0;
-                const newPrice = lastPrice + trendFollowing + randomWalk + occasionalSpike;
+                const newNum = lastNum + trendFollowing + randomWalk + occasionalSpike;
 
-                const newHistory = [...prev, newPrice];
+                const newHistory = [...prev, newNum];
                 return newHistory.length > maxHistoryPoints ? newHistory.slice(-maxHistoryPoints) : newHistory;
             });
         }, 100); // Update every 100ms for smoother animation
@@ -36,42 +38,53 @@ const HealthDiagram = ({ agentsRef }) => {
         return () => clearInterval(interval);
     }, [agentsRef]);
 
-    // Draw on canvas
+    // Handle canvas resize based on container width
+    useEffect(() => {
+        const updateDimensions = () => {
+            if (containerRef.current) {
+                const width = containerRef.current.offsetWidth;
+                setCanvasDimensions({ width: width || 800, height: 70 });
+            }
+        };
+
+        updateDimensions();
+        window.addEventListener('resize', updateDimensions);
+        return () => window.removeEventListener('resize', updateDimensions);
+    }, []);
+
     useEffect(() => {
         const canvas = canvasRef.current;
-        if (!canvas || priceHistory.length === 0) return;
+        if (!canvas || numHistory.length === 0) return;
 
         const ctx = canvas.getContext('2d');
         const width = canvas.width;
         const height = canvas.height;
         const padding = 10;
-        const maxPrice = Math.max(10, ...priceHistory);
-        const minPrice = Math.min(...priceHistory);
-        const priceRange = maxPrice - minPrice || 1;
+        const maxNum = Math.max(10, ...numHistory);
+        const minNum = Math.min(...numHistory);
+        const numRange = maxNum - minNum || 1;
 
-        // Clear canvas
         ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
         ctx.fillRect(0, 0, width, height);
-
-        // Draw price line graph with smooth curves
+        
         ctx.strokeStyle = '#7ECCF8';
         ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.beginPath();
 
-        priceHistory.forEach((price, index) => {
-            const x = padding + (index / (priceHistory.length - 1 || 1)) * (width - padding * 2);
-            const y = height - padding - ((price - minPrice) / priceRange) * (height - padding * 2);
+        numHistory.forEach((num, index) => {
+            const x = padding + (index / (numHistory.length - 1 || 1)) * (width - padding * 2);
+            const y = height - padding - ((num - minNum) / numRange) * (height - padding * 2);
 
             if (index === 0) {
                 ctx.moveTo(x, y);
             } else if (index === 1) {
                 ctx.lineTo(x, y);
             } else {
-                const prevPrice = priceHistory[index - 1];
-                const prevX = padding + ((index - 1) / (priceHistory.length - 1 || 1)) * (width - padding * 2);
-                const prevY = height - padding - ((prevPrice - minPrice) / priceRange) * (height - padding * 2);
+                const prevNum = numHistory[index - 1];
+                const prevX = padding + ((index - 1) / (numHistory.length - 1 || 1)) * (width - padding * 2);
+                const prevY = height - padding - ((prevNum - minNum) / numRange) * (height - padding * 2);
                 const cpX = (prevX + x) / 2;
                 const cpY = (prevY + y) / 2;
                 ctx.quadraticCurveTo(cpX, cpY, x, y);
@@ -80,25 +93,21 @@ const HealthDiagram = ({ agentsRef }) => {
         ctx.stroke();
 
         // Draw current value circle
-        if (priceHistory.length > 0) {
-            const currentPrice = priceHistory[priceHistory.length - 1];
+        if (numHistory.length > 0) {
+            const currentNum = numHistory[numHistory.length - 1];
             const x = width - padding;
-            const y = height - padding - ((currentPrice - minPrice) / priceRange) * (height - padding * 2);
+            const y = height - padding - ((currentNum - minNum) / numRange) * (height - padding * 2);
 
-            // ctx.fillStyle = '#7ECCF8';
-            // ctx.beginPath();
-            // ctx.arc(x, y, 6, 0, Math.PI * 2);
-            // ctx.fill();
         }
-    }, [priceHistory]);
+    }, [numHistory]);
 
     return (
-        <div className='health-diagram'>
+        <div className='health-diagram' ref={containerRef} style={{ width: 'calc(100vw - 280px)' }}>
             <canvas
                 ref={canvasRef}
-                width={800}
-                height={100}
-                style={{ display: 'block', filter: 'blur(4px)' }}
+                width={canvasDimensions.width}
+                height={canvasDimensions.height}
+                style={{ display: 'block', filter: 'blur(4px)', width: '100%', height: '100%' }}
             />
         </div>
     );

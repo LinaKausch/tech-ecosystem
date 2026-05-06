@@ -464,19 +464,19 @@ export const updateSystemState = (agentsRef, aliveAgents, dominantColors = []) =
     }
 
     // Return active message
-    const isOverloaded = aliveAgents >= OVERLOAD_AGENT_THRESHOLD || systemState.connectedPhones >= OVERLOAD_PHONE_THRESHOLD;
+    const isOverloaded = aliveAgents >= OVERLOAD_AGENT_THRESHOLD;
     const activeMessage = systemState.currentCameraState === camera_States.REBOOT || systemState.currentCameraState === camera_States.RECOVERING
         ? messages[7]
         : systemState.systemCollapsed
             ? messages[6]
-            : isOverloaded
-                ? messages[5]
-                : now < systemState.processingUntil
-                    ? messages[2]
-                    : now < systemState.analysingUntil
-                        ? messages[3]
-                        : now < systemState.generatingUntil
-                            ? messages[4]
+            : now < systemState.processingUntil
+                ? messages[2]
+                : now < systemState.analysingUntil
+                    ? messages[3]
+                    : now < systemState.generatingUntil
+                        ? messages[4]
+                        : isOverloaded
+                            ? messages[5]
                             : now < systemState.identificationUntil
                                 ? messages[1]
                                 : messages[0];

@@ -357,10 +357,10 @@ const Scene = ({ agentsRef }) => {
             <Lights />
             <Agents agentsRef={agentsRef} />
             <AnimationController agentsRef={agentsRef} />
-            <mesh>
+            {/* <mesh>
                 <boxGeometry args={[10, 10, 10, 10, 10, 10]} />
                 <meshBasicMaterial color={0x424242} side={THREE.BackSide} roughness={0} metalness={1} wireframe={true} />
-            </mesh>
+            </mesh> */}
             <EffectComposer>
                 <Bloom
                     luminanceThreshold={0.5}
