@@ -32,12 +32,12 @@ export const messages = [
 // ============================================================================
 export const PROCESSING_DURATION_MS = 2000;
 export const ANALYSING_DURATION_MS = 2000;
-export const OVERLOAD_AGENT_THRESHOLD = 300;
+export const OVERLOAD_AGENT_THRESHOLD = 200;
 export const OVERLOAD_PHONE_THRESHOLD = 5;
-export const FAILURE_AGENT_THRESHOLD = 400;
+export const FAILURE_AGENT_THRESHOLD = 300;
 export const COLLAPSE_ANIMATION_DURATION = 4000;
-export const REBOOT_DURATION = 3000; // 3 seconds to reboot
-export const RECOVERY_ZOOM_DURATION = 2000; // 2 seconds to zoom camera back in
+export const REBOOT_DURATION = 3000;
+export const RECOVERY_ZOOM_DURATION = 2000;
 export const SAVE_STORAGE_KEY = 'systemstats';
 
 // ============================================================================
@@ -46,6 +46,9 @@ export const SAVE_STORAGE_KEY = 'systemstats';
 export let systemState = {
     // Camera & timing
     currentCameraState: camera_States.IDLE,
+
+    // Glitch effect
+    glitch: false,
 
     // User input timing
     processingUntil: 0,
@@ -447,20 +450,13 @@ export const updateSystemState = (agentsRef, aliveAgents, dominantColors = []) =
         } else {
             systemState.currentCameraState = camera_States.FAILURE;
         }
+    } else if (now >= systemState.generatingSpawnUntil && now < systemState.generatingUntil) {
+        // GENERATING camera only during spawn, not processing/analysing
+        systemState.currentCameraState = camera_States.GENERATING;
     } else if (aliveAgents >= OVERLOAD_AGENT_THRESHOLD) {
         systemState.currentCameraState = camera_States.OVERLOAD;
-    } else if (systemState.isUserInputGeneration) {
-        if (now >= systemState.generatingSpawnUntil && now < systemState.generatingUntil) {
-            systemState.currentCameraState = camera_States.GENERATING;
-        } else if (now >= systemState.generatingUntil) {
-            systemState.isUserInputGeneration = false;
-        }
     } else {
-        if (now < systemState.generatingUntil) {
-            systemState.currentCameraState = camera_States.GENERATING;
-        } else {
-            systemState.currentCameraState = camera_States.IDLE;
-        }
+        systemState.currentCameraState = camera_States.IDLE;
     }
 
     // Return active message

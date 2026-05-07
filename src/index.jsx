@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars, OrbitControls as OrbitControlsComponent, PerspectiveCamera } from '@react-three/drei';
 import { Bloom, EffectComposer, Glitch, DotScreen, Vignette, DepthOfField, BrightnessContrast } from '@react-three/postprocessing';
+import { GlitchMode } from 'postprocessing';
 import * as THREE from 'three';
 import { cubeCluster, animateCluster } from './components/three/cubes.js';
 import { createAgent } from './components/three/agent.js';
@@ -343,6 +344,20 @@ const Agents = ({ agentsRef }) => {
 
 // MAIN SCENE COMPONENT
 const Scene = ({ agentsRef }) => {
+    const [glitch, setGlitch] = useState(false);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setGlitch(System.systemState.glitch);
+        }, 50);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    // useFrame(() => {
+    //     console.log(`[Scene] Glitch state: ${System.systemState.glitch}`);
+    // });
+
     return (
         <>
             <PerspectiveCamera position={[-1, 0, 9]} fov={40} makeDefault />
@@ -370,7 +385,16 @@ const Scene = ({ agentsRef }) => {
                     mipmapBlur={true}
                     radius={0.5}
                 />
-                {/* <Glitch delay={[0.3, 0.5]} duration={[0.01, 0.1]} strength={[0.01, 0.02]} /> */}
+                {/* <Glitch delay={[0.2, 0.5]} duration={[0.001, 0.01]} strength={[0.01, 0.02]} /> */}
+                {/* <OverloadGlitch /> */}
+                <Glitch
+                    active={glitch}
+                    mode={GlitchMode.SPORADIC}
+                    delay={[0.2, 0.5]}
+                    duration={[0.001, 0.01]}
+                    strength={[0.01, 0.02]}
+                    ratio={0.85}
+                />
                 <Vignette eskil={false} offset={0.1} darkness={1.1} />
                 {/* <DepthOfField focusDistance={0.3}
                     focalLength={0.02}
