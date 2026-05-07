@@ -515,6 +515,9 @@ export const handleUserInput = (data, inputSpawnDelayMs = 120, inputSpawnCount =
     const now = Date.now();
     const generatingStartDelay = PROCESSING_DURATION_MS + ANALYSING_DURATION_MS;
 
+    // Store incoming data for ComingUp component
+    systemState.incomingData = data;
+
     // Universal counter: count every received user input event.
     systemState.totalUserInputs += 1;
     const spawnBurstDuration = (inputSpawnCount - 1) * inputSpawnDelayMs + 1000;

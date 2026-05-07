@@ -77,7 +77,7 @@ export const CameraAnimations = () => {
                 camera.position.y = generatingFixedPos.y + shakeY;
                 camera.position.z = generatingFixedPos.z + shakeZ;
                 
-                console.log(`✓ Camera position is now: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)})`);
+                // console.log(`✓ Camera position is now: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)})`);
                 System.systemState.glitch = false;
                 break;
 

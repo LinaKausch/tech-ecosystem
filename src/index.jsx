@@ -9,6 +9,7 @@ import { cubeCluster, animateCluster } from './components/three/cubes.js';
 import { createAgent } from './components/three/agent.js';
 import { populationControl, inputLife } from './components/three/evolution.js';
 import HealthDiagram from './components/react/utils/HealthDiagram.jsx';
+import ComingUp from './components/react/utils/ComingUp.jsx';
 import MovementHeatmap from './components/react/utils/MovementHeatmap.jsx';
 import { CameraAnimations } from './components/react/CameraAnimations.jsx';
 import { getFormattedTime } from './components/react/utils/Timer.jsx';
@@ -222,22 +223,22 @@ const AnimationController = ({ agentsRef }) => {
             if ($statsEl) {
                 $statsEl.innerHTML = `
                 <div>
-                    <div>${aliveAgents}</div>
-                    <div>${deadAgents}</div>
-                    <div>${totalAgents}</div>
+                    <div>ΣLIVE ${aliveAgents}</div>
+                    <div>∅TERM ${deadAgents}</div>
+                    <div>ΩPOP ${totalAgents}</div>
                 </div>
                 <div>
-                    <div>${avgHealthScore}</div>
-                    <div>${avgEnergy}</div>
+                    <div>μVIT ${avgHealthScore}</div>
+                    <div>μPWR ${avgEnergy}</div>
                 </div>
                 <div>
-                    <div>${System.getTotalGenerations()}</div>
-                    <div>${System.systemState.generationTracker.fromPopulationControl}</div>
-                    <div>${System.systemState.generationTracker.fromUserInput}</div>
+                    <div>GEN::${System.getTotalGenerations()}</div>
+                    <div>∇AUTO ${System.systemState.generationTracker.fromPopulationControl}</div>
+                    <div>ΔUSR ${System.systemState.generationTracker.fromUserInput}</div>
                 </div>
                 <div>
-                    <div>${System.systemState.systemTries}</div>
-                    <div>${System.systemState.totalUserInputs}</div>
+                    <div>TRY::${System.systemState.systemTries}</div>
+                    <div>ΣINPUT ${System.systemState.totalUserInputs}</div>
                 </div>
                 `;
             }
@@ -438,6 +439,7 @@ const Display = () => {
             </Canvas>
             <HealthDiagram agentsRef={agentsRef} />
             <MovementHeatmap agentsRef={agentsRef} />
+            <ComingUp />
         </>
     );
 };
