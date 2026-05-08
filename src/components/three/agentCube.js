@@ -104,7 +104,7 @@ export const loadModel = () => {
     return new Promise((resolve) => {
         if (model) return resolve(model);
 
-        loader.load('/cube16.glb', (gltf) => {
+        loader.load('/cube19.glb', (gltf) => { //16 is the old but gold. maybe too dark.
             model = gltf.scene;
             resolve(model);
         });

@@ -23,7 +23,7 @@ const Cube = ({ color = 'red', sizeX = 1, sizeY = 1, sizeZ = 1, rotation = true,
 };
 
 const CubeModel = ({ sizeX, sizeY, sizeZ, color }) => {
-    const gltf = useLoader(GLTFLoader, '/cube16.glb');
+    const gltf = useLoader(GLTFLoader, '/cube19.glb');
 
     useEffect(() => {
         if (gltf.scene) {
