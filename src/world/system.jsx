@@ -32,9 +32,9 @@ export const messages = [
 // ============================================================================
 export const PROCESSING_DURATION_MS = 2500;
 export const ANALYSING_DURATION_MS = 2500;
-export const OVERLOAD_AGENT_THRESHOLD = 200;
+export const OVERLOAD_AGENT_THRESHOLD = 300;
 export const OVERLOAD_PHONE_THRESHOLD = 5;
-export const FAILURE_AGENT_THRESHOLD = 300;
+export const FAILURE_AGENT_THRESHOLD = 400;
 export const COLLAPSE_ANIMATION_DURATION = 4000;
 export const REBOOT_DURATION = 3000;
 export const RECOVERY_ZOOM_DURATION = 2000;
