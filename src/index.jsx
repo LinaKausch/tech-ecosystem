@@ -104,13 +104,13 @@ const SceneSetup = ({ agentsRef }) => {
 // LIGHTS
 const Lights = () => {
     const lightRef = useRef();
-    const lightColor = new THREE.Color(0x1E7D01); //1E7D01 green //blue 0928c2
+    const lightColor = new THREE.Color(0x0928c2); //1E7D01 green //blue 0928c2
     return (
         <>
             <directionalLight position={[-1, 0, 1]} intensity={0.5} color={lightColor} />
             <directionalLight position={[1, 0, 1]} intensity={0.5} color={lightColor} />
             <Stars radius={100} depth={100} count={5000} factor={6} saturation={10} fade speed={1} />
-            <pointLight ref={lightRef} position={[0, 0, 0]} intensity={2} distance={100} color={lightColor} />
+            <pointLight ref={lightRef} position={[0, 0, 0]} intensity={5} distance={100} color={lightColor} />
         </>
     );
 };

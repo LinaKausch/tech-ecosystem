@@ -110,11 +110,14 @@ export const InputData = ({ socket }) => {
                     next
                 </button>
             )}
-            <div style={{ display: "flex", justifyContent: 'center', marginTop: '-1.5rem', position: 'fixed', bottom: '3rem', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
+            <div style={{ display: "flex", flexDirection: 'column', justifyContent: 'center', position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
                 {(currentStep === 0 || currentStep === steps.length - 1) && (
-                    <button className="about-btn" onClick={() => setShowAbout(true)}>
-                        About
-                    </button>
+                    <>
+                        <p className='about-cta'>or read the...</p>
+                        <button className="about-btn" onClick={() => setShowAbout(true)}>
+                            Story
+                        </button>
+                    </>
                 )}
             </div>
             {showAbout && <AboutStep onClose={() => setShowAbout(false)} />}

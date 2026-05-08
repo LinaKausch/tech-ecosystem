@@ -9,7 +9,7 @@ const Background = () => {
             width: '100vw',
             height: '100vh',
             zIndex: 0,
-            backgroundImage: 'url(/img/bckg.png)',
+            backgroundImage: 'url(/img/bckg.svg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundAttachment: 'fixed',
