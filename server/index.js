@@ -12,128 +12,207 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server);
 const MAX_REMOTES = 5;
-const waitingQueue = [];
-let latestSystemState = {
-    cameraState: 'IDLE',
-    systemCollapsed: false,
+
+// Multi-display state
+const displays = new Map(); // displayId -> { socketId, waitingQueue: [], systemState, resetTimer }
+let displayCounter = 0;
+
+const generateDisplayId = () => {
+    displayCounter += 1;
+    return `display-${displayCounter}`;
 };
 
-const broadcastRemoteCount = () => {
-    const remoteRoom = io.sockets.adapter.rooms.get('remote');
+const getDisplay = (displayId) => {
+    if (!displays.has(displayId)) {
+        displays.set(displayId, {
+            socketId: null,
+            waitingQueue: [],
+            systemState: { cameraState: 'IDLE', systemCollapsed: false },
+            resetTimer: null,
+        });
+    }
+    return displays.get(displayId);
+};
+
+const broadcastRemoteCount = (displayId) => {
+    const roomName = `remote-${displayId}`;
+    const remoteRoom = io.sockets.adapter.rooms.get(roomName);
     const remoteCount = remoteRoom ? remoteRoom.size : 0;
-    io.to('display').emit('remote-count', remoteCount);
-    io.to('remote').emit('remote-count', remoteCount);
+    io.to(`display-${displayId}`).emit('remote-count', remoteCount);
+    io.to(roomName).emit('remote-count', remoteCount);
 };
 
-const broadcastSystemState = () => {
-    io.to('remote').emit('system-state', latestSystemState);
+const broadcastSystemState = (displayId) => {
+    const state = getDisplay(displayId).systemState;
+    io.to(`remote-${displayId}`).emit('system-state', state);
 };
 
-const emitQueuePositions = () => {
-    waitingQueue.forEach((socketId, index) => {
+const emitQueuePositions = (displayId) => {
+    const disp = getDisplay(displayId);
+    disp.waitingQueue.forEach((socketId, index) => {
         const queuedSocket = io.sockets.sockets.get(socketId);
         if (!queuedSocket) return;
-        queuedSocket.emit('remote-access', {
-            admitted: false,
-            queuePosition: index + 1,
-        });
+        queuedSocket.emit('remote-access', { admitted: false, queuePosition: index + 1 });
     });
 };
 
-const removeFromQueue = (socketId) => {
-    const queueIndex = waitingQueue.indexOf(socketId);
-    if (queueIndex !== -1) {
-        waitingQueue.splice(queueIndex, 1);
-        emitQueuePositions();
+const removeFromQueue = (displayId, socketId) => {
+    const disp = getDisplay(displayId);
+    const idx = disp.waitingQueue.indexOf(socketId);
+    if (idx !== -1) {
+        disp.waitingQueue.splice(idx, 1);
+        emitQueuePositions(displayId);
     }
 };
 
-const promoteQueuedRemotes = () => {
-    const room = io.sockets.adapter.rooms.get('remote');
+const promoteQueuedRemotes = (displayId) => {
+    const room = io.sockets.adapter.rooms.get(`remote-${displayId}`);
     const remoteCount = room ? room.size : 0;
+    const disp = getDisplay(displayId);
 
-    if (remoteCount > MAX_REMOTES) return;
-    if (waitingQueue.length === 0) return;
+    if (remoteCount >= MAX_REMOTES) return;
+    if (disp.waitingQueue.length === 0) return;
 
-    const nextSocketId = waitingQueue.shift();
+    const nextSocketId = disp.waitingQueue.shift();
     const nextSocket = io.sockets.sockets.get(nextSocketId);
-
     if (!nextSocket) {
-        emitQueuePositions();
-        promoteQueuedRemotes();
+        emitQueuePositions(displayId);
+        promoteQueuedRemotes(displayId);
         return;
     }
 
-    nextSocket.join('remote');
+    nextSocket.join(`remote-${displayId}`);
+    nextSocket.data = nextSocket.data || {};
+    nextSocket.data.displayId = displayId;
     nextSocket.emit('remote-access', { admitted: true, queuePosition: 0 });
-    nextSocket.emit('system-state', latestSystemState);
+    nextSocket.emit('system-state', disp.systemState);
 
-    broadcastRemoteCount();
-    emitQueuePositions();
+    broadcastRemoteCount(displayId);
+    emitQueuePositions(displayId);
 };
 
 app.use(express.static(join(__dirname, '../dist')));
 
 
-//maybe i need unlimited displays but limited remotes?
+// Support multiple displays: each display gets its own rooms `display-<id>` and `remote-<id>`
 io.on('connection', (socket) => {
-    socket.on('join-display', () => {
-        const room = io.sockets.adapter.rooms.get('display');
-        if (room && room.size >= 1) {
-            socket.emit('display-full');
-            console.log('Display room is full.');
-            return;
-        }
-        socket.join('display');
-        console.log('Display connected! Socket ID:', socket.id);
-        broadcastRemoteCount();
-        broadcastSystemState();
-    });
-    socket.on('join-remote', () => {
-        const room = io.sockets.adapter.rooms.get('remote');
-        const remoteCount = room ? room.size : 0;
-        if (remoteCount > MAX_REMOTES) {
-            if (!waitingQueue.includes(socket.id)) {
-                waitingQueue.push(socket.id);
-            }
-            socket.emit('remote-count', remoteCount);
-            socket.emit('system-state', latestSystemState);
-            socket.emit('remote-access', {
-                admitted: false,
-                queuePosition: waitingQueue.indexOf(socket.id) + 1,
-            });
-            emitQueuePositions();
-            console.log('Remote room is full. Queued Socket ID:', socket.id);
+    console.log('Client connected:', socket.id);
+
+    socket.on('join-display', (config = {}) => {
+        // Allow client to request a specific id (optional), otherwise generate one
+        const displayId = config.displayId || generateDisplayId();
+        const disp = getDisplay(displayId);
+
+        if (disp.socketId) {
+            socket.emit('display-taken', { displayId });
+            console.log(`Display ${displayId} already taken.`);
             return;
         }
 
-        removeFromQueue(socket.id);
-        socket.join('remote');
-        console.log('Remote connected! Socket ID:', socket.id);
+        disp.socketId = socket.id;
+        socket.data = socket.data || {};
+        socket.data.displayId = displayId;
+        socket.join(`display-${displayId}`);
+        console.log(`Display connected. displayId=${displayId}, socket=${socket.id}`);
+
+        // Send assigned id back to display
+        socket.emit('display-room-id', { roomId: displayId });
+
+        broadcastRemoteCount(displayId);
+        broadcastSystemState(displayId);
+
+        // Print remote link in server logs for convenience
+        console.log(`Remote URL: http://localhost:${port}/remote.html?roomId=${displayId}`);
+    });
+
+    socket.on('join-remote', (data = {}) => {
+        const displayId = data.roomId;
+        if (!displayId || !displays.has(displayId)) {
+            socket.emit('remote-join-failed', { error: 'Invalid display id' });
+            console.log(`Remote connection rejected, invalid display id: ${displayId}`);
+            return;
+        }
+
+        const disp = getDisplay(displayId);
+        const room = io.sockets.adapter.rooms.get(`remote-${displayId}`);
+        const remoteCount = room ? room.size : 0;
+
+        if (remoteCount >= MAX_REMOTES) {
+            if (!disp.waitingQueue.includes(socket.id)) disp.waitingQueue.push(socket.id);
+            socket.data = socket.data || {};
+            socket.data.displayId = displayId;
+            socket.emit('remote-count', remoteCount);
+            socket.emit('system-state', disp.systemState);
+            socket.emit('remote-access', { admitted: false, queuePosition: disp.waitingQueue.indexOf(socket.id) + 1 });
+            emitQueuePositions(displayId);
+            console.log(`Remote queued for ${displayId}: ${socket.id}`);
+            return;
+        }
+
+        // Admit remote
+        removeFromQueue(displayId, socket.id);
+        socket.join(`remote-${displayId}`);
+        socket.data = socket.data || {};
+        socket.data.displayId = displayId;
         socket.emit('remote-access', { admitted: true, queuePosition: 0 });
-        broadcastRemoteCount();
-        socket.emit('system-state', latestSystemState);
+        socket.emit('system-state', disp.systemState);
+        console.log(`Remote connected to ${displayId}: ${socket.id}`);
+
+        broadcastRemoteCount(displayId);
     });
 
     socket.on('send-to-display', (data) => {
-        console.log('Forwarding data to display:', data);
-        io.to('display').emit('render-data', data);
-        // Notify all other remotes that system is now processing this data
-        socket.broadcast.emit('system-processing', true);
+        const displayId = socket.data?.displayId;
+        if (!displayId) return;
+        console.log(`Forwarding data to display ${displayId}:`, data);
+        io.to(`display-${displayId}`).emit('render-data', data);
+        socket.to(`remote-${displayId}`).emit('system-processing', true);
     });
+
     socket.on('system-state', (state) => {
-        latestSystemState = {
-            cameraState: state?.cameraState || 'IDLE',
-            systemCollapsed: Boolean(state?.systemCollapsed),
-        };
-        broadcastSystemState();
+        const displayId = socket.data?.displayId;
+        if (!displayId) return;
+        const disp = getDisplay(displayId);
+        disp.systemState = { cameraState: state?.cameraState || 'IDLE', systemCollapsed: Boolean(state?.systemCollapsed) };
+        broadcastSystemState(displayId);
     });
-    // console.log('User connected! Socket ID:', socket.id);
+
+    socket.on('leave-remote', (data = {}) => {
+        const displayId = data.roomId || socket.data?.displayId;
+        if (!displayId) return;
+        removeFromQueue(displayId, socket.id);
+        try { socket.leave(`remote-${displayId}`); } catch (e) { }
+        socket.data = socket.data || {};
+        delete socket.data.displayId;
+        console.log(`Remote left ${displayId}: ${socket.id}`);
+        broadcastRemoteCount(displayId);
+        promoteQueuedRemotes(displayId);
+    });
+
     socket.on('disconnect', () => {
-        console.log('User disconnected. Socket ID:', socket.id);
-        removeFromQueue(socket.id);
-        broadcastRemoteCount();
-        promoteQueuedRemotes();
+        console.log('Client disconnected', socket.id);
+        const displayId = socket.data?.displayId;
+        // If it was a display
+        if (displayId && displays.has(displayId)) {
+            const disp = getDisplay(displayId);
+            if (disp.socketId === socket.id) {
+                disp.socketId = null;
+                console.log(`Display ${displayId} disconnected.`);
+                // clear waiting queue
+                disp.waitingQueue = [];
+            } else {
+                // a remote disconnected
+                removeFromQueue(displayId, socket.id);
+                broadcastRemoteCount(displayId);
+                promoteQueuedRemotes(displayId);
+            }
+        } else {
+            // Might be a queued remote for any display: remove from all queues
+            for (const [id, disp] of displays.entries()) {
+                removeFromQueue(id, socket.id);
+                promoteQueuedRemotes(id);
+            }
+        }
     });
 });
 

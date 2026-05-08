@@ -25,7 +25,10 @@ socket.off();
 
 socket.on('connect', () => {
     console.log('%c✓ SOCKET CONNECTED', 'color: green; font-weight: bold;', 'ID:', socket.id);
-    const url = `${new URL(`remote.html?id=${socket.id}`, window.location)}`;
+});
+
+const generateQRCode = (roomId) => {
+    const url = `${new URL(`remote.html?roomId=${roomId}`, window.location)}`;
     console.log('Generated URL:', url);
 
     const $url = document.getElementById('url');
@@ -71,7 +74,7 @@ socket.on('connect', () => {
     } catch (e) {
         console.error('Error generating QR:', e);
     }
-});
+};
 
 socket.on('disconnect', () => {
     console.log('%c✗ SOCKET DISCONNECTED', 'color: red;');
@@ -424,9 +427,35 @@ const Display = () => {
     const agentsRef = useRef(null);
 
     useEffect(() => {
-        socket.emit('join-display');
+        // Listen for assigned room id and generate QR/link
+        const handleDisplayRoomId = (data) => {
+            const roomId = data?.roomId;
+            if (!roomId) return;
+            if (socket._assignedRoomId) {
+                console.log('Ignoring duplicate room assignment:', roomId);
+                return;
+            }
 
-        return () => { };
+            socket._assignedRoomId = roomId;
+            console.log('Assigned room ID:', roomId);
+            try {
+                const remoteUrl = `${new URL(`remote.html?roomId=${roomId}`, window.location)}`;
+            } catch (e) {
+                console.log('→ Remote path: /remote.html?roomId=' + roomId);
+            }
+            generateQRCode(roomId);
+        };
+
+        socket.on('display-room-id', handleDisplayRoomId);
+
+        if (!socket._displayJoinRequested) {
+            socket._displayJoinRequested = true;
+            socket.emit('join-display');
+        }
+
+        return () => {
+            socket.off('display-room-id', handleDisplayRoomId);
+        };
     }, []);
 
     return (
