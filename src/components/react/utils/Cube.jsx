@@ -32,7 +32,7 @@ const CubeModel = ({ sizeX, sizeY, sizeZ, color }) => {
             const size = box.getSize(new Vector3());
 
             gltf.scene.position.sub(center);
-
+         
             gltf.scene.scale.set(sizeX, sizeY, sizeZ);
 
             // Apply color wheel to light mesh

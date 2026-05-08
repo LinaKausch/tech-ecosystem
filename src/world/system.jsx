@@ -30,8 +30,8 @@ export const messages = [
 // ============================================================================
 // CONSTANTS
 // ============================================================================
-export const PROCESSING_DURATION_MS = 2000;
-export const ANALYSING_DURATION_MS = 2000;
+export const PROCESSING_DURATION_MS = 2500;
+export const ANALYSING_DURATION_MS = 2500;
 export const OVERLOAD_AGENT_THRESHOLD = 200;
 export const OVERLOAD_PHONE_THRESHOLD = 5;
 export const FAILURE_AGENT_THRESHOLD = 300;

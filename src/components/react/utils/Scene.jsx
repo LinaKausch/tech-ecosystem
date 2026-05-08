@@ -17,7 +17,6 @@ const CameraUpdater = ({ sfov }) => {
 
 const Scene = ({ colour, size, sceneNumber = 1, opacity = 1, metalness = 0 }) => {
     const defaultCameraPos = [-1, 0.4, 0.5];
-    // const defaultColor = '#c2260a';
     const defaultColor = '#c20a20';
 
     const sceneConfigs = {
