@@ -4,20 +4,20 @@ import { ColorWheel } from './utils/ColorWheel';
 const ColorStep = ({ onChange, value }) => {
     const [selectedColor, setSelectedColor] = useState({
         colorName: "red",
-        rgbObj: { r: 194, g: 38, b: 10},
-        hex: "#c2260a"
+        rgbObj: { r: 194, g: 38, b: 10 },
+        hex: "c2260a"
     });
 
     const handleColorChange = (colorData) => {
         setSelectedColor(colorData);
-          if (onChange) {
+        if (onChange) {
             onChange(colorData);
         }
         console.log(colorData)
     }
 
     return (
-        <div>
+        <div className='color-wheel-container'>
             {/* <h1>
                 {"What is your system state today?"
                     .split(" ")
@@ -27,8 +27,12 @@ const ColorStep = ({ onChange, value }) => {
                         </span>)
                     )}
             </h1> */}
-            <p className='data hex'>{selectedColor.hex}</p>
-            <div style={{ height: "100dvh", display: "flex", flexWrap: "wrap", justifyContent: "center", alignContent: "center"}}>
+            <div className='data-container'>
+                <p className='barcode'>{selectedColor.hex.replace('#', '')}</p>
+                <p className='data hex'>#{selectedColor.hex.replace('#', '')}</p>
+                <p className='barcode'>{selectedColor.hex.replace('#', '')}</p>
+            </div>
+            <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center", alignContent: "center" }}>
                 <ColorWheel onChange={handleColorChange} />
             </div>
             {/* <p className='data colorname'>`{selectedColor.colorName}`</p> */}

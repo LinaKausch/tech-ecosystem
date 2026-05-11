@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: "Bungee Hairline", sans-serif;
     background-color: #1C1C1C;
@@ -18,18 +22,6 @@ h1 {
     font-size: 0.8rem;
 }
 
-.page,
-.date {
-    font-weight: 600;
-    font-size: 0.65rem;
-}
-
-.hex {
-    position: absolute;
-    top: 18%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
 
 .rgba,
 .colorname {
@@ -43,10 +35,13 @@ h1 {
 }
 
 .date {
-    position: absolute;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-align: center;
+    /* position: absolute;
     top: 0;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%); */
     color: #7ECCF8;
 }
 
@@ -62,18 +57,18 @@ h1 {
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(2.5px);
     -webkit-backdrop-filter: blur(2.5px);
-    border: 0.5px solid rgba(126, 204, 248, 0.5);
+      border: 1px solid rgba(101, 197, 227, 0.8);
     color: rgba(255, 255, 255, 0.5);
     padding: 1rem 1.5rem;
     position: absolute;
-    bottom: 3%;
-    right: 5%;
+    bottom: 1rem;
+    right: 1rem;
     font-family: "Bungee Hairline", sans-serif;
     font-weight: 600;
     font-size: 1.2rem;
 }
 
-.about-cta{
+.about-cta {
     font-family: "Roboto Mono";
 }
 
@@ -121,7 +116,7 @@ text-underline-position: from-font; */
     font-family: 'Share Tech', monospace;
     font-size: 3.5rem;
     z-index: 1;
-    margin-top: 5rem;
+    margin-top: 3rem;
     padding-left: 1rem;
 }
 
@@ -555,4 +550,53 @@ input[type="range"]:active::-moz-range-thumb {
     left: 50%;
     transform: translate(-50%, -50%);
     display: block;
+}
+
+.color-wheel-container {
+    margin: 0rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 100dvh;
+    padding-bottom: 6rem;
+}
+
+.color-wheel {
+    width: 100%;
+    width: auto;
+    padding: 12rem 0;
+    border: 1px solid rgba(101, 197, 227, 0.8);
+    background: rgba(28, 28, 28, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+.data-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: start;
+    background-color: #7ECCF8;
+    /* margin: 0 1rem 0.5rem 1rem; */
+    padding: 0.6rem 1rem 0.1rem 1rem;
+    z-index: 100;
+}
+
+.data-container p {
+    margin: 0;
+}
+
+.hex {
+    color: #1C1C1C;
+    font-weight: 600;
+}
+
+.barcode {
+    font-family: "Libre Barcode 39", system-ui;
+    font-size: 1.5rem;
+    /* line-height: 0.5; */
+    color: #1C1C1C;
+
 }
