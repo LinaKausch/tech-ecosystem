@@ -95,7 +95,7 @@ export const InputData = ({ socket }) => {
 
     const steps = [
         <Onboarding socket={socket} onNext={() => setCurrentStep(1)} onNoClick={() => { setNoContribution(true); setCurrentStep(3); }} />,
-        <ExtensionStep size={size} setSize={setSize} />,
+        // <ExtensionStep size={size} setSize={setSize} />,
         <ColorStep value={data} onChange={handleColorChange} />,
         <ExtensionStep size={size} setSize={setSize} />,
         <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} />,

@@ -35,23 +35,28 @@ const ExtensionStep = ({ size, setSize }) => {
     };
 
     return (
-        <div>
+        <div className='extension-container'>
+            <div className='data-container'>
+                <p className='data size'>{size.x.toFixed(2)}</p>
+                <p className='barcode'>{size.x.toFixed(1)}{size.y.toFixed(1)}</p>
+                <p className='data size'>{size.y.toFixed(2)}</p>
+                <p className='barcode'>{size.y.toFixed(1)}{size.z.toFixed(1)}</p>
+                <p className='data size'>{size.z.toFixed(2)}</p>
+            </div>
+            <div className='bounds-container'></div>
             <div className="slider-container extension">
-
-                <div className="slider-group vertical">
+                <div className="slider-group horizontal">
                     <label>
                         Y: {size.y.toFixed(2)}
                     </label>
-                    <div className='vertical-wrapper'>
-                        <input
-                            type="range"
-                            min="0.1"
-                            max="1"
-                            step="0.01"
-                            value={size.y}
-                            onChange={(e) => handleAxisChange('y', e.target.value)}
-                        />
-                    </div>
+                    <input
+                        type="range"
+                        min="0.1"
+                        max="1"
+                        step="0.01"
+                        value={size.y}
+                        onChange={(e) => handleAxisChange('y', e.target.value)}
+                    />
                 </div>
 
                 <div className="slider-group horizontal">
