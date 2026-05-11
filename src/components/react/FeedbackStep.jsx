@@ -27,7 +27,7 @@ export const FeedbackStep = ({ isOverloaded = false, isBusy = false, dataSent = 
     );
 }
 
-export const Feedback = () => {
+export const Feedback = () => { // needs cube
     return (
         <div className="feedback-step" style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
             <p style={{ fontFamily: 'Share Tech Mono', fontSize: '2.5rem', textAlign: 'center' }}>Your input data has been sent</p>
@@ -36,7 +36,7 @@ export const Feedback = () => {
     )
 }
 
-export const SystemBusy = () => {
+export const SystemBusy = () => { // needs cube
     return (
         <div className="feedback-step" style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
             <p style={{ fontFamily: 'Share Tech Mono', fontSize: '2.5rem', textAlign: 'center' }}>System is busy right now</p>
@@ -45,16 +45,16 @@ export const SystemBusy = () => {
     )
 }
 
-export const Ready = ({ onSend = () => { } }) => {
+export const Ready = ({ onSend = () => { } }) => { // needs cube
     return (
-        <div className="feedback-step" style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
+        <div className="feedback-step" >
             <p style={{ fontFamily: 'Share Tech Mono', fontSize: '2.5rem', textAlign: 'center' }}>System is ready for your input</p>
             <button className="glass-btn" style={{ marginTop: '1rem' }} onClick={onSend}>SEND</button>
         </div>
     )
 }
 
-export const SystemOverloaded = ({ onSend = () => { } }) => {
+export const SystemOverloaded = ({ onSend = () => { } }) => { // needs cube
     return (
         <div className="feedback-step" style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
             <p style={{ fontFamily: 'Share Tech Mono', fontSize: '2.5rem', textAlign: 'center' }}>System is overloaded, your input might destroy it</p>
@@ -63,7 +63,7 @@ export const SystemOverloaded = ({ onSend = () => { } }) => {
     )
 }
 
-export const SystemFailure = () => {
+export const SystemFailure = () => { 
     return (
         <div className="feedback-step" style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
             <p style={{ fontFamily: 'Share Tech Mono', fontSize: '2.5rem', textAlign: 'center' }}>System failed due to overload</p>
