@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Slider from './utils/Slider';
 
 const ExtensionStep = ({ size, setSize }) => {
     const MAX_VOLUME = 0.15;
@@ -6,33 +7,82 @@ const ExtensionStep = ({ size, setSize }) => {
     const MAX_SIZE = 1;
     const MIN_SIZE = 0.1;
 
-    const handleAxisChange = (axis, value) => {
-        const newValue = Math.min(MAX_SIZE, parseFloat(value) || 0);
+    // Morphing slider states
+    const [morphState, setMorphState] = useState(0.5); // 0 = state1, 0.5 = state2, 1 = state3
 
-        setSize((prev) => {
-            const newSize = { ...prev, [axis]: newValue };
-            const volume = newSize.x * newSize.y * newSize.z;
+    const state1 = { x: 0.42, y: 0.42, z: 0.09 };
+    const state2 = { x: 0.25, y: 0.25, z: 0.25 };
+    const state3 = { x: 0.5, y: 0.18, z: 0.18 };
 
-            if (volume > MAX_VOLUME) {
-                const scaleFactor = MAX_VOLUME / volume;
-                const axes = ['x', 'y', 'z'];
-                const otherAxes = axes.filter(a => a !== axis);
-
-                otherAxes.forEach(a => {
-                    newSize[a] = Math.min(MAX_SIZE, parseFloat((newSize[a] * scaleFactor).toFixed(2)));
-                });
-            } else if (volume < MIN_VOLUME) {
-                const scaleFactor = MIN_VOLUME / volume;
-                const axes = ['x', 'y', 'z'];
-                const otherAxes = axes.filter(a => a !== axis);
-
-                otherAxes.forEach(a => {
-                    newSize[a] = Math.min(MAX_SIZE, parseFloat((newSize[a] * scaleFactor).toFixed(2)));
-                });
-            }
-            return newSize;
-        });
+    const interpolateSize = (value) => {
+        // value ranges from 0 to 1
+        let result;
+        if (value <= 0.5) {
+            // Interpolate between state1 and state2
+            const t = value * 2; // 0 to 1
+            result = {
+                x: state1.x + (state2.x - state1.x) * t,
+                y: state1.y + (state2.y - state1.y) * t,
+                z: state1.z + (state2.z - state1.z) * t,
+            };
+        } else {
+            // Interpolate between state2 and state3
+            const t = (value - 0.5) * 2; // 0 to 1
+            result = {
+                x: state2.x + (state3.x - state2.x) * t,
+                y: state2.y + (state3.y - state2.y) * t,
+                z: state2.z + (state3.z - state2.z) * t,
+            };
+        }
+        return result;
     };
+
+    const handleMorphChange = (value) => {
+        const newValue = parseFloat(value);
+        setMorphState(newValue);
+        let newSize = interpolateSize(newValue);
+        const volume = newSize.x * newSize.y * newSize.z;
+
+        // Scale to fit within MAX_VOLUME
+        if (volume > MAX_VOLUME) {
+            const scaleFactor = Math.cbrt(MAX_VOLUME / volume); // cube root to scale all axes
+            newSize = {
+                x: newSize.x * scaleFactor,
+                y: newSize.y * scaleFactor,
+                z: newSize.z * scaleFactor,
+            };
+        }
+
+        setSize(newSize);
+    };
+
+    // const handleAxisChange = (axis, value) => {
+    //     const newValue = Math.min(MAX_SIZE, parseFloat(value) || 0);
+
+    //     setSize((prev) => {
+    //         const newSize = { ...prev, [axis]: newValue };
+    //         const volume = newSize.x * newSize.y * newSize.z;
+
+    //         if (volume > MAX_VOLUME) {
+    //             const scaleFactor = MAX_VOLUME / volume;
+    //             const axes = ['x', 'y', 'z'];
+    //             const otherAxes = axes.filter(a => a !== axis);
+
+    //             otherAxes.forEach(a => {
+    //                 newSize[a] = Math.min(MAX_SIZE, parseFloat((newSize[a] * scaleFactor).toFixed(2)));
+    //             });
+    //         } else if (volume < MIN_VOLUME) {
+    //             const scaleFactor = MIN_VOLUME / volume;
+    //             const axes = ['x', 'y', 'z'];
+    //             const otherAxes = axes.filter(a => a !== axis);
+
+    //             otherAxes.forEach(a => {
+    //                 newSize[a] = Math.min(MAX_SIZE, parseFloat((newSize[a] * scaleFactor).toFixed(2)));
+    //             });
+    //         }
+    //         return newSize;
+    //     });
+    // };
 
     return (
         <div className='extension-container'>
@@ -46,49 +96,18 @@ const ExtensionStep = ({ size, setSize }) => {
             <div className='bounds-container'></div>
             <div className="slider-container extension">
                 <div className="slider-group horizontal">
-                    <label>
-                        Y: {size.y.toFixed(2)}
-                    </label>
+                    <label>Form: State 1 → 2 → 3</label>
                     <input
                         type="range"
-                        min="0.1"
+                        min="0"
                         max="1"
                         step="0.01"
-                        value={size.y}
-                        onChange={(e) => handleAxisChange('y', e.target.value)}
+                        value={morphState}
+                        onChange={(e) => handleMorphChange(e.target.value)}
                     />
                 </div>
-
-                <div className="slider-group horizontal">
-                    <label>
-                        X: {size.x.toFixed(2)}
-                    </label>
-                    <input
-                        type="range"
-                        min="0.1"
-                        max="1"
-                        step="0.01"
-                        value={size.x}
-                        onChange={(e) => handleAxisChange('x', e.target.value)}
-                    />
-                </div>
-
-                <div className="slider-group horizontal">
-                    <label>
-                        Z: {size.z.toFixed(2)}
-                    </label>
-                    <input
-                        type="range"
-                        min="0.1"
-                        max="1"
-                        step="0.01"
-                        value={size.z}
-                        onChange={(e) => handleAxisChange('z', e.target.value)}
-                    />
-                </div>
+                {/* <Slider /> */}
             </div>
-
-            {/* <p className='data rgba' style={{ position: 'fixed', top: '10%', right: '5%', zIndex: 1000, margin: 0, pointerEvents: 'auto' }}>&#123;x: {size.x.toFixed(2)}, y: {size.y.toFixed(2)}, z: {size.z.toFixed(2)}&#125;</p> */}
         </div>
     )
 }

@@ -329,7 +329,7 @@ export const getDominantColors = (agents, count = 3) => {
     const signature = dominantGroupsLog.join('|');
     if (signature && signature !== lastDominantGroupsLogSignature) {
         lastDominantGroupsLogSignature = signature;
-        console.log('Dominant color groups:', dominantGroupsLog);
+        // console.log('Dominant color groups:', dominantGroupsLog);
     }
 
     return selected;

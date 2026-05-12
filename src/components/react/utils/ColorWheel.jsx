@@ -126,7 +126,7 @@ export const ColorWheel = ({ onChange }) => {
 
     //DOM
     return (
-        <div className="color-wheel" style={{ position: "relative", width: '100%', height: size }}>
+        <div className="color-wheel" >
             {/* marker */}
             <div
                 style={{

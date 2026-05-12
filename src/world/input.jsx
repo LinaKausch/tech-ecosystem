@@ -22,6 +22,7 @@ export const InputData = ({ socket }) => {
     const [isFailure, setIsFailure] = useState(false);
     const [isRebooting, setIsRebooting] = useState(false);
     const [showAbout, setShowAbout] = useState(false);
+    const [cubePlacement, setCubePlacement] = useState('50%');
 
     const handleColorChange = (payload) => {
         console.log("Payload received:", payload);
@@ -94,18 +95,19 @@ export const InputData = ({ socket }) => {
     }, [socket]);
 
     const steps = [
+
         <Onboarding socket={socket} onNext={() => setCurrentStep(1)} onNoClick={() => { setNoContribution(true); setCurrentStep(3); }} />,
-        // <ExtensionStep size={size} setSize={setSize} />,
+        // <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} />,
         <ColorStep value={data} onChange={handleColorChange} />,
         <ExtensionStep size={size} setSize={setSize} />,
-        <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} />,
+        <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} onCubeMounted={setCubePlacement} />,
     ]
 
     return (
         <div className='data-bg'>
             <p className="date">{dateTime}</p>
             {steps[currentStep]}
-            <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} />
+            <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} cubePlacement={cubePlacement} />
             {currentStep > 0 && currentStep < steps.length - 1 && (
                 <button className="btn" onClick={handleNext}>
                     next

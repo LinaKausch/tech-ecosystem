@@ -1,0 +1,95 @@
+import React, { useState } from 'react';
+
+const ExtensionStep = ({ size, setSize }) => {
+    const MAX_VOLUME = 0.15;
+    const MIN_VOLUME = 0.008; // 0.5 * 0.5 * 0.5
+    const MAX_SIZE = 1;
+    const MIN_SIZE = 0.1;
+
+    const handleAxisChange = (axis, value) => {
+        const newValue = Math.min(MAX_SIZE, parseFloat(value) || 0);
+
+        setSize((prev) => {
+            const newSize = { ...prev, [axis]: newValue };
+            const volume = newSize.x * newSize.y * newSize.z;
+
+            if (volume > MAX_VOLUME) {
+                const scaleFactor = MAX_VOLUME / volume;
+                const axes = ['x', 'y', 'z'];
+                const otherAxes = axes.filter(a => a !== axis);
+
+                otherAxes.forEach(a => {
+                    newSize[a] = Math.min(MAX_SIZE, parseFloat((newSize[a] * scaleFactor).toFixed(2)));
+                });
+            } else if (volume < MIN_VOLUME) {
+                const scaleFactor = MIN_VOLUME / volume;
+                const axes = ['x', 'y', 'z'];
+                const otherAxes = axes.filter(a => a !== axis);
+
+                otherAxes.forEach(a => {
+                    newSize[a] = Math.min(MAX_SIZE, parseFloat((newSize[a] * scaleFactor).toFixed(2)));
+                });
+            }
+            return newSize;
+        });
+    };
+
+    return (
+        <div className='extension-container'>
+            <div className='data-container'>
+                <p className='data size'>{size.x.toFixed(2)}</p>
+                <p className='barcode'>{size.x.toFixed(1)}{size.y.toFixed(1)}</p>
+                <p className='data size'>{size.y.toFixed(2)}</p>
+                <p className='barcode'>{size.y.toFixed(1)}{size.z.toFixed(1)}</p>
+                <p className='data size'>{size.z.toFixed(2)}</p>
+            </div>
+            <div className='bounds-container'></div>
+            <div className="slider-container extension">
+                <div className="slider-group horizontal">
+                    <label>
+                        Y: {size.y.toFixed(2)}
+                    </label>
+                    <input
+                        type="range"
+                        min="0.1"
+                        max="1"
+                        step="0.01"
+                        value={size.y}
+                        onChange={(e) => handleAxisChange('y', e.target.value)}
+                    />
+                </div>
+
+                <div className="slider-group horizontal">
+                    <label>
+                        X: {size.x.toFixed(2)}
+                    </label>
+                    <input
+                        type="range"
+                        min="0.1"
+                        max="1"
+                        step="0.01"
+                        value={size.x}
+                        onChange={(e) => handleAxisChange('x', e.target.value)}
+                    />
+                </div>
+
+                <div className="slider-group horizontal">
+                    <label>
+                        Z: {size.z.toFixed(2)}
+                    </label>
+                    <input
+                        type="range"
+                        min="0.1"
+                        max="1"
+                        step="0.01"
+                        value={size.z}
+                        onChange={(e) => handleAxisChange('z', e.target.value)}
+                    />
+                </div>
+            </div>
+
+            {/* <p className='data rgba' style={{ position: 'fixed', top: '10%', right: '5%', zIndex: 1000, margin: 0, pointerEvents: 'auto' }}>&#123;x: {size.x.toFixed(2)}, y: {size.y.toFixed(2)}, z: {size.z.toFixed(2)}&#125;</p> */}
+        </div>
+    )
+}
+export default ExtensionStep;
