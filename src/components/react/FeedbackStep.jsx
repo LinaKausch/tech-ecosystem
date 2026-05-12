@@ -9,13 +9,13 @@ const FEEDBACK_CONTENT = {
     },
     SystemBusy: {
         title: "System is busy right now",
-        subtitle: "Please wait...",
+        subtitle: "Please wait",
         cta: null,
     },
     Feedback: {
         title: "Your input data has been sent",
-        subtitle: "You may now close the tab",
-        cta: null,
+        // subtitle: "You may now close the tab",
+        cta: {label: "again", action: 'again'},
     },
     SystemOverloaded: {
         title: "System is overloaded, your input might destroy it",
@@ -24,7 +24,7 @@ const FEEDBACK_CONTENT = {
     },
     SystemFailure: {
         title: "System failed due to overload",
-        subtitle: "Please wait while it reboots...",
+        subtitle: "Please wait",
         cta: null,
     },
     NoContribution: {
