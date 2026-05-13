@@ -95,17 +95,40 @@ const ExtensionStep = ({ size, setSize }) => {
             </div>
             <div className='bounds-container'></div>
             <div className="slider-container extension">
-                <div className="slider-group horizontal">
-                    <label>Form: State 1 → 2 → 3</label>
-                    <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        value={morphState}
-                        onChange={(e) => handleMorphChange(e.target.value)}
-                    />
-                </div>
+                <div
+                    style={{
+                        width: 'calc(100vw - 9.95rem)',
+                        height: '1.5rem',
+                        // background: "linear-gradient(to right, red, yellow, green, cyan, blue, purple, red)",
+                        background: 'cyan',
+                        touchAction: "none",
+                        // mixBlendMode: "luminosity",
+                        position: "absolute",
+                        top: "-0.15rem",
+                        left: "0.08rem",
+                        filter: "blur(2px)",
+                    }}> </div>
+                          <div
+                    style={{
+                        width: 'calc(100vw - 10rem)',
+                        height: '1.5rem',
+                        // background: "linear-gradient(to right, red, yellow, green, cyan, blue, purple, red)",
+                        background: '#1c1c1c',
+                        touchAction: "none",
+                        // mixBlendMode: "luminosity",
+                        position: "absolute",
+                        top: "-0.15rem",
+                        left: "0.08rem",
+                        filter: "blur(2px)",
+                    }}> </div>
+                <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={morphState}
+                    onChange={(e) => handleMorphChange(e.target.value)}
+                />
                 {/* <Slider /> */}
             </div>
         </div>

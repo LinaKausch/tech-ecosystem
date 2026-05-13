@@ -15,10 +15,10 @@ const FEEDBACK_CONTENT = {
     Feedback: {
         title: "Your input data has been sent",
         // subtitle: "You may now close the tab",
-        cta: {label: "again", action: 'again'},
+        cta: { label: "again", action: 'again' },
     },
     SystemOverloaded: {
-        title: "System is overloaded, your input might destroy it",
+        title: "Input may cause system failure",
         subtitle: null,
         cta: { label: "Send anyway", action: "send" },
     },
@@ -42,6 +42,7 @@ export const FeedbackStep = ({
     isFailure = false,
     isRebooting = false,
     onSend = () => { },
+    onAction = () => { },
     onCubeMounted = () => { },
 }) => {
     const cubeRef = useRef(null);
@@ -93,7 +94,7 @@ export const FeedbackStep = ({
             <div className="feedback-footer">
                 {subtitle && <p className="feedback-subtitle">{subtitle}</p>}
                 {cta && (
-                    <button className="glass-btn feedback-cta" onClick={onSend}>
+                    <button className="glass-btn feedback-cta" onClick={() => onAction(cta.action)}>
                         {cta.label}
                     </button>
                 )}

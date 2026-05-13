@@ -55,6 +55,20 @@ export const InputData = ({ socket }) => {
         }
     };
 
+    const handleFeedbackAction = (action) => {
+        if (action === 'again') {
+            // Reset all states and go back to ColorStep (step 1)
+            setData({});
+            setSize({ x: 0.25, y: 0.25, z: 0.25 });
+            setHealth(Math.random());
+            setDataSent(false);
+            setIsBusy(false);
+            setCurrentStep(1);
+        } else if (action === 'send') {
+            sendData();
+        }
+    };
+
     useEffect(() => {
         const updateDateTime = () => {
             const now = new Date();
@@ -100,20 +114,20 @@ export const InputData = ({ socket }) => {
         // <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} />,
         <ColorStep value={data} onChange={handleColorChange} />,
         <ExtensionStep size={size} setSize={setSize} />,
-        <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} onCubeMounted={setCubePlacement} />,
+        <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} onAction={handleFeedbackAction} onCubeMounted={setCubePlacement} />,
     ]
 
     return (
         <div className='data-bg'>
             <p className="date">{dateTime}</p>
             {steps[currentStep]}
-            <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} cubePlacement={cubePlacement} />
+            <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} cubePlacement={cubePlacement} dataSent={dataSent} />
             {currentStep > 0 && currentStep < steps.length - 1 && (
                 <button className="btn" onClick={handleNext}>
                     next
                 </button>
             )}
-            <div style={{ display: "flex", flexDirection: 'column', justifyContent: 'center', position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
+            <div style={{ display: "flex", flexDirection: 'column', justifyContent: 'center', gap: '0.5rem', position: 'fixed', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
                 {(currentStep === 0 || currentStep === steps.length - 1) && (
                     <>
                         <p className='about-cta'>or read the...</p>

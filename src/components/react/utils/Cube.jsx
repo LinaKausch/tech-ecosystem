@@ -1,15 +1,27 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Box3, Vector3 } from 'three';
 
-const Cube = ({ color = 'red', sizeX = 1, sizeY = 1, sizeZ = 1, rotation = true, opacity = 1, metalness = 0 }) => {
+const Cube = ({ color = 'red', sizeX = 0.25, sizeY = 0.25, sizeZ = 0.25, rotation = true, opacity = 1, metalness = 0, animateOut = false }) => {
     const meshRef = useRef();
+    const targetYRef = useRef(0);
+
     useFrame(() => {
         if (!meshRef.current) return;
+
         if (rotation) {
             meshRef.current.rotation.x += 0.005;
             meshRef.current.rotation.y += 0.005;
+        }
+
+        // Animate cube moving out of canvas
+        if (animateOut) {
+            targetYRef.current = Math.min(targetYRef.current + 0.2, 5);
+            meshRef.current.position.y = targetYRef.current;
+        } else {
+            targetYRef.current = 0;
+            meshRef.current.position.y = 0;
         }
     });
 
@@ -26,15 +38,17 @@ const CubeModel = ({ sizeX, sizeY, sizeZ, color }) => {
     const gltf = useLoader(GLTFLoader, '/cube19.glb');
     const scene = useMemo(() => gltf.scene.clone(true), [gltf]);
     const baseCenterRef = useRef(new Vector3());
+    const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
         if (!scene) return;
         const box = new Box3().setFromObject(scene);
         box.getCenter(baseCenterRef.current);
+        setIsReady(true);
     }, [scene]);
 
     useEffect(() => {
-        if (!scene) return;
+        if (!scene || !isReady) return;
 
         scene.scale.set(sizeX, sizeY, sizeZ);
         scene.position.set(
@@ -56,9 +70,9 @@ const CubeModel = ({ sizeX, sizeY, sizeZ, color }) => {
                 child.material.opacity = 0.5;
             }
         });
-    }, [scene, sizeX, sizeY, sizeZ, color]);
+    }, [scene, sizeX, sizeY, sizeZ, color, isReady]);
 
-    return <primitive object={scene} />;
+    return isReady ? <primitive object={scene} /> : null;
 }
 
 export default Cube;
