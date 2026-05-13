@@ -23,6 +23,7 @@ const RotatingCube = ({ color = '#c2260a', sizeX = 0.6, sizeY = 0.6, sizeZ = 0.6
 const ComingUp = () => {
     const [incomingSize, setIncomingSize] = useState(null);
     const [incomingColor, setIncomingColor] = useState(null);
+    const [incomingName, setIncomingName] = useState(null);
     const [shouldShow, setShouldShow] = useState(false);
     const [isExiting, setIsExiting] = useState(false);
     const prevShouldShowRef = React.useRef(false);
@@ -36,6 +37,7 @@ const ComingUp = () => {
                     z: System.systemState.incomingData.depthExt || 0.5
                 });
                 setIncomingColor(System.systemState.incomingData.hex || '#c2260a');
+                setIncomingName(System.systemState.incomingData.name || null);
 
                 // Show only during processing and analysing (messages[2] and [3])
                 // Hide when generating starts (messages[4])
@@ -63,7 +65,7 @@ const ComingUp = () => {
         return () => clearInterval(interval);
     }, []);
 
-    if (!shouldShow || !incomingSize || !incomingColor) return null;
+    if (!shouldShow || !incomingSize || !incomingColor || !incomingName) return null;
 
     return (
         <>
@@ -94,27 +96,30 @@ const ComingUp = () => {
                 }
             `}</style>
             <div className="coming-up-container coming-up-container-animated">
-                <Canvas className="coming-up-canvas" camera={{ position: [-1, 0.4, 0.5], fov: 50 }}>
-                    <CameraUpdater sfov={50} />
-                    <ambientLight intensity={0.5} />
-                    <directionalLight position={[2, 2, 2]} intensity={0.8} />
-                    <RotatingCube
-                        key={`${incomingSize.x}-${incomingSize.y}-${incomingSize.z}`}
-                        color={incomingColor}
-                        sizeX={incomingSize.x}
-                        sizeY={incomingSize.y}
-                        sizeZ={incomingSize.z}
-                    />
-                    <EffectComposer>
-                        <Bloom
-                            luminanceThreshold={0.5}
-                            luminanceSmoothing={2}
-                            height={30}
-                            intensity={1.8}
-                            radius={0.4}
+                <p className="coming-up-name">{incomingName}</p>
+                <div className='coming-up-canvas-container'>
+                    <Canvas className="coming-up-canvas" camera={{ position: [-1, 0.4, 0.5], fov: 50 }}>
+                        <CameraUpdater sfov={50} />
+                        <ambientLight intensity={0.5} />
+                        <directionalLight position={[2, 2, 2]} intensity={0.8} />
+                        <RotatingCube
+                            key={`${incomingSize.x}-${incomingSize.y}-${incomingSize.z}`}
+                            color={incomingColor}
+                            sizeX={incomingSize.x}
+                            sizeY={incomingSize.y}
+                            sizeZ={incomingSize.z}
                         />
-                    </EffectComposer>
-                </Canvas>
+                        <EffectComposer>
+                            <Bloom
+                                luminanceThreshold={0.5}
+                                luminanceSmoothing={2}
+                                height={30}
+                                intensity={1.8}
+                                radius={0.4}
+                            />
+                        </EffectComposer>
+                    </Canvas>
+                </div>
             </div>
         </>
     );

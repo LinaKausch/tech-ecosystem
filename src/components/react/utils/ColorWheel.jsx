@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 
-const size = 350;
+const size = 320;
 
 //HSL TO RGB
 const hslToRgb = (h, s, l) => {
@@ -126,7 +126,7 @@ export const ColorWheel = ({ onChange }) => {
 
     //DOM
     return (
-        <div style={{ position: "relative", width: size, height: size }}>
+        <div className="color-wheel" >
             {/* marker */}
             <div
                 style={{
@@ -135,27 +135,47 @@ export const ColorWheel = ({ onChange }) => {
                     background: "#1C1C1C",
                     border: "1px solid #7ECCF8",
                     position: "absolute",
-                    top: -20,
+                    top: '5%',
                     left: "50%",
                     transform: "translateX(-50%)",
                     zIndex: 10,
                     pointerEvents: "none",
                 }}
             ></div>
+            <div
+                ref={wheelRef}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                style={{
+                    width: size + 6,
+                    height: size + 6,
+                    borderRadius: "50%",
+                    // border: "1px solid #7ECCF8",
+                    background: "conic-gradient(red, yellow, green, cyan, blue, purple, red)",
+                    transform: `translate(-50%, -50%) rotate(${angle}deg)`,
+                    filter: "blur(1px)",
+                    touchAction: "none",
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                }}> </div>
+
             {/* circle */}
             <div
                 style={{
                     width: size,
                     height: size,
                     borderRadius: "50%",
-                     backdropFilter: "blur(2.5px)",
+                    backdropFilter: "blur(2.5px)",
                     WebkitBackdropFilter: "blur(2.5px)",
                     border: "1px solid #7ECCF8",
                     // background: "#1C1C1C",
-                    background: "rgba(153, 153, 153, 0.04)",
+                    background: "rgb(44, 44, 44)",
                     position: "absolute",
-                    top: 0,
-                    left: 0,
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
                 }}>
             </div>
             {/* wheel */}
@@ -170,18 +190,39 @@ export const ColorWheel = ({ onChange }) => {
                     borderRadius: "50%",
                     border: "1px solid #7ECCF8",
                     background: "conic-gradient(red, yellow, green, cyan, blue, purple, red)",
-                    transform: `rotate(${angle}deg)`,
+                    transform: `translate(-50%, -50%) rotate(${angle}deg)`,
                     touchAction: "none",
                     mixBlendMode: "luminosity",
                     position: "absolute",
-                    top: 0,
-                    left: 0,
+                    top: "50%",
+                    left: "50%",
                 }}> </div>
+
+                  <div
+                ref={wheelRef}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                style={{
+                    width: size - 67,
+                    height: size - 67,
+                    borderRadius: "50%",
+                    // border: "1px solid #7ECCF8",
+                    background: "conic-gradient(red, yellow, green, cyan, blue, purple, red)",
+                    transform: `translate(-50%, -50%) rotate(${angle}deg)`,
+                    filter: "blur(1px)",
+                    touchAction: "none",
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                }}> </div>
+
+
             {/* center circle */}
             <div
                 style={{
-                    width: size - 100,
-                    height: size - 100,
+                    width: size - 70,
+                    height: size - 70,
                     borderRadius: "50%",
                     border: "1px solid #7ECCF8",
                     background: "#1C1C1C",

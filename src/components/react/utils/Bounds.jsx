@@ -7,7 +7,7 @@ const Bounds = ({ sizeX = 1, sizeY = 1, sizeZ = 1 }) => {
     return (
         <mesh ref={meshRef}>
             <boxGeometry args={[sizeX, sizeY, sizeZ]} />
-            <meshStandardMaterial color="#7ECCF8" transparent opacity={0.3} wireframe />
+            <meshLine color="#7ECCF8" transparent opacity={0.3} wireframe />
         </mesh>
     );
 };

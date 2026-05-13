@@ -1,15 +1,27 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Box3, Vector3 } from 'three';
 
-const Cube = ({ color = 'red', sizeX = 1, sizeY = 1, sizeZ = 1, rotation = true, opacity = 1, metalness = 0 }) => {
+const Cube = ({ color = 'red', sizeX = 0.25, sizeY = 0.25, sizeZ = 0.25, rotation = true, opacity = 1, metalness = 0, animateOut = false }) => {
     const meshRef = useRef();
+    const targetYRef = useRef(0);
+
     useFrame(() => {
         if (!meshRef.current) return;
+
         if (rotation) {
             meshRef.current.rotation.x += 0.005;
             meshRef.current.rotation.y += 0.005;
+        }
+
+        // Animate cube moving out of canvas
+        if (animateOut) {
+            targetYRef.current = Math.min(targetYRef.current + 0.12, 5);
+            meshRef.current.position.y = targetYRef.current;
+        } else {
+            targetYRef.current = 0;
+            meshRef.current.position.y = 0;
         }
     });
 
@@ -24,33 +36,43 @@ const Cube = ({ color = 'red', sizeX = 1, sizeY = 1, sizeZ = 1, rotation = true,
 
 const CubeModel = ({ sizeX, sizeY, sizeZ, color }) => {
     const gltf = useLoader(GLTFLoader, '/cube19.glb');
+    const scene = useMemo(() => gltf.scene.clone(true), [gltf]);
+    const baseCenterRef = useRef(new Vector3());
+    const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
-        if (gltf.scene) {
-            const box = new Box3().setFromObject(gltf.scene);
-            const center = box.getCenter(new Vector3());
-            const size = box.getSize(new Vector3());
+        if (!scene) return;
+        const box = new Box3().setFromObject(scene);
+        box.getCenter(baseCenterRef.current);
+        setIsReady(true);
+    }, [scene]);
 
-            gltf.scene.position.sub(center);
-         
-            gltf.scene.scale.set(sizeX, sizeY, sizeZ);
+    useEffect(() => {
+        if (!scene || !isReady) return;
 
-            // Apply color wheel to light mesh
-            gltf.scene.traverse((child) => {
-                if (child.isMesh && child.name === 'light') {
-                    child.material = child.material.clone();
-                    const lightColor = color?.hex || color;
-                    child.material.color.set(lightColor);
-                    child.material.emissive.set(lightColor);
-                    child.material.emissiveIntensity = 2.5;
-                    child.material.transparent = true;
-                    child.material.opacity = 0.5;
-                }
-            });
-        }
-    }, [gltf, sizeX, sizeY, sizeZ, color]);
+        scene.scale.set(sizeX, sizeY, sizeZ);
+        scene.position.set(
+            -baseCenterRef.current.x * sizeX,
+            -baseCenterRef.current.y * sizeY,
+            -baseCenterRef.current.z * sizeZ
+        );
+        scene.updateMatrixWorld(true);
 
-    return <primitive object={gltf.scene} />;
+        // Apply color wheel to light mesh
+        scene.traverse((child) => {
+            if (child.isMesh && child.name === 'light') {
+                child.material = child.material.clone();
+                const lightColor = color?.hex || color;
+                child.material.color.set(lightColor);
+                child.material.emissive.set(lightColor);
+                child.material.emissiveIntensity = 2.5;
+                child.material.transparent = true;
+                child.material.opacity = 0.5;
+            }
+        });
+    }, [scene, sizeX, sizeY, sizeZ, color, isReady]);
+
+    return isReady ? <primitive object={scene} /> : null;
 }
 
 export default Cube;

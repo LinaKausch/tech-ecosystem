@@ -3,10 +3,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const sentences = [
-    "You are connected to the _system.",
-    "You can influence, but not control it.",
-    "Your input influences the _system.",
-    "The _system has limits."
+    "You are connected to the Intake_system.",
+    "You can influence, but you cannot control it.",
+    "Your input influences the Intake_system.",
+    "The Intake_system has limits."
 ];
 
 const Onboarding = ({ onNext, socket, onNoClick }) => {
@@ -75,10 +75,9 @@ const Onboarding = ({ onNext, socket, onNoClick }) => {
 export const OnboardingCTA = ({ onNext, onNoClick }) => {
     return (
         <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <p style={{ fontFamily: 'Share Tech Mono', fontSize: '1.2rem' }}>Do you want to influence?</p>
+            {/* <p style={{ fontFamily: 'Share Tech Mono', fontSize: '1.2rem' }}>Do you want to influence?</p> */}
             <div style={{ display: 'flex', gap: '2rem' }}>
-                <button className="glass-btn btn-n" onClick={() => onNoClick && onNoClick()}>No</button>
-                <button className="glass-btn btn-y" onClick={() => onNext && onNext()}>Yes</button>
+                <button className="btn-y" onClick={() => onNext && onNext()}>Continue</button>
             </div>
         </div>
     )

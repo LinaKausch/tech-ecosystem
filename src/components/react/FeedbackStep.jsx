@@ -1,85 +1,107 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 
-export const FeedbackStep = ({ isOverloaded = false, isBusy = false, dataSent = false, noContribution = false, isFailure = false, isRebooting = false, onSend = () => { } }) => {
-    let display = 'Ready';
+const FEEDBACK_CONTENT = {
+    Ready: {
+        title: "System is ready for your input",
+        subtitle: null,
+        cta: { label: "SEND", action: "send" },
+    },
+    SystemBusy: {
+        title: "System is busy right now",
+        subtitle: "Please wait",
+        cta: null,
+    },
+    Feedback: {
+        title: "Your input data has been sent",
+        // subtitle: "You may now close the tab",
+        cta: { label: "again", action: 'again' },
+    },
+    SystemOverloaded: {
+        title: "Input may cause system failure",
+        subtitle: null,
+        cta: { label: "Send anyway", action: "send" },
+    },
+    SystemFailure: {
+        title: "System failed due to overload",
+        subtitle: "Please wait",
+        cta: null,
+    },
+    NoContribution: {
+        title: "Your input is necessary, but dangerous for the _system",
+        subtitle: "You may now close the tab",
+        cta: null,
+    },
+};
+
+export const FeedbackStep = ({
+    isOverloaded = false,
+    isBusy = false,
+    dataSent = false,
+    noContribution = false,
+    isFailure = false,
+    isRebooting = false,
+    onSend = () => { },
+    onAction = () => { },
+    onCubeMounted = () => { },
+    randomName = 'digital-data',
+}) => {
+    const cubeRef = useRef(null);
+
+    useEffect(() => {
+        const measureCubePosition = () => {
+            if (cubeRef.current) {
+                const rect = cubeRef.current.getBoundingClientRect();
+                const cubeCenter = rect.top + rect.height / 2;
+                const viewportHeight = window.innerHeight;
+                const placementPercent = (cubeCenter / viewportHeight) * 100;
+                onCubeMounted(`${placementPercent.toFixed(1)}%`);
+            }
+        };
+
+        // Measure on mount
+        measureCubePosition();
+
+        // Re-measure on window resize
+        window.addEventListener('resize', measureCubePosition);
+        return () => window.removeEventListener('resize', measureCubePosition);
+    }, [onCubeMounted]);
+    let display = "Ready";
     if (noContribution) {
-        display = 'NoContribution';
+        display = "NoContribution";
     } else if (dataSent) {
-        display = 'Feedback';
+        display = "Feedback";
     } else if (isFailure || isRebooting) {
-        display = 'SystemFailure';
+        display = "SystemFailure";
     } else if (isBusy) {
-        display = 'SystemBusy';
+        display = "SystemBusy";
     } else if (isOverloaded) {
-        display = 'SystemOverloaded';
+        display = "SystemOverloaded";
     }
 
+    const { title, subtitle, cta } = FEEDBACK_CONTENT[display];
+
     return (
-        <div style={{ zIndex: 1, display: 'flex', height: '100dvh', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
-            {display === 'Ready' && <Ready onSend={onSend} />}
-            {display === 'SystemBusy' && <SystemBusy />}
-            {display === 'Feedback' && <Feedback />}
-            {display === 'SystemOverloaded' && <SystemOverloaded onSend={onSend} />}
-            {display === 'SystemFailure' && <SystemFailure />}
-            {display === 'NoContribution' && <NoContribution />}
+        <div className="feedback-step-wrapper">
+            <div className="feedback-step">
+                <p className="feedback-title">{title}</p>
+            </div>
+            <div className="feedback-cube-container">
+                <div className="feedback-cube" ref={cubeRef}></div>
+                <div>
+                    <p className="id-name">{randomName}</p>
+                </div>
+            </div>
+            <div className="feedback-footer">
+                {subtitle && <p className="feedback-subtitle">{subtitle}</p>}
+                {cta && (
+                    <button className="glass-btn feedback-cta" onClick={() => onAction(cta.action)}>
+                        {cta.label}
+                    </button>
+                )}
+            </div>
         </div>
     );
-}
-
-export const Feedback = () => {
-    return (
-        <div className="feedback-step" style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
-            <p style={{ fontFamily: 'Share Tech Mono', fontSize: '2.5rem', textAlign: 'center' }}>Your input data has been sent</p>
-            <p style={{ color: "#7ECCF8" }}>You may now close the tab</p>
-        </div>
-    )
-}
-
-export const SystemBusy = () => {
-    return (
-        <div className="feedback-step" style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
-            <p style={{ fontFamily: 'Share Tech Mono', fontSize: '2.5rem', textAlign: 'center' }}>System is busy right now</p>
-            <p style={{ color: "#7ECCF8" }}>Please wait...</p>
-        </div>
-    )
-}
-
-export const Ready = ({ onSend = () => { } }) => {
-    return (
-        <div className="feedback-step" style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
-            <p style={{ fontFamily: 'Share Tech Mono', fontSize: '2.5rem', textAlign: 'center' }}>System is ready for your input</p>
-            <button className="glass-btn" style={{ marginTop: '1rem' }} onClick={onSend}>SEND</button>
-        </div>
-    )
-}
-
-export const SystemOverloaded = ({ onSend = () => { } }) => {
-    return (
-        <div className="feedback-step" style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
-            <p style={{ fontFamily: 'Share Tech Mono', fontSize: '2.5rem', textAlign: 'center' }}>System is overloaded, your input might destroy it</p>
-            <button className="glass-btn" style={{ marginTop: '1rem' }} onClick={onSend}>Send anyway</button>
-        </div>
-    )
-}
-
-export const SystemFailure = () => {
-    return (
-        <div className="feedback-step" style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
-            <p style={{ fontFamily: 'Share Tech Mono', fontSize: '2.5rem', textAlign: 'center' }}>System failed due to overload</p>
-            <p style={{ color: "#7ECCF8" }}>Please wait while it reboots...</p>
-        </div>
-    )
-}
-
-export const NoContribution = () => {
-    return (
-        <div className="feedback-step" style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
-            <p style={{ fontFamily: 'Share Tech Mono', fontSize: '2.5rem', textAlign: 'center' }}>Your input is necessary, but dangerous for
-                the _system</p>
-            <p style={{ color: "#7ECCF8" }}>You may now close the tab</p>
-        </div>
-    )
-}
+};
 
 export default FeedbackStep;

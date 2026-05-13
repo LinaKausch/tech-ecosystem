@@ -6,7 +6,7 @@ import Onboarding from '../components/react/Onboarding.jsx';
 import FeedbackStep from '../components/react/FeedbackStep.jsx';
 import AboutStep from '../components/react/AboutStep.jsx';
 import HealthStep from '../components/react/HealthStep.jsx';
-// import Onboarding from '../components/react/Onboarding.jsx';
+import { getRandomIdName } from '../components/react/utils/IdName.jsx';
 
 
 export const InputData = ({ socket }) => {
@@ -22,6 +22,8 @@ export const InputData = ({ socket }) => {
     const [isFailure, setIsFailure] = useState(false);
     const [isRebooting, setIsRebooting] = useState(false);
     const [showAbout, setShowAbout] = useState(false);
+    const [cubePlacement, setCubePlacement] = useState('50%');
+    const [randomName, setRandomName] = useState(() => getRandomIdName());
 
     const handleColorChange = (payload) => {
         console.log("Payload received:", payload);
@@ -38,7 +40,8 @@ export const InputData = ({ socket }) => {
             healthScore: health * 100,
             widthExt: size.x,
             heightExt: size.y,
-            depthExt: size.z
+            depthExt: size.z,
+            name: randomName
         };
         console.log('Data sent to display:', dataToSend);
         socket.emit("send-to-display", dataToSend);
@@ -51,6 +54,21 @@ export const InputData = ({ socket }) => {
             sendData();
         } else {
             setCurrentStep((prev) => prev + 1);
+        }
+    };
+
+    const handleFeedbackAction = (action) => {
+        if (action === 'again') {
+            // Reset all states and go back to ColorStep (step 1)
+            setData({});
+            setSize({ x: 0.25, y: 0.25, z: 0.25 });
+            setHealth(Math.random());
+            setRandomName(getRandomIdName());
+            setDataSent(false);
+            setIsBusy(false);
+            setCurrentStep(1);
+        } else if (action === 'send') {
+            sendData();
         }
     };
 
@@ -94,27 +112,35 @@ export const InputData = ({ socket }) => {
     }, [socket]);
 
     const steps = [
+
         <Onboarding socket={socket} onNext={() => setCurrentStep(1)} onNoClick={() => { setNoContribution(true); setCurrentStep(3); }} />,
+        // <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} />,
         <ColorStep value={data} onChange={handleColorChange} />,
         <ExtensionStep size={size} setSize={setSize} />,
-        <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} />,
+        <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} onAction={handleFeedbackAction} onCubeMounted={setCubePlacement} randomName={randomName} />,
     ]
 
     return (
         <div className='data-bg'>
             <p className="date">{dateTime}</p>
             {steps[currentStep]}
-            <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} />
+            <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} cubePlacement={cubePlacement} dataSent={dataSent} />
             {currentStep > 0 && currentStep < steps.length - 1 && (
-                <button className="btn" onClick={handleNext}>
-                    next
-                </button>
-            )}
-            <div style={{ display: "flex", justifyContent: 'center', marginTop: '-1.5rem', position: 'fixed', bottom: '3rem', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
-                {(currentStep === 0 || currentStep === steps.length - 1) && (
-                    <button className="about-btn" onClick={() => setShowAbout(true)}>
-                        About
+                <div className="next-button-container">
+                    <p className="id-barcode">{randomName}</p>
+                    <button className="btn" onClick={handleNext}>
+                        next
                     </button>
+                </div>
+            )}
+            <div style={{ display: "flex", flexDirection: 'column', justifyContent: 'center', gap: '0.5rem', position: 'fixed', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
+                {(currentStep === 0 || currentStep === steps.length - 1) && (
+                    <>
+                        <p className='about-cta'>or read the...</p>
+                        <button className="about-btn" onClick={() => setShowAbout(true)}>
+                            Story
+                        </button>
+                    </>
                 )}
             </div>
             {showAbout && <AboutStep onClose={() => setShowAbout(false)} />}

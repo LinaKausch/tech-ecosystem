@@ -15,40 +15,52 @@ const CameraUpdater = ({ sfov }) => {
     return null;
 };
 
-const Scene = ({ colour, size, sceneNumber = 1, opacity = 1, metalness = 0 }) => {
+const Scene = ({ colour, size, sceneNumber = 1, opacity = 1, metalness = 0, cubePlacement = '50%', dataSent = false }) => {
     const defaultCameraPos = [-1, 0.4, 0.5];
     const defaultColor = '#c20a20';
+    const placement = '50%';
+
 
     const sceneConfigs = {
-        1: { sfov: 0, showBounds: false, sh: '40%', sw: '50%', cameraP: [-1, 0.8, 1], rotation: true },
-        2: { sfov: 53, showBounds: false, sh: '40%', sw: '50%', cameraP: defaultCameraPos, rotation: true },
-        3: { sfov: 100, showBounds: true, sh: '80%', sw: '90%', cameraP: [-1, 0.8, 1], rotation: false },
-        4: { sfov: 60, showBounds: false, sh: '100%', sw: '100%', cameraP: [-1, 0.8, 0], rotation: true },
-        5: { sfov: 100, showBounds: false, sh: '100%', sw: '100%', cameraP: defaultCameraPos, rotation: true },
-        6: { sfov: 120, showBounds: false, sh: '100%', sw: '100%', cameraP: defaultCameraPos, rotation: true }
+        1: { sfov: 0, showBounds: false, sh: '40%', sw: '50%', cameraP: [-1, 0.8, 1], place: placement, rotation: true },
+        2: { sfov: 43, showBounds: false, sh: '13rem', sw: '13rem', cameraP: defaultCameraPos, place: placement, rotation: true },
+        3: { sfov: 60, showBounds: true, sh: '20.9rem', sw: 'calc(100% - 2.1rem)', cameraP: defaultCameraPos, place: 'calc(50% - 1rem)', rotation: true },
+        4: { sfov: 55, showBounds: false, sh: '14.9rem', sw: 'calc(100% - 8.1rem)', cameraP: defaultCameraPos, place: cubePlacement, rotation: true },
+        5: { sfov: 100, showBounds: false, sh: '100%', sw: '100%', cameraP: defaultCameraPos, place: placement, rotation: true },
+        6: { sfov: 120, showBounds: false, sh: '100%', sw: '100%', cameraP: defaultCameraPos, place: placement, rotation: true }
     };
 
+    // const sceneConfigs = {
+    //     1: { sfov: 0, showBounds: false, sh: '40%', sw: '50%', cameraP: [-1, 0.8, 1], place: placement, rotation: true },
+    //     2: { sfov: 110, showBounds: false, sh: '100%', sw: '100%', cameraP: [-1, 0.8, 0], place: placement, rotation: true },
+    //     3: { sfov: 53, showBounds: false, sh: '40%', sw: '50%', cameraP: defaultCameraPos, place: placement, rotation: true },
+    //     4: { sfov: 60, showBounds: true, sh: '50%', sw: '90%', cameraP: defaultCameraPos, place: placement, rotation: true },
+    //     5: { sfov: 100, showBounds: false, sh: '100%', sw: '100%', cameraP: defaultCameraPos, place: placement, rotation: true },
+    //     6: { sfov: 120, showBounds: false, sh: '100%', sw: '100%', cameraP: defaultCameraPos, place: placement, rotation: true }
+    // };
+
+
     const config = sceneConfigs[sceneNumber] || sceneConfigs[2];
-    const { sfov, showBounds, sh, sw, cameraP, rotation } = config;
+    const { sfov, showBounds, sh, sw, cameraP, place, rotation } = config;
 
     return (
         <Canvas
             key={sceneNumber}
-            style={{ width: sw, height: sh, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+            style={{ width: sw, height: sh, position: 'absolute', top: place, left: '50%', transform: 'translate(-50%, -50%)' }}
             camera={{ position: cameraP, fov: sfov }}
         >
             <CameraUpdater sfov={sfov} />
             <ambientLight intensity={0.5} />
             <directionalLight position={[-1, 2, 1]} intensity={0.5} />
             {/* <directionalLight position={[0, 0, -4]} intensity={1} /> */}
-            {showBounds && (
+            {/* {showBounds && (
                 <>
                     <Bounds sizeX={0.5} sizeY={0.5} sizeZ={1.9} />
                     <Bounds sizeX={0.5} sizeY={1.9} sizeZ={0.5} />
                     <Bounds sizeX={1.9} sizeY={0.5} sizeZ={0.5} />
                 </>
-            )}
-            <Cube color={colour || defaultColor} sizeX={size.x} sizeY={size.y} sizeZ={size.z} rotation={rotation} opacity={opacity} metalness={metalness} />
+            )} */}
+            <Cube color={colour || defaultColor} sizeX={size.x} sizeY={size.y} sizeZ={size.z} rotation={rotation} opacity={opacity} metalness={metalness} animateOut={dataSent} />
             {/* <Sparkles count={100} size={0.05} speed={0.05} color={colour || defaultColor} /> */}
             <EffectComposer>
                 <Bloom
