@@ -32,7 +32,7 @@ const ColorStep = ({ onChange, value }) => {
                 <p className='data hex'>#{selectedColor.hex.replace('#', '')}</p>
                 <p className='barcode'>{selectedColor.hex.replace('#', '')}</p>
             </div>
-            <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center", alignContent: "center" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignContent: "center" }}>
                 <ColorWheel onChange={handleColorChange} />
             </div>
             {/* <p className='data colorname'>`{selectedColor.colorName}`</p> */}

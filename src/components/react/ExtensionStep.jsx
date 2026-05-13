@@ -108,7 +108,7 @@ const ExtensionStep = ({ size, setSize }) => {
                         left: "0.08rem",
                         filter: "blur(2px)",
                     }}> </div>
-                          <div
+                <div
                     style={{
                         width: 'calc(100vw - 10rem)',
                         height: '1.5rem',

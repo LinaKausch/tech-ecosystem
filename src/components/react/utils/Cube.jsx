@@ -17,7 +17,7 @@ const Cube = ({ color = 'red', sizeX = 0.25, sizeY = 0.25, sizeZ = 0.25, rotatio
 
         // Animate cube moving out of canvas
         if (animateOut) {
-            targetYRef.current = Math.min(targetYRef.current + 0.2, 5);
+            targetYRef.current = Math.min(targetYRef.current + 0.12, 5);
             meshRef.current.position.y = targetYRef.current;
         } else {
             targetYRef.current = 0;

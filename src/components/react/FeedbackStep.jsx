@@ -44,6 +44,7 @@ export const FeedbackStep = ({
     onSend = () => { },
     onAction = () => { },
     onCubeMounted = () => { },
+    randomName = 'digital-data',
 }) => {
     const cubeRef = useRef(null);
 
@@ -88,7 +89,7 @@ export const FeedbackStep = ({
             <div className="feedback-cube-container">
                 <div className="feedback-cube" ref={cubeRef}></div>
                 <div>
-                    <p className="id-name">digital-data</p>
+                    <p className="id-name">{randomName}</p>
                 </div>
             </div>
             <div className="feedback-footer">

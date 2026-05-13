@@ -54,11 +54,11 @@ h1 {
     backdrop-filter: blur(2.5px);
     -webkit-backdrop-filter: blur(2.5px);
     border: 1px solid rgba(101, 197, 227, 0.8);
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(101, 197, 227, 1);
     padding: 1rem 1.5rem;
-    position: absolute;
+    /* position: absolute;
     bottom: 1rem;
-    right: 1rem;
+    right: 1rem; */
     font-family: "Bungee Hairline", sans-serif;
     font-weight: 600;
     font-size: 1.2rem;
@@ -125,11 +125,11 @@ text-underline-position: from-font; */
     backdrop-filter: blur(2.5px);
     -webkit-backdrop-filter: blur(2.5px);
     border: 1px solid rgba(101, 197, 227, 0.8);
-    color: rgba(119, 213, 241, 0.8);
+    color: rgba(101, 197, 227, 1);
     padding: 0.9rem 1.6rem;
-    /* font-family: "Bungee Hairline", sans-serif; */
-    font-family: "Roboto Mono";
-    font-weight: 100;
+    font-family: "Bungee Hairline", sans-serif;
+    /* font-family: "Roboto Mono"; */
+    font-weight: 600;
     font-size: 1.2rem;
     text-transform: uppercase;
 }
@@ -391,8 +391,8 @@ html,
     position: fixed;
     bottom: 240px;
     left: 20px;
-    width: 200px;
-    height: 200px;
+    width: 250px;
+    height: 250px;
     z-index: 99999;
     overflow: hidden;
     background: rgba(71, 71, 71, 0.2);
@@ -400,6 +400,28 @@ html,
     border: 0.5px solid rgba(126, 204, 248, 0.12);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+}
+
+.coming-up-name {
+    position: absolute;
+    bottom: 0.5rem;
+    font-family: 'Libre Barcode 39 Text', system-ui;
+    font-size: 1.4rem;
+    font-weight: 300;
+    /* background-color: #7ECCF8; */
+    color:  #7ECCF8;
+    margin: 0;
+    z-index: 10;
+    width: calc(100% - 1rem);
+    white-space: nowrap;
+    margin-left: 0.5rem;
+    padding: 0.3rem;
+}
+
+.coming-up-canvas-container {
+    width: 200px;
+    height: 200px;
+    z-index: 1;
 }
 
 .coming-up-canvas {
@@ -501,7 +523,7 @@ html,
 input[type="range"] {
     appearance: none;
     -webkit-appearance: none;
-    background:  linear-gradient(to right, rgb(46, 46, 46), rgb(119, 119, 119), rgb(28, 28, 28));
+    background: linear-gradient(to right, rgb(46, 46, 46), rgb(119, 119, 119), rgb(28, 28, 28));
     width: var(--slider-width);
     height: 1rem;
 }
@@ -509,7 +531,7 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-runnable-track {
     height: 1.5rem;
     /* background: rgba(28, 28, 28, 1); */
-    background:  linear-gradient(to right,  rgb(46, 46, 46), rgb(119, 119, 119), rgb(28, 28, 28));
+    background: linear-gradient(to right, rgb(46, 46, 46), rgb(119, 119, 119), rgb(28, 28, 28));
     box-shadow: 0 4px 30px rgba(39, 39, 39, 0.2);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -519,7 +541,7 @@ input[type="range"]::-webkit-slider-runnable-track {
 input[type="range"]::-moz-range-track {
     height: 1.5rem;
     /* background: rgba(28, 28, 28, 1); */
-    background:  linear-gradient(to right, rgb(46, 46, 46), rgb(119, 119, 119), rgb(28, 28, 28));
+    background: linear-gradient(to right, rgb(46, 46, 46), rgb(119, 119, 119), rgb(28, 28, 28));
     box-shadow: 0 4px 30px rgba(39, 39, 39, 0.2);
 
     backdrop-filter: blur(10px);
@@ -656,4 +678,26 @@ input[type="range"]:active::-moz-range-thumb {
     justify-content: center;
     gap: 0.5rem;
     margin-top: 1rem;
+}
+
+/* Next Button Container */
+.next-button-container {
+    position: absolute;
+    bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    width: 100%;
+    padding: 1rem;
+}
+
+/* Random Name Display */
+.id-barcode {
+    margin: 0;
+    font-family: 'Libre Barcode 39 Text', system-ui;
+    /* background-color: #7ECCF8; */
+    color: #7ECCF8;
+    ;
+    padding: 0.3rem 0.5rem;
+    font-size: 1.5rem;
 }

@@ -6,7 +6,7 @@ import Onboarding from '../components/react/Onboarding.jsx';
 import FeedbackStep from '../components/react/FeedbackStep.jsx';
 import AboutStep from '../components/react/AboutStep.jsx';
 import HealthStep from '../components/react/HealthStep.jsx';
-// import Onboarding from '../components/react/Onboarding.jsx';
+import { getRandomIdName } from '../components/react/utils/IdName.jsx';
 
 
 export const InputData = ({ socket }) => {
@@ -23,6 +23,7 @@ export const InputData = ({ socket }) => {
     const [isRebooting, setIsRebooting] = useState(false);
     const [showAbout, setShowAbout] = useState(false);
     const [cubePlacement, setCubePlacement] = useState('50%');
+    const [randomName, setRandomName] = useState(() => getRandomIdName());
 
     const handleColorChange = (payload) => {
         console.log("Payload received:", payload);
@@ -39,7 +40,8 @@ export const InputData = ({ socket }) => {
             healthScore: health * 100,
             widthExt: size.x,
             heightExt: size.y,
-            depthExt: size.z
+            depthExt: size.z,
+            name: randomName
         };
         console.log('Data sent to display:', dataToSend);
         socket.emit("send-to-display", dataToSend);
@@ -61,6 +63,7 @@ export const InputData = ({ socket }) => {
             setData({});
             setSize({ x: 0.25, y: 0.25, z: 0.25 });
             setHealth(Math.random());
+            setRandomName(getRandomIdName());
             setDataSent(false);
             setIsBusy(false);
             setCurrentStep(1);
@@ -114,7 +117,7 @@ export const InputData = ({ socket }) => {
         // <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} />,
         <ColorStep value={data} onChange={handleColorChange} />,
         <ExtensionStep size={size} setSize={setSize} />,
-        <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} onAction={handleFeedbackAction} onCubeMounted={setCubePlacement} />,
+        <FeedbackStep isOverloaded={isOverloaded} isBusy={isBusy} dataSent={dataSent} noContribution={noContribution} isFailure={isFailure} isRebooting={isRebooting} onSend={sendData} onAction={handleFeedbackAction} onCubeMounted={setCubePlacement} randomName={randomName} />,
     ]
 
     return (
@@ -123,9 +126,12 @@ export const InputData = ({ socket }) => {
             {steps[currentStep]}
             <Scene colour={data.hex} size={size} sceneNumber={currentStep + 1} cubePlacement={cubePlacement} dataSent={dataSent} />
             {currentStep > 0 && currentStep < steps.length - 1 && (
-                <button className="btn" onClick={handleNext}>
-                    next
-                </button>
+                <div className="next-button-container">
+                    <p className="id-barcode">{randomName}</p>
+                    <button className="btn" onClick={handleNext}>
+                        next
+                    </button>
+                </div>
             )}
             <div style={{ display: "flex", flexDirection: 'column', justifyContent: 'center', gap: '0.5rem', position: 'fixed', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
                 {(currentStep === 0 || currentStep === steps.length - 1) && (
