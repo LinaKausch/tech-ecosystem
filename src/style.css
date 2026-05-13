@@ -391,7 +391,7 @@ html,
     position: fixed;
     bottom: 240px;
     left: 20px;
-    width: 250px;
+    width: 200px;
     height: 250px;
     z-index: 99999;
     overflow: hidden;
