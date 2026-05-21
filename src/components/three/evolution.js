@@ -6,7 +6,7 @@ const POPULATION_CONTROL_BURST_COUNT = 100;
 const POPULATION_CONTROL_COOLDOWN_MS = SPAWN_DELAY_MS * POPULATION_CONTROL_BURST_COUNT + 250;
 let nextPopulationControlAt = 0;
 export const INPUT_SPAWN_DELAY_MS = 120;
-export const INPUT_SPAWN_COUNT = 40;
+export const INPUT_SPAWN_COUNT = 67;
 
 const spawnAgentWithDelay = (
     scene,
@@ -91,10 +91,7 @@ export const mixDNA = (dna1, dna2) => {
         depthExt: THREE.MathUtils.lerp(dna1.depthExt, dna2.depthExt, Math.random()),
         color: mutateColor(baseColor),
         speed: mutate(Math.random() > 0.5 ? dna1.speed : dna2.speed),
-        opacity: Math.max(0.2, THREE.MathUtils.lerp(dna1.opacity, dna2.opacity, Math.random())),
-        metalness: mutate(THREE.MathUtils.lerp(dna1.metalness, dna2.metalness, Math.random())),
         healthScore: newHealth,
-        mass: mutate(THREE.MathUtils.lerp(dna1.mass, dna2.mass, Math.random())),
     }
 }
 
@@ -145,10 +142,7 @@ const calculateDNASimilarity = (dna1, dna2) => {
         Math.abs(dna1.depthExt - dna2.depthExt) +
         colorDiff +
         Math.abs(dna1.speed - dna2.speed) +
-        Math.abs(dna1.opacity - dna2.opacity) +
-        Math.abs(dna1.metalness - dna2.metalness) +
-        Math.abs(dna1.healthScore - dna2.healthScore) * 0.01 +
-        Math.abs(dna1.mass - dna2.mass) * 0.1;
+        Math.abs(dna1.healthScore - dna2.healthScore) * 0.01;
 
     return distance;
 };

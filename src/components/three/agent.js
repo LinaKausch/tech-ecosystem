@@ -29,10 +29,7 @@ export const createAgent = async (
         depthExt: Math.random() * 0.5,
         color: createVividColor(),
         speed: 0.001,
-        opacity: Math.max(0.2, Math.random()),
-        metalness: Math.random(),
         healthScore: Math.random() * 100,
-        mass: Math.random() * 10,
     };
 
     // dna: widthExt, heightExt, depthExt, color, speed, opacity, metalness

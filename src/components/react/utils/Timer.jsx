@@ -5,6 +5,10 @@
 */
 export const getFormattedTime = (startTimeMs) => {
     const elapsedMs = Date.now() - startTimeMs;
+    return formatDurationMs(elapsedMs);
+};
+
+export const formatDurationMs = (elapsedMs) => {
     const elapsedSeconds = Math.floor(elapsedMs / 1000);
     const hours = Math.floor(elapsedSeconds / 3600);
     const minutes = Math.floor((elapsedSeconds % 3600) / 60);
